@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Operação</title>
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D0B14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Painel Op">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#0D0B14;
+    --surface:#161320;
+    --surface2:#1C1829;
+    --surface3:#231E33;
+    --border:#2A2438;
+    --border-strong:#392F4D;
+    --text:#F2F0F7;
+    --muted:#9891A8;
+    --muted2:#665D7A;
+    --violet:#8B5CF6;
+    --violet-soft:rgba(139,92,246,0.12);
+    --lime:#C6FF3D;
+    --urgent:#FF4D6D;
+    --urgent-soft:rgba(255,77,109,0.10);
+    --ok:#3ADC8C;
+    --warn:#F5A623;
+    --neg:#FF6B7A;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --sans:'Inter',system-ui,sans-serif;
+    --display:'Space Grotesk','Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 1000px 550px at 10% -10%, rgba(139,92,246,0.14), transparent),
+      radial-gradient(ellipse 700px 400px at 100% 0%, rgba(198,255,61,0.06), transparent),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    padding:24px;
+    min-height:100vh;
+  }
+  .wrap{max-width:1220px;margin:0 auto;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:18px;padding-bottom:22px;margin-bottom:22px;
+    border-bottom:1px solid var(--border);position:relative;
+  }
+  .hero::before{
+    content:'';position:absolute;left:0;bottom:-1px;width:64px;height:3px;
+    background:linear-gradient(90deg,var(--violet),var(--lime));border-radius:2px;
+  }
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--muted2);text-transform:uppercase;margin-bottom:6px;}
+  .hero h1{margin:0;font-family:var(--display);font-size:27px;font-weight:700;letter-spacing:-0.3px;}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 16px;min-width:112px;}
+  .stat .n{font-family:var(--mono);font-size:19px;font-weight:700;}
+  .stat .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-top:2px;}
+  .stat.crit .n{color:var(--urgent);}
+  .stat.info .n{color:var(--violet);}
+  .stat.ok .n{color:var(--ok);}
+  .stat.warn .n{color:var(--warn);}
+  .stat.lime .n{color:var(--lime);}
+
+  /* ---------- PRIORITY SPLIT ---------- */
+  .priority-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
+  @media(max-width:800px){.priority-grid{grid-template-columns:1fr;}}
+  .priority-card{border-radius:16px;padding:18px;border:1px solid var(--border);}
+  .priority-card.urgent{background:var(--urgent-soft);border-color:rgba(255,77,109,0.28);}
+  .priority-card.structural{background:var(--violet-soft);border-color:rgba(139,92,246,0.28);}
+  .priority-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+  .priority-head .dotbig{width:10px;height:10px;border-radius:50%;}
+  .priority-card.urgent .dotbig{background:var(--urgent);box-shadow:0 0 0 0 rgba(255,77,109,.6);animation:pulse 1.8s infinite;}
+  .priority-card.structural .dotbig{background:var(--violet);}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,109,.55);}70%{box-shadow:0 0 0 7px rgba(255,77,109,0);}100%{box-shadow:0 0 0 0 rgba(255,77,109,0);}}
+  .priority-head h2{font-family:var(--display);font-size:14.5px;margin:0;font-weight:700;}
+  .priority-sub{font-size:11.5px;color:var(--muted);margin:2px 0 14px 20px;}
+
+  /* ---------- PANELS ---------- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:800px){.grid{grid-template-columns:1fr;}}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .panel h2{font-family:var(--display);font-size:13.5px;letter-spacing:0.3px;color:var(--text);margin:0;font-weight:700;}
+  .panel h2 .sub{display:block;font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:500;}
+  .panel-total{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--text);}
+  .panel-total.pos{color:var(--ok);}
+  .panel-total.neg{color:var(--neg);}
+
+  /* ---------- ITEMS ---------- */
+  .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
+  .item.dragging, .cost-row.dragging, .fin-row.dragging{opacity:0.4;border-color:var(--violet);}
+  .drag-handle{cursor:grab;color:var(--muted2);font-size:13px;line-height:1;padding:2px 4px;touch-action:none;user-select:none;flex-shrink:0;margin-top:2px;}
+  .drag-handle:active{cursor:grabbing;}
+  .item.done{opacity:0.4;}
+  .item.done .item-text{text-decoration:line-through;}
+  .item-status{width:11px;height:11px;border-radius:50%;margin-top:3px;flex-shrink:0;cursor:pointer;border:1px solid rgba(255,255,255,0.15);}
+  .status-pending{background:var(--warn);}
+  .status-done{background:var(--ok);}
+  .status-blocked{background:var(--urgent);}
+  .status-delegated{background:var(--violet);}
+  .item-body{flex:1;min-width:0;}
+  .item-text{font-size:13.5px;line-height:1.4;word-break:break-word;}
+  .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
+  .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
+  .del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:2px 6px;flex-shrink:0;}
+  .del-btn:hover{color:var(--urgent);}
+
+  /* ---------- COST ROWS ---------- */
+  .cost-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;}
+  .cost-cat{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;}
+  .cost-name{flex:1;font-size:13.5px;}
+  .cost-amount{font-family:var(--mono);font-size:13.5px;font-weight:600;min-width:90px;text-align:right;}
+  .cost-freq{font-family:var(--mono);font-size:9.5px;color:var(--muted2);min-width:46px;}
+
+  /* ---------- FINANCEIRO TABLE ---------- */
+  .fin-table-wrap{overflow-x:auto;}
+  .fin-table{width:100%;border-collapse:collapse;min-width:640px;}
+  .fin-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border-strong);}
+  .fin-table td{font-size:13px;padding:8px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .fin-table tr:hover td{background:var(--surface2);}
+  .fin-num{font-family:var(--mono);text-align:right;white-space:nowrap;}
+  .fin-num.pos{color:var(--ok);}
+  .fin-num.neg{color:var(--neg);}
+  .fin-breakdown{font-size:11px;color:var(--muted);margin-top:2px;}
+  .fin-table .del-btn{font-size:13px;}
+
+  /* ---------- CAIXA ---------- */
+  .caixa-balance{
+    background:linear-gradient(135deg, var(--violet-soft), rgba(198,255,61,0.06));
+    border:1px solid var(--border-strong);border-radius:14px;padding:16px 18px;margin-bottom:14px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  }
+  .caixa-balance .label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+  .caixa-balance .value{font-family:var(--display);font-size:26px;font-weight:700;}
+  .caixa-balance .value.pos{color:var(--lime);}
+  .caixa-balance .value.neg{color:var(--neg);}
+  .caixa-balance .value{filter:blur(9px);transition:filter .15s;user-select:none;}
+  .caixa-balance .value.revealed{filter:none;user-select:text;}
+  .reveal-btn{
+    background:var(--surface3);border:1px solid var(--border-strong);color:var(--text);
+    border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:14px;flex-shrink:0;
+  }
+  .reveal-btn:hover{background:var(--border-strong);}
+
+  .month-nav{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .nav-btn{
+    background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;font-family:var(--mono);
+  }
+  .nav-btn:hover{background:var(--border-strong);}
+  .month-label{font-family:var(--display);font-size:16px;font-weight:700;text-transform:capitalize;min-width:160px;}
+
+  .month-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .msum{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:130px;}
+  .msum .l{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:3px;}
+  .msum .v{font-family:var(--mono);font-size:16px;font-weight:700;}
+  .msum .v.pos{color:var(--ok);}
+  .msum .v.neg{color:var(--neg);}
+  .msum.imposto-box input{width:100%;background:transparent;border:none;color:var(--warn);font-family:var(--mono);font-size:16px;font-weight:700;padding:0;}
+
+  .day-cell-input{
+    background:transparent;border:1px solid transparent;color:var(--text);
+    border-radius:6px;padding:5px 6px;font-family:var(--mono);font-size:12.5px;
+    width:90px;text-align:right;
+  }
+  .day-cell-input:hover, .day-cell-input:focus{background:var(--bg);border-color:var(--border-strong);}
+  .fin-table tr.weekend td{background:rgba(139,92,246,0.04);}
+  .detail-btn{background:none;border:none;color:var(--violet);cursor:pointer;font-size:11px;font-family:var(--mono);}
+  .detail-row td{background:var(--surface2);padding:10px 12px;}
+  .detail-row textarea{width:100%;min-height:40px;}
+  .detail-row .mini-add{margin-top:6px;display:flex;gap:6px;}
+  .gateway-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+  .gateway-row select{flex:1;min-width:140px;}
+  .gateway-row input{width:110px;}
+  .mov-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;}
+  .mov-type{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;border-radius:4px;padding:2px 6px;}
+  .mov-type.entrada{background:rgba(58,220,140,0.14);color:var(--ok);}
+  .mov-type.saida{background:rgba(255,107,122,0.14);color:var(--neg);}
+  .mov-desc{flex:1;font-size:13px;}
+  .mov-amount{font-family:var(--mono);font-size:13px;font-weight:600;min-width:90px;text-align:right;}
+
+  /* ---------- FORM ---------- */
+  .add-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  input[type=text], input[type=number], input[type=date], select, textarea{
+    background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:8px;padding:8px 10px;font-family:var(--sans);font-size:13px;
+  }
+  input[type=text]{flex:1;min-width:120px;}
+  input[type=number]{width:100px;}
+  input[type=date]{width:140px;}
+  textarea{width:100%;resize:vertical;min-height:44px;font-family:var(--sans);}
+  button.add{background:var(--violet);border:none;color:#0D0B14;font-weight:700;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;}
+  button.add:hover{opacity:0.85;background:var(--lime);}
+  .empty{color:var(--muted2);font-size:12.5px;font-style:italic;padding:6px 0;}
+
+  /* ---------- LOG ---------- */
+  .log-entry{border-left:2px solid var(--border);padding:6px 0 6px 10px;margin-bottom:8px;}
+  .log-entry.win{border-left-color:var(--ok);}
+  .log-entry.problem{border-left-color:var(--urgent);}
+  .log-meta{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:2px;}
+  .log-text{font-size:13px;line-height:1.4;}
+
+  .loading{color:var(--muted);font-family:var(--mono);font-size:12px;padding:40px;text-align:center;}
+  .full{grid-column:1/-1;}
+  .field-label{font-size:11px;color:var(--muted);margin-bottom:3px;display:block;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">painel de operação</div>
+      <h1>Tráfego direto · Infoproduto</h1>
+    </div>
+    <div class="stats" id="statsRow"></div>
+  </div>
+
+  <div id="loading" class="loading">carregando dados...</div>
+
+  <div id="mainContent" style="display:none;">
+
+    <div class="priority-grid">
+      <div class="priority-card urgent">
+        <div class="priority-head"><span class="dotbig"></span><h2>Urgente agora</h2></div>
+        <div class="priority-sub">destrava a operação — sem isso, nada escala</div>
+        <div id="urgentList"></div>
+        <div class="add-row">
+          <input type="text" id="urgentInput" placeholder="nova tarefa urgente...">
+          <button class="add" onclick="addTask('urgente')">+ add</button>
+        </div>
+      </div>
+      <div class="priority-card structural">
+        <div class="priority-head"><span class="dotbig"></span><h2>Estrutura pra escalar</h2></div>
+        <div class="priority-sub">mantém constante e crescendo, sem pressa de hoje</div>
+        <div id="structuralList"></div>
+        <div class="add-row">
+          <input type="text" id="structuralInput" placeholder="nova tarefa estrutural...">
+          <button class="add" onclick="addTask('estrutural')">+ add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head"><h2><span class="sub">saldo disponível · ficas borrado até você clicar em mostrar</span>Caixa da empresa</h2></div>
+      <div class="caixa-balance">
+        <div>
+          <div class="label">saldo atual</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="value" id="caixaSaldo">R$ 0,00</div>
+            <button class="reveal-btn" onclick="toggleCaixaReveal()" id="revealBtn" title="mostrar/ocultar saldo">👁</button>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <label class="field-label">saldo inicial (ponto de partida)</label>
+          <input type="number" id="saldoInicialInput" placeholder="0,00" style="width:140px;">
+        </div>
+      </div>
+      <div id="movList"></div>
+      <div class="add-row">
+        <select id="movTipo">
+          <option value="entrada">entrada</option>
+          <option value="saida">saída</option>
+        </select>
+        <input type="text" id="movDesc" placeholder="descrição (ex: retirada sócio, pagamento contador)">
+        <input type="number" id="movValor" placeholder="R$">
+        <button class="add" onclick="addMov()">+ registrar</button>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head">
+        <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
+      </div>
+
+      <div class="month-nav">
+        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="month-label" id="monthLabel">—</div>
+        <button class="nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+
+      <div class="month-summary" id="monthSummary"></div>
+
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead><tr>
+            <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
+            <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th></th>
+          </tr></thead>
+          <tbody id="finTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-head"><h2>Infraestrutura</h2></div>
+        <div id="infraList"></div>
+        <div class="add-row">
+          <input type="text" id="infraInput" placeholder="ex: BM 2 - verificação">
+          <select id="infraStatus">
+            <option value="pending">atenção</option>
+            <option value="done">ok</option>
+            <option value="blocked">bloqueado</option>
+          </select>
+          <button class="add" onclick="addInfra()">+ add</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Ofertas em teste</h2></div>
+        <div id="offersList"></div>
+        <div class="add-row">
+          <input type="text" id="offerInput" placeholder="nome da oferta...">
+          <select id="offerStatus">
+            <option value="pending">validando</option>
+            <option value="done">escalando</option>
+            <option value="blocked">pausada/matada</option>
+          </select>
+          <button class="add" onclick="addOffer()">+ add</button>
+        </div>
+      </div>
+
+      <div class="panel full">
+        <div class="panel-head">
+          <h2>Custos fixos da operação</h2>
+          <div class="panel-total" id="costTotal">—</div>
+        </div>
+        <div id="costsList"></div>
+        <div class="add-row">
+          <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
+          <input type="number" id="costAmount" placeholder="R$">
+          <select id="costFreq">
+            <option value="mensal">mensal</option>
+            <option value="anual">anual</option>
+            <option value="variavel">variável</option>
+          </select>
+          <select id="costCat">
+            <option value="ferramenta">ferramenta</option>
+            <option value="imposto">imposto</option>
+            <option value="contabilidade">contabilidade</option>
+            <option value="hospedagem">hospedagem</option>
+            <option value="outro">outro</option>
+          </select>
+          <button class="add" onclick="addCost()">+ add</button>
+        </div>
+      </div>
+
+      <div class="panel full">
+        <div class="panel-head"><h2>Diário da operação</h2></div>
+        <div id="logList"></div>
+        <div class="add-row" style="flex-direction:column;">
+          <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
+          <div style="display:flex;gap:6px;">
+            <select id="logType" style="flex:1;">
+              <option value="win">funcionou</option>
+              <option value="problem">travou / problema</option>
+            </select>
+            <button class="add" onclick="addLog()">+ registrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'painel-operacao-v4';
+
+const defaultState = {
+  tasks: [
+    { id:'t1', text:'Comprar chip novo (pré-pago) pra verificação de BM', status:'pending', priority:'urgente' },
+    { id:'t2', text:'Abrir CNPJ pra verificar BM como empresa (separa de CPF pessoal)', status:'done', priority:'urgente' },
+    { id:'t3', text:'Verificar pelo menos 1-2 BMs (documento + domínio)', status:'pending', priority:'urgente' },
+    { id:'t4', text:'Migrar entrega/recuperação pra WhatsApp API oficial (Cloud API / 360dialog / Take Blip)', status:'pending', priority:'urgente' },
+    { id:'t5', text:'Montar canal alternativo de entrega (e-mail automático / página de acesso direto)', status:'pending', priority:'urgente' },
+    { id:'t6', text:'Redistribuir budget entre as contas de anúncio ainda ativas', status:'pending', priority:'urgente' },
+    { id:'t7', text:'Definir critério objetivo de validação de oferta (CPA vs ticket líquido)', status:'pending', priority:'estrutural' },
+    { id:'t8', text:'Fechar com contador especializado em infoproduto (regime tributário certo)', status:'pending', priority:'estrutural' },
+    { id:'t9', text:'Testar 2-3 ofertas em paralelo em vez de depender de uma só', status:'pending', priority:'estrutural' },
+    { id:'t10', text:'Confirmar se o regime atual (MEI/Simples) aguenta o volume ao escalar', status:'pending', priority:'estrutural' },
+    { id:'t11', text:'Documentar processos do funil pra dar pra delegar depois', status:'pending', priority:'estrutural' }
+  ],
+  infra: [
+    { id:'i1', text:'Conta de anúncio principal', status:'blocked', note:'desabilitada' },
+    { id:'i2', text:'Outras contas de anúncio', status:'pending', note:'ativas, não verificadas' },
+    { id:'i3', text:'BMs', status:'blocked', note:'não verificadas' },
+    { id:'i4', text:'Perfil pessoal no Facebook', status:'done', note:'ativo' },
+    { id:'i5', text:'Número de WhatsApp (entrega)', status:'blocked', note:'perdido' },
+    { id:'i6', text:'Funil de recuperação via WhatsApp', status:'pending', note:'número solto cai com frequência' },
+    { id:'i7', text:'Estrutura fiscal / CNPJ', status:'done', note:'CNPJ aberto' }
+  ],
+  offers: [
+    { id:'o1', text:'Oferta atual em rodagem', status:'pending', note:'vende, lucro inconsistente — potencial de escala não validado' }
+  ],
+  costs: [
+    { id:'c1', name:'Contador', amount:0, freq:'mensal', cat:'contabilidade', note:'preencher valor' },
+    { id:'c2', name:'Hospedagem (Hostinger)', amount:0, freq:'mensal', cat:'hospedagem', note:'preencher valor' },
+    { id:'c3', name:'VTurb', amount:0, freq:'mensal', cat:'ferramenta', note:'preencher valor' },
+    { id:'c4', name:'UTMify', amount:0, freq:'mensal', cat:'ferramenta', note:'preencher valor' },
+    { id:'c5', name:'Imposto sobre anúncios (Meta)', amount:0, freq:'variavel', cat:'imposto', note:'cobrado sobre o valor investido' },
+    { id:'c6', name:'DAS (Simples Nacional/MEI)', amount:0, freq:'mensal', cat:'imposto', note:'guia unificada - se estiver no MEI ou Simples' },
+    { id:'c7', name:'DARF (IRPJ/CSLL/PIS/COFINS)', amount:0, freq:'mensal', cat:'imposto', note:'só se estiver em Lucro Presumido/Real' }
+  ],
+  logs: [
+    { id:'l1', text:'Já foi possível escalar a operação a R$300k de faturamento/mês com mais de R$100k de lucro no passado — a estrutura de funil já provou que funciona.', type:'win', date:new Date().toLocaleDateString('pt-BR') },
+    { id:'l2', text:'Conta de anúncio principal foi desabilitada; BMs não verificadas deixam a operação vulnerável. Número de WhatsApp da entrega/recuperação foi perdido.', type:'problem', date:new Date().toLocaleDateString('pt-BR') },
+    { id:'l3', text:'Oferta atual vende, mas lucro não é consistente — falta critério claro de validação (lucro líquido, não faturamento).', type:'problem', date:new Date().toLocaleDateString('pt-BR') }
+  ],
+  finance: {
+    currentMonth: currentMonthKey(),
+    months: {}
+  },
+  caixaMovs: [],
+  saldoInicial: 0
+};
+
+function currentMonthKey(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0 };
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
+function brl(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function brDate(iso){
+  if(!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+const SUPABASE_URL = 'https://otbisnouqcevacfokwhz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_V2tAnUXp7EW16gGKvwpMJw_-wFZHAWL';
+const ROW_ID = 'PnPe7VjL1rlj7zIyJL7o86NvLtyneDAt';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadState(){
+  try{
+    const { data, error } = await sb.from('app_state').select('data').eq('id', ROW_ID).single();
+    if(error) throw error;
+    if(data && data.data){
+      const loaded = data.data;
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0}, loaded);
+      if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
+    } else {
+      state = JSON.parse(JSON.stringify(defaultState));
+      await saveState();
+    }
+  }catch(e){
+    console.error('erro ao carregar do Supabase', e);
+    document.getElementById('loading').innerText = 'erro ao conectar — verifique sua internet e recarregue a página.';
+    return;
+  }
+  document.getElementById('loading').style.display='none';
+  document.getElementById('mainContent').style.display='block';
+  document.getElementById('saldoInicialInput').value = state.saldoInicial || '';
+  render();
+}
+
+let saveTimeout = null;
+async function saveState(){
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(async ()=>{
+    try{
+      await sb.from('app_state').update({ data: state, updated_at: new Date().toISOString() }).eq('id', ROW_ID);
+    }catch(e){ console.error('erro ao salvar no Supabase', e); }
+  }, 400);
+}
+
+function statusClass(s){
+  if(s==='done') return 'status-done';
+  if(s==='blocked') return 'status-blocked';
+  if(s==='delegated') return 'status-delegated';
+  return 'status-pending';
+}
+const taskCycle = ['pending','delegated','blocked','done'];
+const infraCycle = ['pending','blocked','done'];
+const offerCycle = ['pending','done','blocked'];
+function nextStatus(s, cycle){ const i=cycle.indexOf(s); return cycle[(i+1)%cycle.length]; }
+
+function renderTasks(){
+  renderTaskGroup('urgentList', state.tasks.filter(t=>t.priority==='urgente'));
+  renderTaskGroup('structuralList', state.tasks.filter(t=>t.priority==='estrutural'));
+}
+function renderTaskGroup(containerId, arr){
+  const el = document.getElementById(containerId);
+  if(arr.length===0){ el.innerHTML='<div class="empty">nada por aqui ainda.</div>'; return; }
+  el.innerHTML = arr.map(item=>`
+    <div class="item ${item.status==='done'?'done':''}" data-id="${item.id}">
+      <span class="drag-handle">⠿</span>
+      <div class="item-status ${statusClass(item.status)}" onclick="cycleTaskStatus('${item.id}')" title="clique pra mudar status"></div>
+      <div class="item-body"><div class="item-text">${escapeHtml(item.text)}</div></div>
+      <button class="del-btn" onclick="removeTask('${item.id}')">✕</button>
+    </div>
+  `).join('');
+}
+function cycleTaskStatus(id){
+  const item = state.tasks.find(t=>t.id===id);
+  if(!item) return;
+  item.status = nextStatus(item.status, taskCycle);
+  saveState(); render();
+}
+function removeTask(id){ state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render(); }
+function addTask(priority){
+  const inputId = priority==='urgente' ? 'urgentInput' : 'structuralInput';
+  const input = document.getElementById(inputId);
+  if(!input.value.trim()) return;
+  state.tasks.push({id:uid(), text:input.value.trim(), status:'pending', priority});
+  input.value=''; saveState(); render();
+}
+
+function renderSimpleList(containerId, arr, cycle){
+  const el = document.getElementById(containerId);
+  if(arr.length===0){ el.innerHTML='<div class="empty">nada por aqui ainda.</div>'; return; }
+  el.innerHTML = arr.map(item=>`
+    <div class="item ${item.status==='done'?'done':''}" data-id="${item.id}">
+      <span class="drag-handle">⠿</span>
+      <div class="item-status ${statusClass(item.status)}" onclick="cycleSimple('${containerId}','${item.id}')" title="clique pra mudar status"></div>
+      <div class="item-body">
+        <div class="item-text">${escapeHtml(item.text)}</div>
+        ${item.note?`<div class="item-tags"><span class="tag">${escapeHtml(item.note)}</span></div>`:''}
+      </div>
+      <button class="del-btn" onclick="removeSimple('${containerId}','${item.id}')">✕</button>
+    </div>
+  `).join('');
+}
+const simpleMap = {infraList:{key:'infra',cycle:infraCycle}, offersList:{key:'offers',cycle:offerCycle}};
+function cycleSimple(containerId,id){
+  const {key,cycle} = simpleMap[containerId];
+  const item = state[key].find(i=>i.id===id);
+  if(!item) return;
+  item.status = nextStatus(item.status, cycle);
+  saveState(); render();
+}
+function removeSimple(containerId,id){
+  const {key} = simpleMap[containerId];
+  state[key] = state[key].filter(i=>i.id!==id);
+  saveState(); render();
+}
+function addInfra(){
+  const input = document.getElementById('infraInput');
+  const status = document.getElementById('infraStatus').value;
+  if(!input.value.trim()) return;
+  state.infra.push({id:uid(), text:input.value.trim(), status});
+  input.value=''; saveState(); render();
+}
+function addOffer(){
+  const input = document.getElementById('offerInput');
+  const status = document.getElementById('offerStatus').value;
+  if(!input.value.trim()) return;
+  state.offers.push({id:uid(), text:input.value.trim(), status});
+  input.value=''; saveState(); render();
+}
+
+function renderCosts(){
+  const el = document.getElementById('costsList');
+  if(state.costs.length===0){ el.innerHTML='<div class="empty">nenhum custo cadastrado.</div>'; return; }
+  el.innerHTML = state.costs.map(c=>`
+    <div class="cost-row" data-id="${c.id}">
+      <span class="drag-handle">⠿</span>
+      <span class="cost-cat">${c.cat}</span>
+      <div class="cost-name">${escapeHtml(c.name)}${c.note?` <span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(c.note)}</span>`:''}</div>
+      <div class="cost-freq">${c.freq}</div>
+      <div class="cost-amount">${brl(c.amount)}</div>
+      <button class="del-btn" onclick="removeCost('${c.id}')">✕</button>
+    </div>
+  `).join('');
+  const monthly = state.costs.reduce((sum,c)=>{
+    if(c.freq==='mensal') return sum + Number(c.amount||0);
+    if(c.freq==='anual') return sum + Number(c.amount||0)/12;
+    return sum;
+  },0);
+  document.getElementById('costTotal').innerText = brl(monthly) + ' /mês (fixo)';
+}
+function addCost(){
+  const name = document.getElementById('costName');
+  const amount = document.getElementById('costAmount').value;
+  const freq = document.getElementById('costFreq').value;
+  const cat = document.getElementById('costCat').value;
+  if(!name.value.trim()) return;
+  state.costs.push({id:uid(), name:name.value.trim(), amount:Number(amount)||0, freq, cat});
+  name.value=''; document.getElementById('costAmount').value='';
+  saveState(); render();
+}
+function removeCost(id){ state.costs = state.costs.filter(c=>c.id!==id); saveState(); render(); }
+
+/* ---------- FINANCEIRO POR MÊS (estilo planilha) ---------- */
+const MONTH_NAMES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+function ensureMonth(key){
+  if(!state.finance.months[key]) state.finance.months[key] = { imposto:0, days:{} };
+  return state.finance.months[key];
+}
+function daysInMonth(key){
+  const [y,m] = key.split('-').map(Number);
+  return new Date(y, m, 0).getDate();
+}
+function monthLabel(key){
+  const [y,m] = key.split('-').map(Number);
+  return MONTH_NAMES[m-1] + ' de ' + y;
+}
+function shiftMonthKey(key, delta){
+  let [y,m] = key.split('-').map(Number);
+  m += delta;
+  if(m>12){ m=1; y++; }
+  if(m<1){ m=12; y--; }
+  return y + '-' + String(m).padStart(2,'0');
+}
+function changeMonth(delta){
+  state.finance.currentMonth = shiftMonthKey(state.finance.currentMonth, delta);
+  ensureMonth(state.finance.currentMonth);
+  saveState();
+  renderFinanceTable();
+}
+
+function getDay(monthObj, day){
+  return monthObj.days[day] || {gasto:0, faturamento:0, contas:''};
+}
+
+function handleDayChange(day, field, value){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d[field] = Number(value)||0;
+  monthObj.days[day] = d;
+  saveState();
+  updateRowComputed(day);
+  updateMonthSummary();
+  updateTopStats();
+}
+
+function updateRowComputed(day){
+  const gastoInput = document.getElementById('gasto-'+day);
+  const fatInput = document.getElementById('fat-'+day);
+  if(!gastoInput || !fatInput) return;
+  const gasto = Number(gastoInput.value)||0;
+  const fat = Number(fatInput.value)||0;
+  const lucro = fat - gasto;
+  const margem = fat>0 ? (lucro/fat*100) : null;
+  const lucroCell = document.getElementById('lucro-'+day);
+  const margemCell = document.getElementById('margem-'+day);
+  if(lucroCell){
+    lucroCell.innerText = brl(lucro);
+    lucroCell.className = 'fin-num ' + (lucro>=0?'pos':'neg');
+  }
+  if(margemCell){
+    margemCell.innerText = margem===null ? '—' : margem.toFixed(1)+'%';
+  }
+}
+
+function toggleDetail(type, day){
+  const row = document.getElementById('detail-'+type+'-'+day);
+  if(row) row.style.display = row.style.display==='none' ? 'table-row' : 'none';
+}
+
+const GATEWAY_OPTIONS = ['Pepper','iExperience/Doppus','Kirvano','Cakto','PerfectPay','Hotmart','Monetizze','Eduzz','Outro'];
+
+function gatewayRowsHtml(day, gateways){
+  const rows = gateways.map((g,idx)=>`
+    <div class="gateway-row">
+      <select onchange="updateGatewayField(${day},${idx},'gateway',this.value)">
+        ${GATEWAY_OPTIONS.map(opt=>`<option value="${opt}" ${g.gateway===opt?'selected':''}>${opt}</option>`).join('')}
+      </select>
+      <input type="number" value="${g.valor||''}" placeholder="R$" onchange="updateGatewayField(${day},${idx},'valor',this.value)">
+      <button class="del-btn" onclick="removeGatewayRow(${day},${idx})">✕</button>
+    </div>
+  `).join('');
+  return rows + `<button class="add" style="margin-top:6px;" onclick="addGatewayRow(${day})">+ adicionar gateway</button>`;
+}
+function renderGatewayDetail(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  if(!d.gateways) d.gateways = [];
+  const container = document.getElementById('gateways-'+day);
+  if(container) container.innerHTML = gatewayRowsHtml(day, d.gateways);
+}
+function addGatewayRow(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  if(!d.gateways) d.gateways = [];
+  d.gateways.push({gateway:GATEWAY_OPTIONS[0], valor:0});
+  monthObj.days[day] = d;
+  saveState();
+  renderGatewayDetail(day);
+  recalcGatewaySum(day);
+}
+function removeGatewayRow(day, idx){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d.gateways.splice(idx,1);
+  monthObj.days[day] = d;
+  saveState();
+  renderGatewayDetail(day);
+  recalcGatewaySum(day);
+}
+function updateGatewayField(day, idx, field, value){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d.gateways[idx][field] = field==='valor' ? (Number(value)||0) : value;
+  monthObj.days[day] = d;
+  saveState();
+  recalcGatewaySum(day);
+}
+function recalcGatewaySum(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  const sum = (d.gateways||[]).reduce((s,g)=>s+Number(g.valor||0),0);
+  d.faturamento = sum;
+  monthObj.days[day] = d;
+  saveState();
+  const fatInput = document.getElementById('fat-'+day);
+  if(fatInput) fatInput.value = sum || '';
+  updateRowComputed(day);
+  updateMonthSummary();
+  updateTopStats();
+}
+function applyContasSum(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const textarea = document.getElementById('contas-'+day);
+  const spends = textarea.value.split('\n').map(l=>l.trim()).filter(Boolean).map(line=>{
+    const parts = line.split(':');
+    return Number((parts[1]||'0').replace(/[^\d.,-]/g,'').replace(',','.'))||0;
+  });
+  const total = spends.reduce((s,v)=>s+v,0);
+  const d = getDay(monthObj, day);
+  d.contas = textarea.value;
+  d.gasto = total;
+  monthObj.days[day] = d;
+  document.getElementById('gasto-'+day).value = total || '';
+  saveState();
+  updateRowComputed(day);
+  updateMonthSummary();
+  updateTopStats();
+}
+function saveContasNote(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d.contas = document.getElementById('contas-'+day).value;
+  monthObj.days[day] = d;
+  saveState();
+}
+
+function renderFinanceTable(){
+  const key = state.finance.currentMonth;
+  const monthObj = ensureMonth(key);
+  document.getElementById('monthLabel').innerText = monthLabel(key);
+  const totalDays = daysInMonth(key);
+  const tbody = document.getElementById('finTableBody');
+  let rows = '';
+  for(let day=1; day<=totalDays; day++){
+    const d = getDay(monthObj, day);
+    const lucro = d.faturamento - d.gasto;
+    const margem = d.faturamento>0 ? (lucro/d.faturamento*100) : null;
+    rows += `<tr data-day="${day}">
+      <td style="font-family:var(--mono);color:var(--muted);">${day}</td>
+      <td class="fin-num"><input class="day-cell-input" type="number" id="gasto-${day}" value="${d.gasto||''}" placeholder="0" onchange="handleDayChange(${day},'gasto',this.value)"></td>
+      <td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>
+      <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
+      <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
+      <td style="white-space:nowrap;">
+        <button class="detail-btn" onclick="toggleDetail('gasto',${day})">contas ▾</button>
+        <button class="detail-btn" onclick="toggleDetail('fat',${day})">gateways ▾</button>
+      </td>
+    </tr>
+    <tr class="detail-row" id="detail-gasto-${day}" style="display:none;">
+      <td></td>
+      <td colspan="5">
+        <label class="field-label">detalhar gasto por conta de anúncio (uma por linha: nome: valor)</label>
+        <textarea id="contas-${day}" onblur="saveContasNote(${day})" placeholder="Conta 1: 250&#10;Conta 2: 180">${escapeHtml(d.contas||'')}</textarea>
+        <div class="mini-add"><button class="add" onclick="applyContasSum(${day})">usar soma como gasto do dia</button></div>
+      </td>
+    </tr>
+    <tr class="detail-row" id="detail-fat-${day}" style="display:none;">
+      <td></td>
+      <td colspan="5">
+        <label class="field-label">detalhar faturamento por gateway de pagamento</label>
+        <div id="gateways-${day}">${gatewayRowsHtml(day, d.gateways||[])}</div>
+      </td>
+    </tr>`;
+  }
+  tbody.innerHTML = rows;
+  updateMonthSummary();
+}
+
+function updateMonthSummary(){
+  const key = state.finance.currentMonth;
+  const monthObj = ensureMonth(key);
+  let totalGasto=0, totalFat=0;
+  Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
+  const lucroPre = totalFat - totalGasto;
+  const imposto = Number(monthObj.imposto||0);
+  const lucroReal = lucroPre - imposto;
+  const el = document.getElementById('monthSummary');
+  el.innerHTML = `
+    <div class="msum"><div class="l">Gasto do mês</div><div class="v">${brl(totalGasto)}</div></div>
+    <div class="msum"><div class="l">Faturamento do mês</div><div class="v">${brl(totalFat)}</div></div>
+    <div class="msum"><div class="l">Lucro pré-imposto</div><div class="v ${lucroPre>=0?'pos':'neg'}">${brl(lucroPre)}</div></div>
+    <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="0" onchange="updateImposto(this.value)"></div>
+    <div class="msum"><div class="l">Lucro real pós-imposto</div><div class="v ${lucroReal>=0?'pos':'neg'}">${brl(lucroReal)}</div></div>
+  `;
+  return lucroReal;
+}
+function updateImposto(value){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  monthObj.imposto = Number(value)||0;
+  saveState();
+  updateMonthSummary();
+  updateTopStats();
+}
+
+function monthLucroReal(key){
+  const monthObj = state.finance.months[key];
+  if(!monthObj) return 0;
+  let totalGasto=0, totalFat=0;
+  Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
+  return (totalFat - totalGasto) - Number(monthObj.imposto||0);
+}
+
+/* ---------- CAIXA ---------- */
+let caixaRevealed = false;
+function toggleCaixaReveal(){
+  caixaRevealed = !caixaRevealed;
+  document.getElementById('caixaSaldo').classList.toggle('revealed', caixaRevealed);
+}
+function addMov(){
+  const tipo = document.getElementById('movTipo').value;
+  const desc = document.getElementById('movDesc').value;
+  const valor = Number(document.getElementById('movValor').value)||0;
+  if(!desc.trim() || valor===0) return;
+  state.caixaMovs.push({id:uid(), tipo, desc:desc.trim(), valor, date:new Date().toLocaleDateString('pt-BR')});
+  document.getElementById('movDesc').value=''; document.getElementById('movValor').value='';
+  saveState(); renderCaixa();
+}
+function removeMov(id){ state.caixaMovs = state.caixaMovs.filter(m=>m.id!==id); saveState(); renderCaixa(); }
+function renderCaixa(){
+  const el = document.getElementById('movList');
+  if(state.caixaMovs.length===0){
+    el.innerHTML = '<div class="empty">nenhuma movimentação manual ainda.</div>';
+  } else {
+    el.innerHTML = [...state.caixaMovs].reverse().map(m=>`
+      <div class="mov-row">
+        <span class="mov-type ${m.tipo}">${m.tipo}</span>
+        <div class="mov-desc">${escapeHtml(m.desc)} <span style="color:var(--muted2);font-size:11px;">· ${m.date}</span></div>
+        <div class="mov-amount" style="color:${m.tipo==='entrada'?'var(--ok)':'var(--neg)'}">${m.tipo==='entrada'?'+':'-'} ${brl(m.valor)}</div>
+        <button class="del-btn" onclick="removeMov('${m.id}')">✕</button>
+      </div>
+    `).join('');
+  }
+  const lucroAcumulado = Object.keys(state.finance.months).reduce((s,key)=>s+monthLucroReal(key),0);
+  const movSum = state.caixaMovs.reduce((s,m)=> s + (m.tipo==='entrada'? m.valor : -m.valor), 0);
+  const saldo = Number(state.saldoInicial||0) + lucroAcumulado + movSum;
+  const saldoEl = document.getElementById('caixaSaldo');
+  saldoEl.innerText = brl(saldo);
+  saldoEl.className = 'value ' + (saldo>=0?'pos':'neg') + (caixaRevealed?' revealed':'');
+  return saldo;
+}
+document.getElementById('saldoInicialInput').addEventListener('change', (e)=>{
+  state.saldoInicial = Number(e.target.value)||0;
+  saveState(); renderCaixa();
+});
+
+function renderLogs(){
+  const el = document.getElementById('logList');
+  if(state.logs.length===0){ el.innerHTML='<div class="empty">nenhum registro ainda.</div>'; return; }
+  el.innerHTML = state.logs.slice(0,25).map(l=>`
+    <div class="log-entry ${l.type}">
+      <div class="log-meta">${l.date} · ${l.type==='win'?'funcionou':'travou'}</div>
+      <div class="log-text">${escapeHtml(l.text)}</div>
+    </div>
+  `).join('');
+}
+function addLog(){
+  const input = document.getElementById('logInput');
+  const type = document.getElementById('logType').value;
+  if(!input.value.trim()) return;
+  state.logs.unshift({id:uid(), text:input.value.trim(), type, date:new Date().toLocaleDateString('pt-BR')});
+  input.value=''; saveState(); render();
+}
+
+function updateTopStats(){
+  const urgentPending = state.tasks.filter(t=>t.priority==='urgente' && t.status!=='done').length;
+  const blockedInfra = state.infra.filter(i=>i.status==='blocked').length;
+  const monthly = state.costs.reduce((sum,c)=>{
+    if(c.freq==='mensal') return sum+Number(c.amount||0);
+    if(c.freq==='anual') return sum+Number(c.amount||0)/12;
+    return sum;
+  },0);
+  const lucroMesAtual = monthLucroReal(state.finance.currentMonth);
+  const el = document.getElementById('statsRow');
+  el.innerHTML = `
+    <div class="stat crit"><div class="n">${urgentPending}</div><div class="l">urgentes</div></div>
+    <div class="stat ${blockedInfra>0?'crit':'ok'}"><div class="n">${blockedInfra}</div><div class="l">infra bloqueada</div></div>
+    <div class="stat warn"><div class="n">${brl(monthly)}</div><div class="l">custo fixo/mês</div></div>
+    <div class="stat ${lucroMesAtual>=0?'ok':'crit'}"><div class="n">${brl(lucroMesAtual)}</div><div class="l">lucro no mês</div></div>
+  `;
+}
+
+function render(){
+  renderTasks();
+  renderSimpleList('infraList', state.infra, infraCycle);
+  renderSimpleList('offersList', state.offers, offerCycle);
+  renderCosts();
+  renderFinanceTable();
+  renderCaixa();
+  renderLogs();
+  updateTopStats();
+}
+
+/* ---------- DRAG & DROP ---------- */
+function getAfterElement(container, y, dragging){
+  const els = [...container.querySelectorAll('[data-id]')].filter(el=>el!==dragging);
+  return els.reduce((closest, child)=>{
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height/2;
+    if(offset<0 && offset>closest.offset) return {offset, element:child};
+    return closest;
+  }, {offset:-Infinity}).element;
+}
+function attachSortable(containerId, onReordered){
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  container.addEventListener('pointerdown', (e)=>{
+    const handle = e.target.closest('.drag-handle');
+    if(!handle) return;
+    const dragging = handle.closest('[data-id]');
+    if(!dragging) return;
+    e.preventDefault();
+    dragging.classList.add('dragging');
+    handle.setPointerCapture(e.pointerId);
+    const onMove = (ev)=>{
+      const after = getAfterElement(container, ev.clientY, dragging);
+      if(after == null) container.appendChild(dragging);
+      else container.insertBefore(dragging, after);
+    };
+    const onUp = ()=>{
+      dragging.classList.remove('dragging');
+      handle.removeEventListener('pointermove', onMove);
+      handle.removeEventListener('pointerup', onUp);
+      handle.removeEventListener('pointercancel', onUp);
+      const ids = Array.from(container.querySelectorAll('[data-id]')).map(el=>el.dataset.id);
+      onReordered(ids);
+    };
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', onUp);
+    handle.addEventListener('pointercancel', onUp);
+  });
+}
+function reorderTasksGroup(ids){
+  const idSet = new Set(ids);
+  const groupItems = ids.map(id => state.tasks.find(t=>t.id===id)).filter(Boolean);
+  const others = state.tasks.filter(t=>!idSet.has(t.id));
+  state.tasks = others.concat(groupItems);
+  saveState();
+}
+function reorderArray(key, ids){
+  state[key] = ids.map(id => state[key].find(i=>i.id===id)).filter(Boolean);
+  saveState();
+}
+function setupDragHandlers(){
+  attachSortable('urgentList', reorderTasksGroup);
+  attachSortable('structuralList', reorderTasksGroup);
+  attachSortable('infraList', ids=>reorderArray('infra', ids));
+  attachSortable('offersList', ids=>reorderArray('offers', ids));
+  attachSortable('costsList', ids=>reorderArray('costs', ids));
+}
+
+loadState().then(setupDragHandlers);
+</script>
+</body>
+</html>
