@@ -217,6 +217,83 @@
   .loading{color:var(--muted);font-family:var(--mono);font-size:12px;padding:40px;text-align:center;}
   .full{grid-column:1/-1;}
   .field-label{font-size:11px;color:var(--muted);margin-bottom:3px;display:block;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.5px;}
+
+  /* ---------- FIX MOBILE OVERFLOW ---------- */
+  html, body{ overflow-x:hidden; max-width:100vw; }
+  .wrap{ width:100%; }
+  @media(max-width:600px){
+    body{ padding:14px; }
+    .hero h1{ font-size:21px; }
+    .stat{ min-width:100px; padding:8px 12px; }
+    .stat .n{ font-size:15px; }
+    .month-label{ font-size:14px; min-width:0; flex:1; text-align:center; }
+    .msum{ min-width:100%; }
+    .day-cell-input{ width:70px; }
+    .caixa-balance{ flex-direction:column; align-items:flex-start; }
+    .caixa-balance > div:last-child{ text-align:left; width:100%; }
+  }
+
+  /* ---------- TABS ---------- */
+  .tab-nav{display:flex;gap:8px;margin-bottom:22px;border-bottom:1px solid var(--border);}
+  .tab-btn{
+    background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:700;
+    font-size:14px;padding:10px 4px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+  }
+  .tab-btn.active{color:var(--text);border-bottom-color:var(--violet);}
+  .tab-view{display:none;}
+  .tab-view.active{display:block;}
+
+  /* ---------- EDITABLE COST ROW ---------- */
+  .cost-row input[type=text]{background:transparent;border:1px solid transparent;color:var(--text);padding:4px 6px;font-size:13.5px;}
+  .cost-row input[type=text]:hover, .cost-row input[type=text]:focus{background:var(--bg);border-color:var(--border-strong);}
+  .cost-row input[type=number]{background:transparent;border:1px solid transparent;color:var(--text);font-family:var(--mono);font-weight:600;text-align:right;padding:4px 6px;width:90px;}
+  .cost-row input[type=number]:hover, .cost-row input[type=number]:focus{background:var(--bg);border-color:var(--border-strong);}
+  .cost-row select{background:transparent;border:1px solid transparent;color:var(--muted);font-family:var(--mono);font-size:9.5px;text-transform:uppercase;padding:4px;}
+  .cost-row select:hover, .cost-row select:focus{background:var(--bg);border-color:var(--border-strong);}
+
+  /* ---------- RESUMO DO MÊS (home) ---------- */
+  .resumo-mes{
+    background:linear-gradient(135deg, var(--violet-soft), rgba(198,255,61,0.05));
+    border:1px solid var(--border-strong);border-radius:16px;padding:18px;margin-bottom:22px;
+    display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  }
+  .resumo-mes .rtitle{font-family:var(--display);font-size:14px;font-weight:700;}
+  .resumo-mes .rsub{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .resumo-mes .rstats{display:flex;gap:22px;flex-wrap:wrap;}
+  .resumo-mes .rstat .v{font-family:var(--mono);font-size:18px;font-weight:700;}
+  .resumo-mes .rstat .v.pos{color:var(--ok);}
+  .resumo-mes .rstat .v.neg{color:var(--neg);}
+  .resumo-mes .rstat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
+  .resumo-mes .goto-btn{
+    background:var(--violet);color:#0D0B14;border:none;border-radius:8px;padding:8px 14px;
+    font-weight:700;font-size:12.5px;cursor:pointer;
+  }
+
+  /* ---------- ATIVOS / GERENTES ---------- */
+  .asset-row{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
+  .asset-tipo{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;white-space:nowrap;}
+  .asset-name{flex:1;font-size:13.5px;}
+
+  /* ---------- PLANEJAMENTO ---------- */
+  .planner-focus{
+    background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px;
+  }
+  .planner-focus textarea{width:100%;background:transparent;border:none;color:var(--text);font-size:13.5px;min-height:34px;}
+  .planner-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+  @media(max-width:800px){.planner-days{grid-template-columns:repeat(2,1fr);}}
+  .planner-day{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;min-height:80px;}
+  .planner-day.today{border-color:var(--violet);background:var(--violet-soft);}
+  .planner-day h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin:0 0 8px 0;}
+  .planner-day.today h4{color:var(--violet);}
+  .planner-item{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;font-size:12.5px;}
+  .planner-item.done{opacity:0.4;text-decoration:line-through;}
+  .planner-item .p-status{width:9px;height:9px;border-radius:50%;background:var(--warn);margin-top:3px;flex-shrink:0;cursor:pointer;}
+  .planner-item.done .p-status{background:var(--ok);}
+  .planner-item .p-text{flex:1;word-break:break-word;}
+  .planner-item .del-btn{font-size:11px;padding:0;}
+  .planner-add{display:flex;gap:4px;margin-top:6px;}
+  .planner-add input{font-size:11.5px;padding:5px 6px;flex:1;min-width:0;}
+  .planner-add button{background:var(--violet);border:none;color:#0D0B14;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -233,6 +310,35 @@
   <div id="loading" class="loading">carregando dados...</div>
 
   <div id="mainContent" style="display:none;">
+
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tabBtnHome" onclick="switchTab('home')">Início</button>
+      <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
+    </div>
+
+    <div class="tab-view active" id="homeView">
+
+    <div class="resumo-mes">
+      <div>
+        <div class="rsub">resumo do mês · financeiro</div>
+        <div class="rtitle" id="resumoMesLabel">—</div>
+      </div>
+      <div class="rstats">
+        <div class="rstat"><div class="v" id="resumoInvestido">R$ 0,00</div><div class="l">investido</div></div>
+        <div class="rstat"><div class="v" id="resumoRetornou">R$ 0,00</div><div class="l">voltou (faturamento)</div></div>
+        <div class="rstat"><div class="v" id="resumoLucro">R$ 0,00</div><div class="l">lucro real</div></div>
+      </div>
+      <button class="goto-btn" onclick="switchTab('finance')">ver detalhes ›</button>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
+      <div class="planner-focus">
+        <label class="field-label">foco da semana</label>
+        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
+      </div>
+      <div class="planner-days" id="plannerDays"></div>
+    </div>
 
     <div class="priority-grid">
       <div class="priority-card urgent">
@@ -282,31 +388,36 @@
       </div>
     </div>
 
-    <div class="panel full">
-      <div class="panel-head">
-        <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
-      </div>
-
-      <div class="month-nav">
-        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-        <div class="month-label" id="monthLabel">—</div>
-        <button class="nav-btn" onclick="changeMonth(1)">›</button>
-      </div>
-
-      <div class="month-summary" id="monthSummary"></div>
-
-      <div class="fin-table-wrap">
-        <table class="fin-table">
-          <thead><tr>
-            <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
-            <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th></th>
-          </tr></thead>
-          <tbody id="finTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
     <div class="grid">
+      <div class="panel">
+        <div class="panel-head"><h2>Gerentes de conta</h2></div>
+        <div id="managersList"></div>
+        <div class="add-row">
+          <input type="text" id="managerNome" placeholder="nome do gerente">
+          <input type="text" id="managerNumero" placeholder="número/contato">
+          <input type="text" id="managerGateway" placeholder="gateway/dashboard (ex: Kirvano)">
+          <button class="add" onclick="addManager()">+ add</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Meus ativos</h2></div>
+        <div id="assetsList"></div>
+        <div class="add-row">
+          <select id="assetTipo">
+            <option value="Perfil Facebook">Perfil Facebook</option>
+            <option value="BM">BM</option>
+            <option value="Página">Página</option>
+            <option value="Conta de anúncio">Conta de anúncio</option>
+            <option value="Domínio">Domínio</option>
+            <option value="Outro">Outro</option>
+          </select>
+          <input type="text" id="assetNome" placeholder="nome/identificador">
+          <input type="text" id="assetNota" placeholder="nota (opcional)">
+          <button class="add" onclick="addAsset()">+ add</button>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="panel-head"><h2>Infraestrutura</h2></div>
         <div id="infraList"></div>
@@ -376,6 +487,34 @@
       </div>
     </div>
 
+    </div>
+
+    <div class="tab-view" id="financeView">
+      <div class="panel full">
+        <div class="panel-head">
+          <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
+        </div>
+
+        <div class="month-nav">
+          <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+          <div class="month-label" id="monthLabel">—</div>
+          <button class="nav-btn" onclick="changeMonth(1)">›</button>
+        </div>
+
+        <div class="month-summary" id="monthSummary"></div>
+
+        <div class="fin-table-wrap">
+          <table class="fin-table">
+            <thead><tr>
+              <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
+              <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th></th>
+            </tr></thead>
+            <tbody id="finTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -427,7 +566,10 @@ const defaultState = {
     months: {}
   },
   caixaMovs: [],
-  saldoInicial: 0
+  saldoInicial: 0,
+  managers: [],
+  assets: [],
+  planner: { focoSemana: '', days: { seg:[], ter:[], qua:[], qui:[], sex:[], sab:[], dom:[] } }
 };
 
 function currentMonthKey(){
@@ -435,7 +577,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0 };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -457,8 +599,12 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
+      if(!state.managers) state.managers = [];
+      if(!state.assets) state.assets = [];
+      if(!state.planner) state.planner = {focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}};
+      if(!state.planner.days) state.planner.days = {seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]};
     } else {
       state = JSON.parse(JSON.stringify(defaultState));
       await saveState();
@@ -569,16 +715,147 @@ function addOffer(){
   input.value=''; saveState(); render();
 }
 
+/* ---------- GERENTES DE CONTA ---------- */
+function renderManagers(){
+  const el = document.getElementById('managersList');
+  if(state.managers.length===0){ el.innerHTML='<div class="empty">nenhum gerente cadastrado.</div>'; return; }
+  el.innerHTML = state.managers.map(m=>`
+    <div class="asset-row" data-id="${m.id}">
+      <span class="asset-tipo">${escapeHtml(m.gateway||'—')}</span>
+      <div class="asset-name">${escapeHtml(m.nome)} ${m.numero?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(m.numero)}</span>`:''}</div>
+      <button class="del-btn" onclick="removeManager('${m.id}')">✕</button>
+    </div>
+  `).join('');
+}
+function addManager(){
+  const nome = document.getElementById('managerNome');
+  const numero = document.getElementById('managerNumero').value;
+  const gateway = document.getElementById('managerGateway').value;
+  if(!nome.value.trim()) return;
+  state.managers.push({id:uid(), nome:nome.value.trim(), numero, gateway});
+  nome.value=''; document.getElementById('managerNumero').value=''; document.getElementById('managerGateway').value='';
+  saveState(); renderManagers();
+}
+function removeManager(id){ state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers(); }
+
+/* ---------- ATIVOS ---------- */
+function renderAssets(){
+  const el = document.getElementById('assetsList');
+  if(state.assets.length===0){ el.innerHTML='<div class="empty">nenhum ativo cadastrado.</div>'; return; }
+  el.innerHTML = state.assets.map(a=>`
+    <div class="asset-row" data-id="${a.id}">
+      <span class="asset-tipo">${escapeHtml(a.tipo)}</span>
+      <div class="asset-name">${escapeHtml(a.nome)} ${a.nota?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(a.nota)}</span>`:''}</div>
+      <button class="del-btn" onclick="removeAsset('${a.id}')">✕</button>
+    </div>
+  `).join('');
+}
+function addAsset(){
+  const tipo = document.getElementById('assetTipo').value;
+  const nome = document.getElementById('assetNome');
+  const nota = document.getElementById('assetNota').value;
+  if(!nome.value.trim()) return;
+  state.assets.push({id:uid(), tipo, nome:nome.value.trim(), nota});
+  nome.value=''; document.getElementById('assetNota').value='';
+  saveState(); renderAssets();
+}
+function removeAsset(id){ state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets(); }
+
+/* ---------- PLANEJAMENTO ---------- */
+const WEEK_DAYS = [
+  {key:'seg', label:'Segunda'}, {key:'ter', label:'Terça'}, {key:'qua', label:'Quarta'},
+  {key:'qui', label:'Quinta'}, {key:'sex', label:'Sexta'}, {key:'sab', label:'Sábado'}, {key:'dom', label:'Domingo'}
+];
+function todayKey(){
+  const idx = new Date().getDay(); // 0=domingo
+  const map = ['dom','seg','ter','qua','qui','sex','sab'];
+  return map[idx];
+}
+function saveFocoSemana(value){
+  state.planner.focoSemana = value;
+  saveState();
+}
+function renderPlanner(){
+  document.getElementById('focoSemanaInput').value = state.planner.focoSemana || '';
+  const tKey = todayKey();
+  const el = document.getElementById('plannerDays');
+  el.innerHTML = WEEK_DAYS.map(d=>{
+    const items = state.planner.days[d.key] || [];
+    return `<div class="planner-day ${d.key===tKey?'today':''}">
+      <h4>${d.label}${d.key===tKey?' · hoje':''}</h4>
+      <div>${items.length===0?'<div class="empty" style="padding:0;">vazio</div>':items.map(it=>`
+        <div class="planner-item ${it.done?'done':''}">
+          <span class="p-status" onclick="togglePlannerItem('${d.key}','${it.id}')"></span>
+          <span class="p-text">${escapeHtml(it.text)}</span>
+          <button class="del-btn" onclick="removePlannerItem('${d.key}','${it.id}')">✕</button>
+        </div>
+      `).join('')}</div>
+      <div class="planner-add">
+        <input type="text" id="plannerInput-${d.key}" placeholder="+ tarefa">
+        <button onclick="addPlannerItem('${d.key}')">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function addPlannerItem(dayKey){
+  const input = document.getElementById('plannerInput-'+dayKey);
+  if(!input.value.trim()) return;
+  if(!state.planner.days[dayKey]) state.planner.days[dayKey] = [];
+  state.planner.days[dayKey].push({id:uid(), text:input.value.trim(), done:false});
+  input.value = '';
+  saveState(); renderPlanner();
+}
+function togglePlannerItem(dayKey, id){
+  const item = (state.planner.days[dayKey]||[]).find(i=>i.id===id);
+  if(!item) return;
+  item.done = !item.done;
+  saveState(); renderPlanner();
+}
+function removePlannerItem(dayKey, id){
+  state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
+  saveState(); renderPlanner();
+}
+
+/* ---------- RESUMO DO MÊS (home) ---------- */
+function renderResumoMes(){
+  const key = state.finance.currentMonth;
+  document.getElementById('resumoMesLabel').innerText = monthLabel(key);
+  const monthObj = state.finance.months[key];
+  let totalGasto=0, totalFat=0;
+  if(monthObj){
+    Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
+  }
+  const imposto = monthObj ? Number(monthObj.imposto||0) : 0;
+  const lucroReal = (totalFat - totalGasto) - imposto;
+  document.getElementById('resumoInvestido').innerText = brl(totalGasto);
+  document.getElementById('resumoRetornou').innerText = brl(totalFat);
+  const lucroEl = document.getElementById('resumoLucro');
+  lucroEl.innerText = brl(lucroReal);
+  lucroEl.className = 'v ' + (lucroReal>=0?'pos':'neg');
+}
+
+function switchTab(tab){
+  document.getElementById('homeView').classList.toggle('active', tab==='home');
+  document.getElementById('financeView').classList.toggle('active', tab==='finance');
+  document.getElementById('tabBtnHome').classList.toggle('active', tab==='home');
+  document.getElementById('tabBtnFinance').classList.toggle('active', tab==='finance');
+  window.scrollTo(0,0);
+}
+
 function renderCosts(){
   const el = document.getElementById('costsList');
   if(state.costs.length===0){ el.innerHTML='<div class="empty">nenhum custo cadastrado.</div>'; return; }
   el.innerHTML = state.costs.map(c=>`
     <div class="cost-row" data-id="${c.id}">
       <span class="drag-handle">⠿</span>
-      <span class="cost-cat">${c.cat}</span>
-      <div class="cost-name">${escapeHtml(c.name)}${c.note?` <span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(c.note)}</span>`:''}</div>
-      <div class="cost-freq">${c.freq}</div>
-      <div class="cost-amount">${brl(c.amount)}</div>
+      <select onchange="updateCostField('${c.id}','cat',this.value)">
+        ${['ferramenta','imposto','contabilidade','hospedagem','outro'].map(opt=>`<option value="${opt}" ${c.cat===opt?'selected':''}>${opt}</option>`).join('')}
+      </select>
+      <input type="text" class="cost-name" value="${escapeHtml(c.name)}" onchange="updateCostField('${c.id}','name',this.value)">
+      <select onchange="updateCostField('${c.id}','freq',this.value)">
+        ${['mensal','anual','variavel'].map(opt=>`<option value="${opt}" ${c.freq===opt?'selected':''}>${opt}</option>`).join('')}
+      </select>
+      <input type="number" value="${c.amount||''}" placeholder="0" onchange="updateCostField('${c.id}','amount',this.value)">
       <button class="del-btn" onclick="removeCost('${c.id}')">✕</button>
     </div>
   `).join('');
@@ -588,6 +865,12 @@ function renderCosts(){
     return sum;
   },0);
   document.getElementById('costTotal').innerText = brl(monthly) + ' /mês (fixo)';
+}
+function updateCostField(id, field, value){
+  const c = state.costs.find(c=>c.id===id);
+  if(!c) return;
+  c[field] = field==='amount' ? (Number(value)||0) : value;
+  saveState(); renderCosts(); updateTopStats();
 }
 function addCost(){
   const name = document.getElementById('costName');
@@ -628,6 +911,7 @@ function changeMonth(delta){
   ensureMonth(state.finance.currentMonth);
   saveState();
   renderFinanceTable();
+  renderResumoMes();
 }
 
 function getDay(monthObj, day){
@@ -643,6 +927,7 @@ function handleDayChange(day, field, value){
   updateRowComputed(day);
   updateMonthSummary();
   updateTopStats();
+  renderResumoMes();
 }
 
 function updateRowComputed(day){
@@ -729,6 +1014,7 @@ function recalcGatewaySum(day){
   updateRowComputed(day);
   updateMonthSummary();
   updateTopStats();
+  renderResumoMes();
 }
 function applyContasSum(day){
   const monthObj = ensureMonth(state.finance.currentMonth);
@@ -747,6 +1033,7 @@ function applyContasSum(day){
   updateRowComputed(day);
   updateMonthSummary();
   updateTopStats();
+  renderResumoMes();
 }
 function saveContasNote(day){
   const monthObj = ensureMonth(state.finance.currentMonth);
@@ -822,6 +1109,7 @@ function updateImposto(value){
   saveState();
   updateMonthSummary();
   updateTopStats();
+  renderResumoMes();
 }
 
 function monthLucroReal(key){
@@ -919,6 +1207,10 @@ function render(){
   renderFinanceTable();
   renderCaixa();
   renderLogs();
+  renderManagers();
+  renderAssets();
+  renderPlanner();
+  renderResumoMes();
   updateTopStats();
 }
 
