@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
@@ -37,7 +37,7 @@
     --neg:#FF6B7A;
     --mono:'JetBrains Mono',ui-monospace,monospace;
     --sans:'Inter',system-ui,sans-serif;
-    --display:'Space Grotesk','Inter',system-ui,sans-serif;
+    --display:'Plus Jakarta Sans','Inter',system-ui,sans-serif;
   }
   *{box-sizing:border-box;}
   body{
@@ -112,6 +112,19 @@
   .status-done{background:var(--ok);}
   .status-blocked{background:var(--urgent);}
   .status-delegated{background:var(--violet);}
+
+  .check-box{
+    width:18px;height:18px;border-radius:6px;border:2px solid var(--muted2);
+    margin-top:1px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all .12s;
+  }
+  .check-box:hover{border-color:var(--violet);}
+  .check-box.checked{background:var(--ok);border-color:var(--ok);}
+  .check-box.checked::after{content:'✓';color:#0D0B14;font-size:12px;font-weight:700;line-height:1;}
+  .task-tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px;cursor:pointer;display:inline-block;margin-top:4px;}
+  .task-tag.none{color:var(--muted2);background:transparent;border:1px dashed var(--border-strong);}
+  .task-tag.delegada{color:var(--violet);background:rgba(139,92,246,.15);}
+  .task-tag.bloqueada{color:var(--urgent);background:rgba(255,77,109,.15);}
   .item-body{flex:1;min-width:0;}
   .item-text{font-size:13.5px;line-height:1.4;word-break:break-word;}
   .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
@@ -279,9 +292,9 @@
     background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px;
   }
   .planner-focus textarea{width:100%;background:transparent;border:none;color:var(--text);font-size:13.5px;min-height:34px;}
-  .planner-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
-  @media(max-width:800px){.planner-days{grid-template-columns:repeat(2,1fr);}}
-  .planner-day{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;min-height:80px;}
+  .planner-days{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
+  .planner-day{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;min-height:80px;flex:0 0 200px;scroll-snap-align:start;}
+  @media(max-width:600px){ .planner-day{flex:0 0 78%;} }
   .planner-day.today{border-color:var(--violet);background:var(--violet-soft);}
   .planner-day h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin:0 0 8px 0;}
   .planner-day.today h4{color:var(--violet);}
@@ -294,6 +307,28 @@
   .planner-add{display:flex;gap:4px;margin-top:6px;}
   .planner-add input{font-size:11.5px;padding:5px 6px;flex:1;min-width:0;}
   .planner-add button{background:var(--violet);border:none;color:#0D0B14;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;}
+
+  /* ---------- ONVIO LINK ---------- */
+  .onvio-link{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:16px;
+    display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s;
+  }
+  .onvio-link:hover{border-color:var(--violet);}
+  .onvio-link span:first-child{font-size:22px;}
+  .onvio-title{font-family:var(--display);font-weight:700;font-size:14px;}
+  .onvio-sub{font-size:11.5px;color:var(--muted);}
+  .onvio-arrow{margin-left:auto;color:var(--violet);font-size:18px;}
+
+  /* ---------- CHECKLIST DIÁRIO ---------- */
+  .checklist-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;}
+  .checklist-item.done{opacity:0.5;}
+  .checklist-item.done .checklist-text{text-decoration:line-through;}
+  .checklist-text{flex:1;font-size:13.5px;}
+
+  /* ---------- PRODUCT STEPS ---------- */
+  .step-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
+  .step-num{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--bg);border:1px solid var(--border);border-radius:50%;width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .step-text{flex:1;font-size:13px;white-space:pre-wrap;word-break:break-word;}
 </style>
 </head>
 <body>
@@ -314,9 +349,19 @@
     <div class="tab-nav">
       <button class="tab-btn active" id="tabBtnHome" onclick="switchTab('home')">Início</button>
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
+      <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
     </div>
 
     <div class="tab-view active" id="homeView">
+
+    <div class="onvio-link" onclick="window.open('https://onvio.com.br/clientcenter/','_blank')">
+      <span>📄</span>
+      <div>
+        <div class="onvio-title">Portal do Escritório Palombo (Onvio)</div>
+        <div class="onvio-sub">impostos, guias e documentos da empresa</div>
+      </div>
+      <span class="onvio-arrow">→</span>
+    </div>
 
     <div class="resumo-mes">
       <div>
@@ -338,6 +383,18 @@
         <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
       </div>
       <div class="planner-days" id="plannerDays"></div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head">
+        <h2><span class="sub">reseta todo dia — hábitos de execução</span>Checklist diário</h2>
+        <div class="panel-total" id="checklistProgress">—</div>
+      </div>
+      <div id="checklistList"></div>
+      <div class="add-row">
+        <input type="text" id="checklistInput" placeholder="novo hábito recorrente (ex: subir criativo novo)">
+        <button class="add" onclick="addChecklistTemplateItem()">+ add</button>
+      </div>
     </div>
 
     <div class="priority-grid">
@@ -389,6 +446,21 @@
     </div>
 
     <div class="grid">
+      <div class="panel">
+        <div class="panel-head"><h2>Números de recuperação</h2></div>
+        <div id="phonesList"></div>
+        <div class="add-row">
+          <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
+          <input type="text" id="phoneProduto" placeholder="produto/uso">
+          <select id="phoneStatus">
+            <option value="ativo">ativo</option>
+            <option value="atencao">atenção</option>
+            <option value="queimado">queimado</option>
+          </select>
+          <button class="add" onclick="addPhone()">+ add</button>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="panel-head"><h2>Gerentes de conta</h2></div>
         <div id="managersList"></div>
@@ -515,6 +587,39 @@
       </div>
     </div>
 
+    <div class="tab-view" id="productsView">
+      <div class="panel full">
+        <div class="panel-head"><h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2></div>
+        <div class="add-row">
+          <select id="productSelect" onchange="selectProduct(this.value)"></select>
+          <input type="text" id="newProductName" placeholder="nome do novo produto...">
+          <button class="add" onclick="addProduct()">+ novo produto</button>
+        </div>
+      </div>
+
+      <div id="productDetail" style="display:none;">
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head"><h2><span class="sub">nessa ordem, uma mensagem por etapa</span>Recuperação de vendas</h2></div>
+            <div id="recoveryStepsList"></div>
+            <div class="add-row" style="flex-direction:column;">
+              <textarea id="recoveryStepInput" placeholder="texto da mensagem dessa etapa..."></textarea>
+              <button class="add" onclick="addStep('recovery')">+ adicionar etapa</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2><span class="sub">nessa ordem, uma mensagem por etapa</span>Entrega do entregável</h2></div>
+            <div id="deliveryStepsList"></div>
+            <div class="add-row" style="flex-direction:column;">
+              <textarea id="deliveryStepInput" placeholder="texto da mensagem dessa etapa..."></textarea>
+              <button class="add" onclick="addStep('delivery')">+ adicionar etapa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="productEmpty" class="empty" style="padding:20px 0;">Cria um produto acima pra começar a montar o funil de mensagens.</div>
+    </div>
+
   </div>
 </div>
 
@@ -569,6 +674,18 @@ const defaultState = {
   saldoInicial: 0,
   managers: [],
   assets: [],
+  phones: [],
+  products: [],
+  currentProductId: null,
+  checklist: {
+    template: [
+      {id:'ck1', text:'Subir criativo novo'},
+      {id:'ck2', text:'Checar métricas de ontem'},
+      {id:'ck3', text:'Responder recuperação pendente'},
+      {id:'ck4', text:'Registrar gasto/faturamento do dia'}
+    ],
+    today: { date:'', doneIds:[] }
+  },
   planner: { focoSemana: '', days: { seg:[], ter:[], qua:[], qui:[], sex:[], sab:[], dom:[] } }
 };
 
@@ -577,7 +694,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -599,12 +716,26 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
+      if(!state.phones) state.phones = [];
+      if(!state.products) state.products = [];
+      if(state.currentProductId===undefined) state.currentProductId = null;
+      if(!state.checklist) state.checklist = {template:[
+        {id:'ck1', text:'Subir criativo novo'},
+        {id:'ck2', text:'Checar métricas de ontem'},
+        {id:'ck3', text:'Responder recuperação pendente'},
+        {id:'ck4', text:'Registrar gasto/faturamento do dia'}
+      ], today:{date:'',doneIds:[]}};
       if(!state.planner) state.planner = {focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}};
       if(!state.planner.days) state.planner.days = {seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]};
+      state.tasks.forEach(t=>{
+        if(t.status==='blocked'){ t.tag='bloqueada'; t.status='pending'; }
+        else if(t.status==='delegated'){ t.tag='delegada'; t.status='pending'; }
+        if(!t.tag) t.tag='none';
+      });
     } else {
       state = JSON.parse(JSON.stringify(defaultState));
       await saveState();
@@ -648,19 +779,33 @@ function renderTasks(){
 function renderTaskGroup(containerId, arr){
   const el = document.getElementById(containerId);
   if(arr.length===0){ el.innerHTML='<div class="empty">nada por aqui ainda.</div>'; return; }
-  el.innerHTML = arr.map(item=>`
+  el.innerHTML = arr.map(item=>{
+    const tag = item.tag || 'none';
+    const tagLabel = tag==='none' ? '+ marcar' : tag;
+    return `
     <div class="item ${item.status==='done'?'done':''}" data-id="${item.id}">
       <span class="drag-handle">⠿</span>
-      <div class="item-status ${statusClass(item.status)}" onclick="cycleTaskStatus('${item.id}')" title="clique pra mudar status"></div>
-      <div class="item-body"><div class="item-text">${escapeHtml(item.text)}</div></div>
+      <div class="check-box ${item.status==='done'?'checked':''}" onclick="toggleTaskDone('${item.id}')" title="marcar como feito"></div>
+      <div class="item-body">
+        <div class="item-text">${escapeHtml(item.text)}</div>
+        <span class="task-tag ${tag}" onclick="cycleTaskTag('${item.id}')" title="clique pra marcar delegada/bloqueada">${tagLabel}</span>
+      </div>
       <button class="del-btn" onclick="removeTask('${item.id}')">✕</button>
     </div>
-  `).join('');
+  `;}).join('');
 }
-function cycleTaskStatus(id){
+function toggleTaskDone(id){
   const item = state.tasks.find(t=>t.id===id);
   if(!item) return;
-  item.status = nextStatus(item.status, taskCycle);
+  item.status = item.status==='done' ? 'pending' : 'done';
+  saveState(); render();
+}
+function cycleTaskTag(id){
+  const item = state.tasks.find(t=>t.id===id);
+  if(!item) return;
+  const cycle = ['none','delegada','bloqueada'];
+  const i = cycle.indexOf(item.tag||'none');
+  item.tag = cycle[(i+1)%cycle.length];
   saveState(); render();
 }
 function removeTask(id){ state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render(); }
@@ -668,7 +813,7 @@ function addTask(priority){
   const inputId = priority==='urgente' ? 'urgentInput' : 'structuralInput';
   const input = document.getElementById(inputId);
   if(!input.value.trim()) return;
-  state.tasks.push({id:uid(), text:input.value.trim(), status:'pending', priority});
+  state.tasks.push({id:uid(), text:input.value.trim(), status:'pending', priority, tag:'none'});
   input.value=''; saveState(); render();
 }
 
@@ -816,6 +961,145 @@ function removePlannerItem(dayKey, id){
   saveState(); renderPlanner();
 }
 
+/* ---------- CHECKLIST DIÁRIO ---------- */
+function ensureChecklistToday(){
+  const todayStr = new Date().toISOString().slice(0,10);
+  if(!state.checklist) state.checklist = {template:[], today:{date:todayStr, doneIds:[]}};
+  if(!state.checklist.today || state.checklist.today.date !== todayStr){
+    state.checklist.today = {date:todayStr, doneIds:[]};
+  }
+}
+function renderChecklist(){
+  ensureChecklistToday();
+  const el = document.getElementById('checklistList');
+  const tmpl = state.checklist.template || [];
+  if(tmpl.length===0){ el.innerHTML='<div class="empty">nenhum hábito cadastrado ainda.</div>'; document.getElementById('checklistProgress').innerText='—'; return; }
+  const doneIds = state.checklist.today.doneIds || [];
+  el.innerHTML = tmpl.map(item=>{
+    const done = doneIds.includes(item.id);
+    return `<div class="checklist-item ${done?'done':''}">
+      <div class="check-box ${done?'checked':''}" onclick="toggleChecklistItem('${item.id}')"></div>
+      <div class="checklist-text">${escapeHtml(item.text)}</div>
+      <button class="del-btn" onclick="removeChecklistTemplateItem('${item.id}')">✕</button>
+    </div>`;
+  }).join('');
+  document.getElementById('checklistProgress').innerText = `${doneIds.length}/${tmpl.length} hoje`;
+}
+function toggleChecklistItem(id){
+  ensureChecklistToday();
+  const doneIds = state.checklist.today.doneIds;
+  const i = doneIds.indexOf(id);
+  if(i>=0) doneIds.splice(i,1); else doneIds.push(id);
+  saveState(); renderChecklist();
+}
+function addChecklistTemplateItem(){
+  const input = document.getElementById('checklistInput');
+  if(!input.value.trim()) return;
+  state.checklist.template.push({id:uid(), text:input.value.trim()});
+  input.value = '';
+  saveState(); renderChecklist();
+}
+function removeChecklistTemplateItem(id){
+  state.checklist.template = state.checklist.template.filter(i=>i.id!==id);
+  ensureChecklistToday();
+  state.checklist.today.doneIds = state.checklist.today.doneIds.filter(i=>i!==id);
+  saveState(); renderChecklist();
+}
+
+/* ---------- NÚMEROS DE RECUPERAÇÃO ---------- */
+function renderPhones(){
+  const el = document.getElementById('phonesList');
+  if(state.phones.length===0){ el.innerHTML='<div class="empty">nenhum número cadastrado.</div>'; return; }
+  el.innerHTML = state.phones.map(p=>`
+    <div class="asset-row" data-id="${p.id}">
+      <span class="asset-tipo" style="background:${p.status==='ativo'?'rgba(58,220,140,.12)':p.status==='queimado'?'rgba(255,77,109,.12)':'rgba(245,166,35,.12)'};color:${p.status==='ativo'?'var(--ok)':p.status==='queimado'?'var(--urgent)':'var(--warn)'};">${p.status}</span>
+      <div class="asset-name">${escapeHtml(p.numero)} ${p.produto?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(p.produto)}</span>`:''}</div>
+      <button class="del-btn" onclick="removePhone('${p.id}')">✕</button>
+    </div>
+  `).join('');
+}
+function addPhone(){
+  const numero = document.getElementById('phoneNumero');
+  const produto = document.getElementById('phoneProduto').value;
+  const status = document.getElementById('phoneStatus').value;
+  if(!numero.value.trim()) return;
+  state.phones.push({id:uid(), numero:numero.value.trim(), produto, status});
+  numero.value=''; document.getElementById('phoneProduto').value='';
+  saveState(); renderPhones();
+}
+function removePhone(id){ state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones(); }
+
+/* ---------- PRODUTOS (funil de mensagens) ---------- */
+function renderProductSelect(){
+  const sel = document.getElementById('productSelect');
+  sel.innerHTML = '<option value="">selecione um produto...</option>' +
+    state.products.map(p=>`<option value="${p.id}" ${state.currentProductId===p.id?'selected':''}>${escapeHtml(p.nome)}</option>`).join('');
+}
+function addProduct(){
+  const input = document.getElementById('newProductName');
+  if(!input.value.trim()) return;
+  const id = uid();
+  state.products.push({id, nome:input.value.trim(), recovery:[], delivery:[]});
+  input.value = '';
+  state.currentProductId = id;
+  saveState(); renderProducts();
+}
+function selectProduct(id){
+  state.currentProductId = id || null;
+  saveState(); renderProducts();
+}
+function currentProduct(){
+  return state.products.find(p=>p.id===state.currentProductId);
+}
+function addStep(type){
+  const product = currentProduct();
+  if(!product) return;
+  const inputId = type==='recovery' ? 'recoveryStepInput' : 'deliveryStepInput';
+  const input = document.getElementById(inputId);
+  if(!input.value.trim()) return;
+  product[type].push({id:uid(), texto:input.value.trim()});
+  input.value = '';
+  saveState(); renderProducts();
+}
+function removeStep(type, id){
+  const product = currentProduct();
+  if(!product) return;
+  product[type] = product[type].filter(s=>s.id!==id);
+  saveState(); renderProducts();
+}
+function stepsHtml(steps, type){
+  if(steps.length===0) return '<div class="empty">nenhuma etapa ainda.</div>';
+  return steps.map((s,i)=>`
+    <div class="step-item" data-id="${s.id}">
+      <span class="drag-handle">⠿</span>
+      <span class="step-num">${i+1}</span>
+      <div class="step-text">${escapeHtml(s.texto)}</div>
+      <button class="del-btn" onclick="removeStep('${type}','${s.id}')">✕</button>
+    </div>
+  `).join('');
+}
+function reorderProductSteps(type, ids){
+  const product = currentProduct();
+  if(!product) return;
+  product[type] = ids.map(id=>product[type].find(s=>s.id===id)).filter(Boolean);
+  saveState();
+}
+function renderProducts(){
+  renderProductSelect();
+  const product = currentProduct();
+  const detail = document.getElementById('productDetail');
+  const emptyMsg = document.getElementById('productEmpty');
+  if(!product){
+    detail.style.display = 'none';
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  detail.style.display = 'block';
+  emptyMsg.style.display = 'none';
+  document.getElementById('recoveryStepsList').innerHTML = stepsHtml(product.recovery, 'recovery');
+  document.getElementById('deliveryStepsList').innerHTML = stepsHtml(product.delivery, 'delivery');
+}
+
 /* ---------- RESUMO DO MÊS (home) ---------- */
 function renderResumoMes(){
   const key = state.finance.currentMonth;
@@ -837,8 +1121,10 @@ function renderResumoMes(){
 function switchTab(tab){
   document.getElementById('homeView').classList.toggle('active', tab==='home');
   document.getElementById('financeView').classList.toggle('active', tab==='finance');
+  document.getElementById('productsView').classList.toggle('active', tab==='products');
   document.getElementById('tabBtnHome').classList.toggle('active', tab==='home');
   document.getElementById('tabBtnFinance').classList.toggle('active', tab==='finance');
+  document.getElementById('tabBtnProducts').classList.toggle('active', tab==='products');
   window.scrollTo(0,0);
 }
 
@@ -1209,6 +1495,9 @@ function render(){
   renderLogs();
   renderManagers();
   renderAssets();
+  renderPhones();
+  renderChecklist();
+  renderProducts();
   renderPlanner();
   renderResumoMes();
   updateTopStats();
@@ -1270,6 +1559,8 @@ function setupDragHandlers(){
   attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
+  attachSortable('recoveryStepsList', ids=>reorderProductSteps('recovery', ids));
+  attachSortable('deliveryStepsList', ids=>reorderProductSteps('delivery', ids));
 }
 
 loadState().then(setupDragHandlers);
