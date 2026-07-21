@@ -353,7 +353,16 @@
   .wa-stage-title{font-family:var(--display);font-weight:700;font-size:13px;}
   .variation-row{display:flex;gap:8px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:8px;}
   .variation-label{font-family:var(--mono);font-size:9.5px;color:var(--muted2);white-space:nowrap;padding-top:6px;}
-  .variation-row textarea{flex:1;min-height:44px;font-size:12.5px;}
+  .variation-row textarea{flex:1;min-height:44px;font-size:12.5px;resize:none;overflow:hidden;line-height:1.5;}
+  .step-name-input{
+    background:transparent;border:1px solid transparent;color:var(--text);font-family:var(--display);
+    font-weight:700;font-size:13px;padding:3px 6px;border-radius:6px;flex:1;min-width:0;
+  }
+  .step-name-input:hover, .step-name-input:focus{background:var(--bg);border-color:var(--border-strong);}
+  .objection-desc{
+    background:var(--bg);border:1px solid var(--border);color:var(--muted);font-size:11.5px;
+    border-radius:7px;padding:6px 8px;width:100%;margin-bottom:10px;resize:none;overflow:hidden;
+  }
   .add-variation-btn{
     background:rgba(37,211,102,0.12);color:#25D366;border:1px dashed rgba(37,211,102,0.4);
     border-radius:7px;padding:6px 10px;font-size:11.5px;cursor:pointer;width:100%;margin-top:2px;
@@ -650,6 +659,12 @@
             <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('delivery')">+ nova etapa</button>
           </div>
         </div>
+
+        <div class="panel full">
+          <div class="panel-head"><h2><span class="sub">🛡️ cada card é uma objeção diferente — nomeia, descreve, e monta a resposta em variações</span>Quebra de objeções</h2></div>
+          <div id="objectionsStepsList" class="funnel-wrap"></div>
+          <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
+        </div>
       </div>
       <div id="productEmpty" class="empty" style="padding:20px 0;">Cria um produto acima pra começar a montar o funil de mensagens.</div>
     </div>
@@ -758,13 +773,15 @@ async function loadState(){
       if(!state.products) state.products = [];
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
-        ['recovery','delivery'].forEach(type=>{
+        if(!p.objections) p.objections = [];
+        ['recovery','delivery','objections'].forEach(type=>{
           if(!p[type]) p[type] = [];
-          p[type].forEach(step=>{
+          p[type].forEach((step,idx)=>{
             if(!step.variations){
               step.variations = [{id:uid(), texto: step.texto || ''}];
               delete step.texto;
             }
+            if(!step.nome) step.nome = (type==='objections' ? 'Objeção ' : 'Etapa ') + (idx+1);
           });
         });
       });
@@ -1098,7 +1115,7 @@ function addProduct(){
   const input = document.getElementById('newProductName');
   if(!input.value.trim()) return;
   const id = uid();
-  state.products.push({id, nome:input.value.trim(), funnelLinks:[], recovery:[], delivery:[]});
+  state.products.push({id, nome:input.value.trim(), funnelLinks:[], recovery:[], delivery:[], objections:[]});
   input.value = '';
   state.currentProductId = id;
   saveState(); renderProducts();
@@ -1157,11 +1174,18 @@ function funnelLinksHtml(links){
   }).join('');
 }
 
-/* --- etapas de mensagem (recovery / delivery) --- */
+/* --- etapas de mensagem (recovery / delivery / objections) --- */
 function addStep(type){
   const product = currentProduct();
   if(!product) return;
-  product[type].push({id:uid(), variations:[{id:uid(), texto:''}]});
+  if(!product[type]) product[type] = [];
+  const isObjection = type === 'objections';
+  product[type].push({
+    id:uid(),
+    nome: isObjection ? 'Nova objeção' : 'Nova etapa',
+    descricao: isObjection ? '' : undefined,
+    variations:[{id:uid(), texto:''}]
+  });
   saveState(); renderProducts();
 }
 function removeStep(type, id){
@@ -1174,6 +1198,22 @@ function reorderProductSteps(type, ids){
   const product = currentProduct();
   if(!product) return;
   product[type] = ids.map(id=>product[type].find(s=>s.id===id)).filter(Boolean);
+  saveState();
+}
+function updateStepName(type, stepId, value){
+  const product = currentProduct();
+  if(!product) return;
+  const step = product[type].find(s=>s.id===stepId);
+  if(!step) return;
+  step.nome = value;
+  saveState();
+}
+function updateStepDescricao(type, stepId, value){
+  const product = currentProduct();
+  if(!product) return;
+  const step = product[type].find(s=>s.id===stepId);
+  if(!step) return;
+  step.descricao = value;
   saveState();
 }
 function addVariation(type, stepId){
@@ -1202,30 +1242,43 @@ function updateVariationText(type, stepId, varId, value){
   v.texto = value;
   saveState();
 }
+function autoGrow(el){
+  if(!el) return;
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight + 2) + 'px';
+}
 function stepsHtml(steps, type){
-  if(steps.length===0) return '<div class="empty">nenhuma etapa ainda.</div>';
+  if(!steps || steps.length===0) return '<div class="empty">nenhuma etapa ainda.</div>';
+  const isObjection = type === 'objections';
   return steps.map((s,idx)=>{
     const w = funnelWidth(idx, steps.length);
     const varsHtml = (s.variations||[]).map((v,vi)=>`
       <div class="variation-row">
         <span class="variation-label">v${vi+1}</span>
-        <textarea onblur="updateVariationText('${type}','${s.id}','${v.id}',this.value)" placeholder="texto dessa variação...">${escapeHtml(v.texto||'')}</textarea>
+        <textarea oninput="autoGrow(this)" onblur="updateVariationText('${type}','${s.id}','${v.id}',this.value)" placeholder="texto dessa variação...">${escapeHtml(v.texto||'')}</textarea>
         <button class="del-btn" onclick="removeVariation('${type}','${s.id}','${v.id}')">✕</button>
       </div>
     `).join('');
+    const descHtml = isObjection ? `<textarea class="objection-desc" oninput="autoGrow(this)" onblur="updateStepDescricao('${type}','${s.id}',this.value)" placeholder="sobre o que é essa objeção (ex: preço, desconfiança, prazo de entrega)...">${escapeHtml(s.descricao||'')}</textarea>` : '';
     const stage = `<div class="funnel-stage" data-id="${s.id}" style="width:${w}%;">
       <div class="wa-stage-head">
         <span class="drag-handle">⠿</span>
-        <span class="wa-icon">💬</span>
-        <span class="wa-stage-title">Etapa ${idx+1}</span>
-        <button class="del-btn" style="margin-left:auto;" onclick="removeStep('${type}','${s.id}')">✕ remover etapa</button>
+        <span class="wa-icon">${isObjection ? '🛡️' : '💬'}</span>
+        <input type="text" class="step-name-input" value="${escapeHtml(s.nome || ('Etapa '+(idx+1)))}" onchange="updateStepName('${type}','${s.id}',this.value)">
+        <button class="del-btn" style="margin-left:auto;" onclick="removeStep('${type}','${s.id}')">✕ remover</button>
       </div>
+      ${descHtml}
       ${varsHtml}
-      <button class="add-variation-btn" onclick="addVariation('${type}','${s.id}')">+ variação (evita chip cair por copiar/colar igual)</button>
+      <button class="add-variation-btn" onclick="addVariation('${type}','${s.id}')">+ variação${isObjection ? '' : ' (evita chip cair por copiar/colar igual)'}</button>
     </div>`;
     const connector = idx < steps.length-1 ? '<div class="funnel-connector"></div>' : '';
     return stage + connector;
   }).join('');
+}
+function growAllTextareas(containerId){
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  container.querySelectorAll('textarea').forEach(autoGrow);
 }
 function renderProducts(){
   renderProductSelect();
@@ -1242,6 +1295,12 @@ function renderProducts(){
   document.getElementById('funnelLinksList').innerHTML = funnelLinksHtml(product.funnelLinks||[]);
   document.getElementById('recoveryStepsList').innerHTML = stepsHtml(product.recovery, 'recovery');
   document.getElementById('deliveryStepsList').innerHTML = stepsHtml(product.delivery, 'delivery');
+  document.getElementById('objectionsStepsList').innerHTML = stepsHtml(product.objections, 'objections');
+  setTimeout(()=>{
+    growAllTextareas('recoveryStepsList');
+    growAllTextareas('deliveryStepsList');
+    growAllTextareas('objectionsStepsList');
+  }, 0);
 }
 
 /* ---------- RESUMO DO MÊS (home) ---------- */
@@ -1743,6 +1802,7 @@ function setupDragHandlers(){
   attachSortable('costsList', ids=>reorderArray('costs', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
+  attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
   attachSortable('funnelLinksList', ids=>{ reorderFunnelLinks(ids); renderProducts(); });
 }
 
