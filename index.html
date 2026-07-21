@@ -235,15 +235,30 @@
   html, body{ overflow-x:hidden; max-width:100vw; }
   .wrap{ width:100%; }
   @media(max-width:600px){
-    body{ padding:14px; }
-    .hero h1{ font-size:21px; }
-    .stat{ min-width:100px; padding:8px 12px; }
-    .stat .n{ font-size:15px; }
+    body{ padding:12px; }
+    .hero{ gap:12px; }
+    .hero h1{ font-size:19px; }
+    .stats{ width:100%; }
+    .stat{ min-width:0; flex:1 1 40%; padding:8px 10px; }
+    .stat .n{ font-size:14px; }
     .month-label{ font-size:14px; min-width:0; flex:1; text-align:center; }
     .msum{ min-width:100%; }
-    .day-cell-input{ width:70px; }
-    .caixa-balance{ flex-direction:column; align-items:flex-start; }
-    .caixa-balance > div:last-child{ text-align:left; width:100%; }
+    .day-cell-input{ width:64px; }
+    .tab-nav{ overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; }
+    .tab-btn{ white-space:nowrap; flex-shrink:0; font-size:13px; }
+    .funnel-stage{ width:100% !important; padding:10px 12px; }
+    .funnel-link-stage{ flex-wrap:wrap; }
+    .funnel-link-open{ margin-left:0; }
+    .gateway-row, .variation-row, .mov-row, .cost-row, .asset-row, .step-item{ flex-wrap:wrap; }
+    .gateway-row input, .gateway-row select{ flex:1 1 100px; min-width:0; }
+    .cost-row select, .cost-row input[type=text]{ min-width:80px; }
+    .cost-amount, .cost-row input[type=number]{ width:80px; }
+    .resumo-mes{ flex-direction:column; align-items:flex-start; gap:14px; }
+    .resumo-mes .rstats{ gap:14px; width:100%; justify-content:space-between; }
+    .add-row{ gap:8px; }
+    .add-row input, .add-row select, .add-row textarea{ min-width:0; flex:1 1 100%; }
+    .grid{ gap:12px; }
+    .panel{ padding:14px; }
   }
 
   /* ---------- TABS ---------- */
@@ -284,6 +299,13 @@
 
   /* ---------- ATIVOS / GERENTES ---------- */
   .asset-row{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
+  .mining-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+  .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+  .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
+  .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted);}
+  .mining-ads{font-family:var(--mono);font-size:11px;color:var(--lime);margin-left:auto;}
+  .mining-desc{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
+  .mining-link{font-size:11.5px;color:var(--violet);word-break:break-all;}
   .asset-tipo{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;white-space:nowrap;}
   .asset-name{flex:1;font-size:13.5px;}
 
@@ -356,7 +378,8 @@
   .variation-row textarea{flex:1;min-height:44px;font-size:12.5px;resize:none;overflow:hidden;line-height:1.5;}
   .step-name-input{
     background:transparent;border:1px solid transparent;color:var(--text);font-family:var(--display);
-    font-weight:700;font-size:13px;padding:3px 6px;border-radius:6px;flex:1;min-width:0;
+    font-weight:700;font-size:13.5px;padding:4px 7px;border-radius:6px;width:100%;
+    white-space:normal;word-break:break-word;line-height:1.35;outline:none;min-height:22px;margin-bottom:2px;
   }
   .step-name-input:hover, .step-name-input:focus{background:var(--bg);border-color:var(--border-strong);}
   .objection-desc{
@@ -389,6 +412,7 @@
       <button class="tab-btn active" id="tabBtnHome" onclick="switchTab('home')">Início</button>
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
       <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
+      <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
     </div>
 
     <div class="tab-view active" id="homeView">
@@ -458,35 +482,33 @@
     </div>
 
     <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">saldo disponível · ficas borrado até você clicar em mostrar</span>Caixa da empresa</h2></div>
-      <div class="caixa-balance">
-        <div>
-          <div class="label">saldo atual</div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="value" id="caixaSaldo">R$ 0,00</div>
-            <button class="reveal-btn" onclick="toggleCaixaReveal()" id="revealBtn" title="mostrar/ocultar saldo">👁</button>
-          </div>
-        </div>
-        <div style="text-align:right;">
-          <label class="field-label">saldo inicial (ponto de partida)</label>
-          <input type="number" id="saldoInicialInput" placeholder="0,00" style="width:140px;">
-        </div>
+      <div class="panel-head">
+        <h2>Custos fixos da operação</h2>
+        <div class="panel-total" id="costTotal">—</div>
       </div>
-      <div id="movList"></div>
+      <div id="costsList"></div>
       <div class="add-row">
-        <select id="movTipo">
-          <option value="entrada">entrada</option>
-          <option value="saida">saída</option>
+        <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
+        <input type="number" id="costAmount" placeholder="R$ 0,00">
+        <select id="costFreq">
+          <option value="mensal">mensal</option>
+          <option value="anual">anual</option>
+          <option value="variavel">variável</option>
         </select>
-        <input type="text" id="movDesc" placeholder="descrição (ex: retirada sócio, pagamento contador)">
-        <input type="number" id="movValor" placeholder="R$">
-        <button class="add" onclick="addMov()">+ registrar</button>
+        <select id="costCat">
+          <option value="ferramenta">ferramenta</option>
+          <option value="imposto">imposto</option>
+          <option value="contabilidade">contabilidade</option>
+          <option value="hospedagem">hospedagem</option>
+          <option value="outro">outro</option>
+        </select>
+        <button class="add" onclick="addCost()">+ add</button>
       </div>
     </div>
 
     <div class="grid">
       <div class="panel">
-        <div class="panel-head"><h2>Números de recuperação</h2></div>
+        <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
         <div id="phonesList"></div>
         <div class="add-row">
           <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
@@ -558,31 +580,6 @@
       </div>
 
       <div class="panel full">
-        <div class="panel-head">
-          <h2>Custos fixos da operação</h2>
-          <div class="panel-total" id="costTotal">—</div>
-        </div>
-        <div id="costsList"></div>
-        <div class="add-row">
-          <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
-          <input type="number" id="costAmount" placeholder="R$">
-          <select id="costFreq">
-            <option value="mensal">mensal</option>
-            <option value="anual">anual</option>
-            <option value="variavel">variável</option>
-          </select>
-          <select id="costCat">
-            <option value="ferramenta">ferramenta</option>
-            <option value="imposto">imposto</option>
-            <option value="contabilidade">contabilidade</option>
-            <option value="hospedagem">hospedagem</option>
-            <option value="outro">outro</option>
-          </select>
-          <button class="add" onclick="addCost()">+ add</button>
-        </div>
-      </div>
-
-      <div class="panel full">
         <div class="panel-head"><h2>Diário da operação</h2></div>
         <div id="logList"></div>
         <div class="add-row" style="flex-direction:column;">
@@ -629,11 +626,18 @@
     <div class="tab-view" id="productsView">
       <div class="panel full">
         <div class="panel-head"><h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2></div>
-        <div class="add-row">
-          <select id="productSelect" onchange="selectProduct(this.value)"></select>
-          <input type="text" id="newProductName" placeholder="nome do novo produto...">
-          <button class="add" onclick="addProduct()">+ novo produto</button>
+        <label class="field-label">produto selecionado</label>
+        <select id="productSelect" onchange="selectProduct(this.value)" style="width:100%;margin-bottom:14px;"></select>
+
+        <div id="newProductRow" style="display:none;">
+          <label class="field-label">nome do novo produto</label>
+          <div class="add-row" style="margin-top:0;">
+            <input type="text" id="newProductName" placeholder="ex: Curso X, Mentoria Y...">
+            <button class="add" onclick="addProduct()">criar produto</button>
+            <button class="add" style="background:var(--surface2);color:var(--muted);" onclick="toggleNewProductRow(false)">cancelar</button>
+          </div>
         </div>
+        <button class="add" id="newProductToggleBtn" style="background:var(--violet-soft);color:var(--violet);border:1px dashed var(--violet);" onclick="toggleNewProductRow(true)">+ criar novo produto</button>
       </div>
 
       <div id="productDetail" style="display:none;">
@@ -667,6 +671,23 @@
         </div>
       </div>
       <div id="productEmpty" class="empty" style="padding:20px 0;">Cria um produto acima pra começar a montar o funil de mensagens.</div>
+    </div>
+
+    <div class="tab-view" id="miningView">
+      <div class="panel full">
+        <div class="panel-head"><h2><span class="sub">ofertas de concorrentes pra analisar e modelar</span>Mineração de ofertas</h2></div>
+        <div id="miningList"></div>
+        <div class="add-row" style="flex-wrap:wrap;">
+          <input type="text" id="miningNome" placeholder="nome do produto/oferta">
+          <input type="text" id="miningNicho" placeholder="nicho (ex: emagrecimento, finanças)">
+          <input type="number" id="miningAnuncios" placeholder="qtd anúncios ativos">
+          <input type="text" id="miningLink" placeholder="link da biblioteca de anúncios (Meta)">
+        </div>
+        <div class="add-row">
+          <textarea id="miningDescricao" placeholder="descrição breve do produto/oferta..." style="flex:1;"></textarea>
+        </div>
+        <button class="add" onclick="addMiningEntry()">+ adicionar à mineração</button>
+      </div>
     </div>
 
   </div>
@@ -726,6 +747,7 @@ const defaultState = {
   phones: [],
   products: [],
   currentProductId: null,
+  mining: [],
   checklist: {
     template: [
       {id:'ck1', text:'Subir criativo novo'},
@@ -743,7 +765,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -765,12 +787,13 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
       if(!state.phones) state.phones = [];
       if(!state.products) state.products = [];
+      if(!state.mining) state.mining = [];
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
         if(!p.objections) p.objections = [];
@@ -823,7 +846,6 @@ async function loadState(){
   }
   document.getElementById('loading').style.display='none';
   document.getElementById('mainContent').style.display='block';
-  document.getElementById('saldoInicialInput').value = state.saldoInicial || '';
   render();
 }
 
@@ -1111,6 +1133,11 @@ function renderProductSelect(){
   sel.innerHTML = '<option value="">selecione um produto...</option>' +
     state.products.map(p=>`<option value="${p.id}" ${state.currentProductId===p.id?'selected':''}>${escapeHtml(p.nome)}</option>`).join('');
 }
+function toggleNewProductRow(show){
+  document.getElementById('newProductRow').style.display = show ? 'block' : 'none';
+  document.getElementById('newProductToggleBtn').style.display = show ? 'none' : 'block';
+  if(show) document.getElementById('newProductName').focus();
+}
 function addProduct(){
   const input = document.getElementById('newProductName');
   if(!input.value.trim()) return;
@@ -1118,6 +1145,7 @@ function addProduct(){
   state.products.push({id, nome:input.value.trim(), funnelLinks:[], recovery:[], delivery:[], objections:[]});
   input.value = '';
   state.currentProductId = id;
+  toggleNewProductRow(false);
   saveState(); renderProducts();
 }
 function selectProduct(id){
@@ -1129,7 +1157,7 @@ function currentProduct(){
 }
 function funnelWidth(idx, total){
   if(total<=1) return 100;
-  const min = 55;
+  const min = 80;
   return Math.round(100 - (idx * ((100-min)/Math.max(total-1,1))));
 }
 
@@ -1264,9 +1292,10 @@ function stepsHtml(steps, type){
       <div class="wa-stage-head">
         <span class="drag-handle">⠿</span>
         <span class="wa-icon">${isObjection ? '🛡️' : '💬'}</span>
-        <input type="text" class="step-name-input" value="${escapeHtml(s.nome || ('Etapa '+(idx+1)))}" onchange="updateStepName('${type}','${s.id}',this.value)">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--muted2);">#${idx+1}</span>
         <button class="del-btn" style="margin-left:auto;" onclick="removeStep('${type}','${s.id}')">✕ remover</button>
       </div>
+      <div class="step-name-input" contenteditable="true" onblur="updateStepName('${type}','${s.id}',this.innerText)">${escapeHtml(s.nome || ('Etapa '+(idx+1)))}</div>
       ${descHtml}
       ${varsHtml}
       <button class="add-variation-btn" onclick="addVariation('${type}','${s.id}')">+ variação${isObjection ? '' : ' (evita chip cair por copiar/colar igual)'}</button>
@@ -1303,6 +1332,41 @@ function renderProducts(){
   }, 0);
 }
 
+/* ---------- MINERAÇÃO DE OFERTAS ---------- */
+function addMiningEntry(){
+  const nome = document.getElementById('miningNome');
+  const nicho = document.getElementById('miningNicho').value;
+  const anuncios = document.getElementById('miningAnuncios').value;
+  const link = document.getElementById('miningLink').value;
+  const descricao = document.getElementById('miningDescricao').value;
+  if(!nome.value.trim()) return;
+  state.mining.push({id:uid(), nome:nome.value.trim(), nicho, anuncios:Number(anuncios)||0, link, descricao});
+  nome.value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
+  document.getElementById('miningLink').value=''; document.getElementById('miningDescricao').value='';
+  saveState(); renderMining();
+}
+function removeMiningEntry(id){
+  state.mining = state.mining.filter(m=>m.id!==id);
+  saveState(); renderMining();
+}
+function renderMining(){
+  const el = document.getElementById('miningList');
+  if(!el) return;
+  if(state.mining.length===0){ el.innerHTML = '<div class="empty">nenhuma oferta minerada ainda.</div>'; return; }
+  el.innerHTML = state.mining.map(m=>`
+    <div class="mining-card">
+      <div class="mining-head">
+        <span class="mining-name">${escapeHtml(m.nome)}</span>
+        ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
+        ${m.anuncios ? `<span class="mining-ads">${m.anuncios} anúncios ativos</span>` : ''}
+        <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
+      </div>
+      ${m.descricao ? `<div class="mining-desc">${escapeHtml(m.descricao)}</div>` : ''}
+      ${m.link ? `<a class="mining-link" href="${escapeHtml(m.link)}" target="_blank">${escapeHtml(m.link)}</a>` : ''}
+    </div>
+  `).join('');
+}
+
 /* ---------- RESUMO DO MÊS (home) ---------- */
 function renderResumoMes(){
   const key = state.finance.currentMonth;
@@ -1325,9 +1389,11 @@ function switchTab(tab){
   document.getElementById('homeView').classList.toggle('active', tab==='home');
   document.getElementById('financeView').classList.toggle('active', tab==='finance');
   document.getElementById('productsView').classList.toggle('active', tab==='products');
+  document.getElementById('miningView').classList.toggle('active', tab==='mining');
   document.getElementById('tabBtnHome').classList.toggle('active', tab==='home');
   document.getElementById('tabBtnFinance').classList.toggle('active', tab==='finance');
   document.getElementById('tabBtnProducts').classList.toggle('active', tab==='products');
+  document.getElementById('tabBtnMining').classList.toggle('active', tab==='mining');
   window.scrollTo(0,0);
 }
 
@@ -1344,7 +1410,7 @@ function renderCosts(){
       <select onchange="updateCostField('${c.id}','freq',this.value)">
         ${['mensal','anual','variavel'].map(opt=>`<option value="${opt}" ${c.freq===opt?'selected':''}>${opt}</option>`).join('')}
       </select>
-      <input type="number" value="${c.amount||''}" placeholder="0" onchange="updateCostField('${c.id}','amount',this.value)">
+      <input type="number" value="${c.amount||''}" placeholder="R$ 0" onchange="updateCostField('${c.id}','amount',this.value)">
       <button class="del-btn" onclick="removeCost('${c.id}')">✕</button>
     </div>
   `).join('');
@@ -1584,8 +1650,8 @@ function renderFinanceTable(){
     const margem = d.faturamento>0 ? (lucro/d.faturamento*100) : null;
     rows += `<tr data-day="${day}">
       <td style="font-family:var(--mono);color:var(--muted);">${day}</td>
-      <td class="fin-num"><input class="day-cell-input" type="number" id="gasto-${day}" value="${d.gasto||''}" placeholder="0" onchange="handleDayChange(${day},'gasto',this.value)"></td>
-      <td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>
+      <td class="fin-num"><input class="day-cell-input" type="number" id="gasto-${day}" value="${d.gasto||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'gasto',this.value)"></td>
+      <td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
       <td style="white-space:nowrap;">
@@ -1625,7 +1691,7 @@ function updateMonthSummary(){
     <div class="msum"><div class="l">Gasto do mês</div><div class="v">${brl(totalGasto)}</div></div>
     <div class="msum"><div class="l">Faturamento do mês</div><div class="v">${brl(totalFat)}</div></div>
     <div class="msum"><div class="l">Lucro pré-imposto</div><div class="v ${lucroPre>=0?'pos':'neg'}">${brl(lucroPre)}</div></div>
-    <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="0" onchange="updateImposto(this.value)"></div>
+    <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="R$ 0" onchange="updateImposto(this.value)"></div>
     <div class="msum"><div class="l">Lucro real pós-imposto</div><div class="v ${lucroReal>=0?'pos':'neg'}">${brl(lucroReal)}</div></div>
   `;
   return lucroReal;
@@ -1646,49 +1712,6 @@ function monthLucroReal(key){
   Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
   return (totalFat - totalGasto) - Number(monthObj.imposto||0);
 }
-
-/* ---------- CAIXA ---------- */
-let caixaRevealed = false;
-function toggleCaixaReveal(){
-  caixaRevealed = !caixaRevealed;
-  document.getElementById('caixaSaldo').classList.toggle('revealed', caixaRevealed);
-}
-function addMov(){
-  const tipo = document.getElementById('movTipo').value;
-  const desc = document.getElementById('movDesc').value;
-  const valor = Number(document.getElementById('movValor').value)||0;
-  if(!desc.trim() || valor===0) return;
-  state.caixaMovs.push({id:uid(), tipo, desc:desc.trim(), valor, date:new Date().toLocaleDateString('pt-BR')});
-  document.getElementById('movDesc').value=''; document.getElementById('movValor').value='';
-  saveState(); renderCaixa();
-}
-function removeMov(id){ state.caixaMovs = state.caixaMovs.filter(m=>m.id!==id); saveState(); renderCaixa(); }
-function renderCaixa(){
-  const el = document.getElementById('movList');
-  if(state.caixaMovs.length===0){
-    el.innerHTML = '<div class="empty">nenhuma movimentação manual ainda.</div>';
-  } else {
-    el.innerHTML = [...state.caixaMovs].reverse().map(m=>`
-      <div class="mov-row">
-        <span class="mov-type ${m.tipo}">${m.tipo}</span>
-        <div class="mov-desc">${escapeHtml(m.desc)} <span style="color:var(--muted2);font-size:11px;">· ${m.date}</span></div>
-        <div class="mov-amount" style="color:${m.tipo==='entrada'?'var(--ok)':'var(--neg)'}">${m.tipo==='entrada'?'+':'-'} ${brl(m.valor)}</div>
-        <button class="del-btn" onclick="removeMov('${m.id}')">✕</button>
-      </div>
-    `).join('');
-  }
-  const lucroAcumulado = Object.keys(state.finance.months).reduce((s,key)=>s+monthLucroReal(key),0);
-  const movSum = state.caixaMovs.reduce((s,m)=> s + (m.tipo==='entrada'? m.valor : -m.valor), 0);
-  const saldo = Number(state.saldoInicial||0) + lucroAcumulado + movSum;
-  const saldoEl = document.getElementById('caixaSaldo');
-  saldoEl.innerText = brl(saldo);
-  saldoEl.className = 'value ' + (saldo>=0?'pos':'neg') + (caixaRevealed?' revealed':'');
-  return saldo;
-}
-document.getElementById('saldoInicialInput').addEventListener('change', (e)=>{
-  state.saldoInicial = Number(e.target.value)||0;
-  saveState(); renderCaixa();
-});
 
 function renderLogs(){
   const el = document.getElementById('logList');
@@ -1732,13 +1755,13 @@ function render(){
   renderSimpleList('offersList', state.offers, offerCycle);
   renderCosts();
   renderFinanceTable();
-  renderCaixa();
   renderLogs();
   renderManagers();
   renderAssets();
   renderPhones();
   renderChecklist();
   renderProducts();
+  renderMining();
   renderPlanner();
   renderResumoMes();
   updateTopStats();
