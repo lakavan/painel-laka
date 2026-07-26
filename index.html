@@ -92,7 +92,8 @@
   /* ---------- PANELS ---------- */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   @media(max-width:800px){.grid{grid-template-columns:1fr;}}
-  .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.18);transition:border-color .2s;}
+  .panel:hover{border-color:var(--border-strong);}
   .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
   .panel h2{font-family:var(--display);font-size:13.5px;letter-spacing:0.3px;color:var(--text);margin:0;font-weight:700;}
   .panel h2 .sub{display:block;font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:500;}
@@ -284,6 +285,7 @@
     background:linear-gradient(135deg, var(--violet-soft), rgba(198,255,61,0.05));
     border:1px solid var(--border-strong);border-radius:16px;padding:18px;margin-bottom:22px;
     display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+    box-shadow:0 4px 16px rgba(139,92,246,0.08);
   }
   .resumo-mes .rtitle{font-family:var(--display);font-size:14px;font-weight:700;}
   .resumo-mes .rsub{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
@@ -299,7 +301,45 @@
 
   /* ---------- ATIVOS / GERENTES ---------- */
   .asset-row{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
-  .mining-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+  .mining-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:12px;transition:border-color .15s;}
+  .mining-card:hover{border-color:var(--border-strong);}
+  .mining-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;}
+  .mining-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;}
+  .mining-field-full{grid-column:1/-1;}
+  .mining-field label{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:2px;}
+  .mining-field input, .mining-field textarea{
+    width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:7px;padding:6px 9px;font-size:12.5px;font-family:var(--sans);
+  }
+  .mining-field input:focus, .mining-field textarea:focus{border-color:var(--violet);}
+  .mining-field textarea{resize:none;min-height:38px;}
+  .mining-history{
+    margin-top:10px;border-top:1px solid var(--border);padding-top:8px;
+  }
+  .mining-history-toggle{background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10.5px;cursor:pointer;padding:0;}
+  .mining-history-list{margin-top:6px;display:none;}
+  .mining-history-list.open{display:block;}
+  .mining-history-entry{display:flex;gap:8px;font-size:11.5px;color:var(--muted);padding:3px 0;font-family:var(--mono);}
+  .mining-history-entry .hd{color:var(--muted2);min-width:80px;}
+  .mining-history-entry .hv{color:var(--lime);}
+
+  /* ---------- VÍDEOS ---------- */
+  .videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:6px;}
+  .video-card{
+    background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    cursor:pointer;transition:border-color .15s,transform .15s;position:relative;
+  }
+  .video-card:hover{border-color:var(--violet);transform:translateY(-2px);}
+  .video-thumb{width:100%;aspect-ratio:16/9;background:var(--bg) center/cover no-repeat;position:relative;}
+  .video-play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:40px;height:40px;background:rgba(13,11,20,0.75);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;color:var(--lime);font-size:15px;
+  }
+  .video-info{padding:10px 12px;}
+  .video-title{font-family:var(--display);font-weight:700;font-size:12.5px;margin-bottom:3px;}
+  .video-nota{font-size:11px;color:var(--muted);}
+  .video-del{position:absolute;top:6px;right:6px;background:rgba(13,11,20,0.7);border:none;color:var(--text);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;z-index:2;}
   .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
   .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
   .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted);}
@@ -482,27 +522,13 @@
     </div>
 
     <div class="panel full">
-      <div class="panel-head">
-        <h2>Custos fixos da operação</h2>
-        <div class="panel-total" id="costTotal">—</div>
-      </div>
-      <div id="costsList"></div>
+      <div class="panel-head"><h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2></div>
+      <div id="videosList" class="videos-grid"></div>
       <div class="add-row">
-        <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
-        <input type="number" id="costAmount" placeholder="R$ 0,00">
-        <select id="costFreq">
-          <option value="mensal">mensal</option>
-          <option value="anual">anual</option>
-          <option value="variavel">variável</option>
-        </select>
-        <select id="costCat">
-          <option value="ferramenta">ferramenta</option>
-          <option value="imposto">imposto</option>
-          <option value="contabilidade">contabilidade</option>
-          <option value="hospedagem">hospedagem</option>
-          <option value="outro">outro</option>
-        </select>
-        <button class="add" onclick="addCost()">+ add</button>
+        <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
+        <input type="text" id="videoUrl" placeholder="link do YouTube">
+        <input type="text" id="videoNota" placeholder="nota (opcional)">
+        <button class="add" onclick="addVideo()">+ add</button>
       </div>
     </div>
 
@@ -619,6 +645,31 @@
             </tr></thead>
             <tbody id="finTableBody"></tbody>
           </table>
+        </div>
+      </div>
+
+      <div class="panel full">
+        <div class="panel-head">
+          <h2><span class="sub">o que sai todo mês, independente de faturar ou não</span>Custos fixos da operação</h2>
+          <div class="panel-total" id="costTotal">—</div>
+        </div>
+        <div id="costsList"></div>
+        <div class="add-row">
+          <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
+          <input type="number" id="costAmount" placeholder="R$ 0,00">
+          <select id="costFreq">
+            <option value="mensal">mensal</option>
+            <option value="anual">anual</option>
+            <option value="variavel">variável</option>
+          </select>
+          <select id="costCat">
+            <option value="ferramenta">ferramenta</option>
+            <option value="imposto">imposto</option>
+            <option value="contabilidade">contabilidade</option>
+            <option value="hospedagem">hospedagem</option>
+            <option value="outro">outro</option>
+          </select>
+          <button class="add" onclick="addCost()">+ add</button>
         </div>
       </div>
     </div>
@@ -749,6 +800,7 @@ const defaultState = {
   products: [],
   currentProductId: null,
   mining: [],
+  videos: [],
   checklist: {
     template: [
       {id:'ck1', text:'Subir criativo novo'},
@@ -766,7 +818,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -788,13 +840,14 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
       if(!state.phones) state.phones = [];
       if(!state.products) state.products = [];
       if(!state.mining) state.mining = [];
+      if(!state.videos) state.videos = [];
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
         if(!p.objections) p.objections = [];
@@ -1333,16 +1386,66 @@ function renderProducts(){
   }, 0);
 }
 
+/* ---------- VÍDEOS E CONTEÚDOS ---------- */
+function extractYoutubeId(url){
+  if(!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+  ];
+  for(const p of patterns){
+    const m = url.match(p);
+    if(m) return m[1];
+  }
+  return null;
+}
+function addVideo(){
+  const titulo = document.getElementById('videoTitulo');
+  const url = document.getElementById('videoUrl').value;
+  const nota = document.getElementById('videoNota').value;
+  if(!titulo.value.trim() || !url.trim()) return;
+  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota});
+  titulo.value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
+  saveState(); renderVideos();
+}
+function removeVideo(id){
+  state.videos = state.videos.filter(v=>v.id!==id);
+  saveState(); renderVideos();
+}
+function renderVideos(){
+  const el = document.getElementById('videosList');
+  if(!el) return;
+  if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
+  el.innerHTML = state.videos.map(v=>{
+    const ytId = extractYoutubeId(v.url);
+    const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '';
+    return `
+    <div class="video-card" onclick="window.open('${escapeHtml(v.url)}','_blank')">
+      <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
+      <div class="video-thumb" style="background-image:url('${thumb}');">
+        <div class="video-play">▶</div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">${escapeHtml(v.titulo)}</div>
+        ${v.nota ? `<div class="video-nota">${escapeHtml(v.nota)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 /* ---------- MINERAÇÃO DE OFERTAS ---------- */
 function addMiningEntry(){
   const nome = document.getElementById('miningNome');
   const pagina = document.getElementById('miningPagina').value;
   const nicho = document.getElementById('miningNicho').value;
-  const anuncios = document.getElementById('miningAnuncios').value;
+  const anuncios = Number(document.getElementById('miningAnuncios').value)||0;
   const link = document.getElementById('miningLink').value;
   const descricao = document.getElementById('miningDescricao').value;
   if(!nome.value.trim()) return;
-  state.mining.push({id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios:Number(anuncios)||0, link, descricao});
+  const today = new Date().toLocaleDateString('pt-BR');
+  state.mining.push({
+    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, link, descricao,
+    history: anuncios ? [{date:today, anuncios}] : []
+  });
   nome.value=''; document.getElementById('miningPagina').value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
   document.getElementById('miningLink').value=''; document.getElementById('miningDescricao').value='';
   saveState(); renderMining();
@@ -1351,23 +1454,71 @@ function removeMiningEntry(id){
   state.mining = state.mining.filter(m=>m.id!==id);
   saveState(); renderMining();
 }
+function updateMiningField(id, field, value){
+  const item = state.mining.find(m=>m.id===id);
+  if(!item) return;
+  if(field==='anuncios'){
+    const newVal = Number(value)||0;
+    if(newVal !== item.anuncios){
+      if(!item.history) item.history = [];
+      item.history.push({date:new Date().toLocaleDateString('pt-BR'), anuncios:newVal});
+    }
+    item.anuncios = newVal;
+  } else {
+    item[field] = value;
+  }
+  saveState(); renderMining();
+}
+function toggleMiningHistory(id){
+  const el = document.getElementById('mining-hist-'+id);
+  if(el) el.classList.toggle('open');
+}
 function renderMining(){
   const el = document.getElementById('miningList');
   if(!el) return;
   if(state.mining.length===0){ el.innerHTML = '<div class="empty">nenhuma oferta minerada ainda.</div>'; return; }
-  el.innerHTML = state.mining.map(m=>`
-    <div class="mining-card">
-      <div class="mining-head">
-        <span class="mining-name">${escapeHtml(m.nome)}</span>
-        ${m.pagina ? `<span class="mining-nicho">📄 ${escapeHtml(m.pagina)}</span>` : ''}
-        ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
-        ${m.anuncios ? `<span class="mining-ads">${m.anuncios} anúncios ativos</span>` : ''}
+  el.innerHTML = state.mining.map(m=>{
+    const history = m.history || [];
+    const historyHtml = history.length===0 ? '<div class="empty" style="padding:4px 0;">sem histórico ainda.</div>' :
+      [...history].reverse().map(h=>`<div class="mining-history-entry"><span class="hd">${h.date}</span><span class="hv">${h.anuncios} anúncios ativos</span></div>`).join('');
+    return `
+    <div class="mining-card" data-id="${m.id}">
+      <div class="mining-top">
+        <div class="mining-fields">
+          <div class="mining-field">
+            <label>nome do produto/oferta</label>
+            <input type="text" value="${escapeHtml(m.nome)}" onchange="updateMiningField('${m.id}','nome',this.value)">
+          </div>
+          <div class="mining-field">
+            <label>nome da página</label>
+            <input type="text" value="${escapeHtml(m.pagina||'')}" onchange="updateMiningField('${m.id}','pagina',this.value)">
+          </div>
+          <div class="mining-field">
+            <label>nicho</label>
+            <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
+          </div>
+          <div class="mining-field">
+            <label>anúncios ativos</label>
+            <input type="number" value="${m.anuncios||''}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
+          </div>
+          <div class="mining-field mining-field-full">
+            <label>link da biblioteca de anúncios</label>
+            <input type="text" value="${escapeHtml(m.link||'')}" onchange="updateMiningField('${m.id}','link',this.value)">
+          </div>
+          <div class="mining-field mining-field-full">
+            <label>descrição</label>
+            <textarea oninput="autoGrow(this)" onchange="updateMiningField('${m.id}','descricao',this.value)">${escapeHtml(m.descricao||'')}</textarea>
+          </div>
+        </div>
         <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
       </div>
-      ${m.descricao ? `<div class="mining-desc">${escapeHtml(m.descricao)}</div>` : ''}
-      ${m.link ? `<a class="mining-link" href="${escapeHtml(m.link)}" target="_blank">${escapeHtml(m.link)}</a>` : ''}
-    </div>
-  `).join('');
+      <div class="mining-history">
+        <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📈 histórico de anúncios (${history.length}) ▾</button>
+        <div class="mining-history-list" id="mining-hist-${m.id}">${historyHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>growAllTextareas('miningList'), 0);
 }
 
 /* ---------- RESUMO DO MÊS (home) ---------- */
@@ -1765,6 +1916,7 @@ function render(){
   renderChecklist();
   renderProducts();
   renderMining();
+  renderVideos();
   renderPlanner();
   renderResumoMes();
   updateTopStats();
