@@ -679,6 +679,7 @@
         <div id="miningList"></div>
         <div class="add-row" style="flex-wrap:wrap;">
           <input type="text" id="miningNome" placeholder="nome do produto/oferta">
+          <input type="text" id="miningPagina" placeholder="nome da página">
           <input type="text" id="miningNicho" placeholder="nicho (ex: emagrecimento, finanças)">
           <input type="number" id="miningAnuncios" placeholder="qtd anúncios ativos">
           <input type="text" id="miningLink" placeholder="link da biblioteca de anúncios (Meta)">
@@ -1335,13 +1336,14 @@ function renderProducts(){
 /* ---------- MINERAÇÃO DE OFERTAS ---------- */
 function addMiningEntry(){
   const nome = document.getElementById('miningNome');
+  const pagina = document.getElementById('miningPagina').value;
   const nicho = document.getElementById('miningNicho').value;
   const anuncios = document.getElementById('miningAnuncios').value;
   const link = document.getElementById('miningLink').value;
   const descricao = document.getElementById('miningDescricao').value;
   if(!nome.value.trim()) return;
-  state.mining.push({id:uid(), nome:nome.value.trim(), nicho, anuncios:Number(anuncios)||0, link, descricao});
-  nome.value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
+  state.mining.push({id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios:Number(anuncios)||0, link, descricao});
+  nome.value=''; document.getElementById('miningPagina').value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
   document.getElementById('miningLink').value=''; document.getElementById('miningDescricao').value='';
   saveState(); renderMining();
 }
@@ -1357,6 +1359,7 @@ function renderMining(){
     <div class="mining-card">
       <div class="mining-head">
         <span class="mining-name">${escapeHtml(m.nome)}</span>
+        ${m.pagina ? `<span class="mining-nicho">📄 ${escapeHtml(m.pagina)}</span>` : ''}
         ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
         ${m.anuncios ? `<span class="mining-ads">${m.anuncios} anúncios ativos</span>` : ''}
         <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
