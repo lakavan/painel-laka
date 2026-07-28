@@ -92,6 +92,31 @@
   /* ---------- PANELS ---------- */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   @media(max-width:800px){.grid{grid-template-columns:1fr;}}
+  .today-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:16px;}
+  .today-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+  .today-head .eyebrow{margin:0;}
+  .today-head .tdate{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  @media(max-width:800px){.today-stats{grid-template-columns:1fr 1fr;}}
+  .today-stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;}
+  .today-stat .l{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
+  .today-stat .v{font-family:var(--display);font-size:20px;font-weight:700;}
+  .today-stat .v.pos{color:var(--ok);}
+  .today-stat .v.neg{color:var(--neg);}
+  .today-stat .v.lime{color:var(--lime);}
+  .op-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+  @media(max-width:800px){.op-summary{grid-template-columns:1fr 1fr;}}
+  .op-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color .15s,transform .1s;}
+  .op-card:hover{border-color:var(--border-strong);transform:translateY(-1px);}
+  .op-card .n{font-family:var(--mono);font-size:22px;font-weight:700;}
+  .op-card .l{font-size:11px;color:var(--muted);margin-top:2px;}
+  .op-card.crit .n{color:var(--urgent);}
+  .op-card.warn .n{color:var(--warn);}
+  .op-card.ok .n{color:var(--ok);}
+  .op-card.info .n{color:var(--violet);}
+  .finance-grid{display:grid;grid-template-columns:2.1fr 1fr;gap:16px;align-items:start;}
+  .finance-grid .costs-panel{position:sticky;top:16px;}
+  @media(max-width:1000px){.finance-grid{grid-template-columns:1fr;} .finance-grid .costs-panel{position:static;}}
   .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.18);transition:border-color .2s;}
   .panel:hover{border-color:var(--border-strong);}
   .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
@@ -345,7 +370,13 @@
   .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted);}
   .mining-ads{font-family:var(--mono);font-size:11px;color:var(--lime);margin-left:auto;}
   .mining-desc{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
-  .mining-link{font-size:11.5px;color:var(--violet);word-break:break-all;}
+  .mining-link{font-size:11.5px;color:var(--violet);word-break:break-all;display:block;margin-bottom:8px;}
+  .mining-sub{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-bottom:6px;}
+  .mining-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+  .mining-chip{font-family:var(--mono);font-size:10.5px;background:var(--violet-soft);color:var(--violet);border-radius:6px;padding:3px 8px;}
+  .mining-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:2px;}
+  .mining-edit-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10.5px;border-radius:6px;padding:4px 9px;cursor:pointer;}
+  .mining-edit-btn:hover{border-color:var(--violet);color:var(--violet);}
   .asset-tipo{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;white-space:nowrap;}
   .asset-name{flex:1;font-size:13.5px;}
 
@@ -465,6 +496,16 @@
       </div>
       <span class="onvio-arrow">→</span>
     </div>
+
+    <div class="today-panel">
+      <div class="today-head">
+        <div class="eyebrow">tráfego direto • infoprodutos</div>
+        <div class="tdate" id="todayDate">—</div>
+      </div>
+      <div class="today-stats" id="todayStats"></div>
+    </div>
+
+    <div class="op-summary" id="opSummary"></div>
 
     <div class="resumo-mes">
       <div>
@@ -624,52 +665,54 @@
     </div>
 
     <div class="tab-view" id="financeView">
-      <div class="panel full">
-        <div class="panel-head">
-          <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
+      <div class="finance-grid">
+        <div class="panel full">
+          <div class="panel-head">
+            <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
+          </div>
+
+          <div class="month-nav">
+            <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+            <div class="month-label" id="monthLabel">—</div>
+            <button class="nav-btn" onclick="changeMonth(1)">›</button>
+          </div>
+
+          <div class="month-summary" id="monthSummary"></div>
+
+          <div class="fin-table-wrap">
+            <table class="fin-table">
+              <thead><tr>
+                <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
+                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th><th></th>
+              </tr></thead>
+              <tbody id="finTableBody"></tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="month-nav">
-          <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-          <div class="month-label" id="monthLabel">—</div>
-          <button class="nav-btn" onclick="changeMonth(1)">›</button>
-        </div>
-
-        <div class="month-summary" id="monthSummary"></div>
-
-        <div class="fin-table-wrap">
-          <table class="fin-table">
-            <thead><tr>
-              <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
-              <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th></th>
-            </tr></thead>
-            <tbody id="finTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="panel full">
-        <div class="panel-head">
-          <h2><span class="sub">o que sai todo mês, independente de faturar ou não</span>Custos fixos da operação</h2>
-          <div class="panel-total" id="costTotal">—</div>
-        </div>
-        <div id="costsList"></div>
-        <div class="add-row">
-          <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
-          <input type="number" id="costAmount" placeholder="R$ 0,00">
-          <select id="costFreq">
-            <option value="mensal">mensal</option>
-            <option value="anual">anual</option>
-            <option value="variavel">variável</option>
-          </select>
-          <select id="costCat">
-            <option value="ferramenta">ferramenta</option>
-            <option value="imposto">imposto</option>
-            <option value="contabilidade">contabilidade</option>
-            <option value="hospedagem">hospedagem</option>
-            <option value="outro">outro</option>
-          </select>
-          <button class="add" onclick="addCost()">+ add</button>
+        <div class="panel full costs-panel">
+          <div class="panel-head">
+            <h2><span class="sub">o que sai todo mês, independente de faturar ou não</span>Custos fixos</h2>
+            <div class="panel-total" id="costTotal">—</div>
+          </div>
+          <div id="costsList"></div>
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
+            <input type="number" id="costAmount" placeholder="R$ 0,00">
+            <select id="costFreq">
+              <option value="mensal">mensal</option>
+              <option value="anual">anual</option>
+              <option value="variavel">variável</option>
+            </select>
+            <select id="costCat">
+              <option value="ferramenta">ferramenta</option>
+              <option value="imposto">imposto</option>
+              <option value="contabilidade">contabilidade</option>
+              <option value="hospedagem">hospedagem</option>
+              <option value="outro">outro</option>
+            </select>
+            <button class="add" onclick="addCost()">+ add</button>
+          </div>
         </div>
       </div>
     </div>
@@ -733,6 +776,8 @@
           <input type="text" id="miningPagina" placeholder="nome da página">
           <input type="text" id="miningNicho" placeholder="nicho (ex: emagrecimento, finanças)">
           <input type="number" id="miningAnuncios" placeholder="qtd anúncios ativos">
+          <input type="number" id="miningTicket" placeholder="ticket do produto (R$)">
+          <input type="text" id="miningCheckout" placeholder="checkout usado (ex: Kirvano)">
           <input type="text" id="miningLink" placeholder="link da biblioteca de anúncios (Meta)">
         </div>
         <div class="add-row">
@@ -1433,20 +1478,28 @@ function renderVideos(){
 }
 
 /* ---------- MINERAÇÃO DE OFERTAS ---------- */
+let miningEditingId = null;
+function toggleMiningEdit(id){
+  miningEditingId = (miningEditingId===id) ? null : id;
+  renderMining();
+}
 function addMiningEntry(){
   const nome = document.getElementById('miningNome');
   const pagina = document.getElementById('miningPagina').value;
   const nicho = document.getElementById('miningNicho').value;
   const anuncios = Number(document.getElementById('miningAnuncios').value)||0;
+  const ticket = Number(document.getElementById('miningTicket').value)||0;
+  const checkout = document.getElementById('miningCheckout').value;
   const link = document.getElementById('miningLink').value;
   const descricao = document.getElementById('miningDescricao').value;
   if(!nome.value.trim()) return;
   const today = new Date().toLocaleDateString('pt-BR');
   state.mining.push({
-    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, link, descricao,
+    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, checkout, link, descricao,
     history: anuncios ? [{date:today, anuncios}] : []
   });
   nome.value=''; document.getElementById('miningPagina').value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
+  document.getElementById('miningTicket').value=''; document.getElementById('miningCheckout').value='';
   document.getElementById('miningLink').value=''; document.getElementById('miningDescricao').value='';
   saveState(); renderMining();
 }
@@ -1481,41 +1534,78 @@ function renderMining(){
     const history = m.history || [];
     const historyHtml = history.length===0 ? '<div class="empty" style="padding:4px 0;">sem histórico ainda.</div>' :
       [...history].reverse().map(h=>`<div class="mining-history-entry"><span class="hd">${h.date}</span><span class="hv">${h.anuncios} anúncios ativos</span></div>`).join('');
-    return `
-    <div class="mining-card" data-id="${m.id}">
-      <div class="mining-top">
-        <div class="mining-fields">
-          <div class="mining-field">
-            <label>nome do produto/oferta</label>
-            <input type="text" value="${escapeHtml(m.nome)}" onchange="updateMiningField('${m.id}','nome',this.value)">
-          </div>
-          <div class="mining-field">
-            <label>nome da página</label>
-            <input type="text" value="${escapeHtml(m.pagina||'')}" onchange="updateMiningField('${m.id}','pagina',this.value)">
-          </div>
-          <div class="mining-field">
-            <label>nicho</label>
-            <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
-          </div>
-          <div class="mining-field">
-            <label>anúncios ativos</label>
-            <input type="number" value="${m.anuncios||''}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
-          </div>
-          <div class="mining-field mining-field-full">
-            <label>link da biblioteca de anúncios</label>
-            <input type="text" value="${escapeHtml(m.link||'')}" onchange="updateMiningField('${m.id}','link',this.value)">
-          </div>
-          <div class="mining-field mining-field-full">
-            <label>descrição</label>
-            <textarea oninput="autoGrow(this)" onchange="updateMiningField('${m.id}','descricao',this.value)">${escapeHtml(m.descricao||'')}</textarea>
-          </div>
-        </div>
-        <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
-      </div>
+    const historyBlock = `
       <div class="mining-history">
         <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📈 histórico de anúncios (${history.length}) ▾</button>
         <div class="mining-history-list" id="mining-hist-${m.id}">${historyHtml}</div>
+      </div>`;
+
+    if(miningEditingId === m.id){
+      return `
+      <div class="mining-card" data-id="${m.id}">
+        <div class="mining-top">
+          <div class="mining-fields">
+            <div class="mining-field">
+              <label>nome do produto/oferta</label>
+              <input type="text" value="${escapeHtml(m.nome)}" onchange="updateMiningField('${m.id}','nome',this.value)">
+            </div>
+            <div class="mining-field">
+              <label>nome da página</label>
+              <input type="text" value="${escapeHtml(m.pagina||'')}" onchange="updateMiningField('${m.id}','pagina',this.value)">
+            </div>
+            <div class="mining-field">
+              <label>nicho</label>
+              <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
+            </div>
+            <div class="mining-field">
+              <label>anúncios ativos</label>
+              <input type="number" value="${m.anuncios||''}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
+            </div>
+            <div class="mining-field">
+              <label>ticket do produto</label>
+              <input type="number" value="${m.ticket||''}" placeholder="R$" onchange="updateMiningField('${m.id}','ticket',this.value)">
+            </div>
+            <div class="mining-field">
+              <label>checkout usado</label>
+              <input type="text" value="${escapeHtml(m.checkout||'')}" placeholder="ex: Kirvano, Hotmart" onchange="updateMiningField('${m.id}','checkout',this.value)">
+            </div>
+            <div class="mining-field mining-field-full">
+              <label>link da biblioteca de anúncios</label>
+              <input type="text" value="${escapeHtml(m.link||'')}" onchange="updateMiningField('${m.id}','link',this.value)">
+            </div>
+            <div class="mining-field mining-field-full">
+              <label>descrição</label>
+              <textarea oninput="autoGrow(this)" onchange="updateMiningField('${m.id}','descricao',this.value)">${escapeHtml(m.descricao||'')}</textarea>
+            </div>
+          </div>
+          <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
+        </div>
+        <div class="mining-actions">
+          <button class="mining-edit-btn" onclick="toggleMiningEdit('${m.id}')">✓ concluir edição</button>
+        </div>
+        ${historyBlock}
+      </div>`;
+    }
+
+    return `
+    <div class="mining-card" data-id="${m.id}">
+      <div class="mining-head">
+        <span class="mining-name">${escapeHtml(m.nome)}</span>
+        ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
+        <span class="mining-ads">${m.anuncios||0} anúncios ativos</span>
       </div>
+      ${m.pagina ? `<div class="mining-sub">página: ${escapeHtml(m.pagina)}</div>` : ''}
+      <div class="mining-meta-row">
+        ${m.ticket ? `<span class="mining-chip">🎟 ticket ${brl(m.ticket)}</span>` : ''}
+        ${m.checkout ? `<span class="mining-chip">💳 ${escapeHtml(m.checkout)}</span>` : ''}
+      </div>
+      ${m.descricao ? `<div class="mining-desc">${escapeHtml(m.descricao)}</div>` : ''}
+      ${m.link ? `<a class="mining-link" href="${escapeHtml(m.link)}" target="_blank" rel="noopener">${escapeHtml(m.link)}</a>` : ''}
+      <div class="mining-actions">
+        <button class="mining-edit-btn" onclick="toggleMiningEdit('${m.id}')">✎ editar</button>
+        <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
+      </div>
+      ${historyBlock}
     </div>`;
   }).join('');
   setTimeout(()=>growAllTextareas('miningList'), 0);
@@ -1620,7 +1710,7 @@ function changeMonth(delta){
   ensureMonth(state.finance.currentMonth);
   saveState();
   renderFinanceTable();
-  renderResumoMes();
+  renderResumoMes(); renderTodayPanel();
 }
 
 function getDay(monthObj, day){
@@ -1636,7 +1726,7 @@ function handleDayChange(day, field, value){
   updateRowComputed(day);
   updateMonthSummary();
   updateTopStats();
-  renderResumoMes();
+  renderResumoMes(); renderTodayPanel();
 }
 
 function updateRowComputed(day){
@@ -1649,12 +1739,17 @@ function updateRowComputed(day){
   const margem = fat>0 ? (lucro/fat*100) : null;
   const lucroCell = document.getElementById('lucro-'+day);
   const margemCell = document.getElementById('margem-'+day);
+  const roasCell = document.getElementById('roas-'+day);
   if(lucroCell){
     lucroCell.innerText = brl(lucro);
     lucroCell.className = 'fin-num ' + (lucro>=0?'pos':'neg');
   }
   if(margemCell){
     margemCell.innerText = margem===null ? '—' : margem.toFixed(1)+'%';
+  }
+  if(roasCell){
+    const roas = gasto>0 ? (fat/gasto) : null;
+    roasCell.innerText = roas===null ? '—' : roas.toFixed(2)+'x';
   }
 }
 
@@ -1727,15 +1822,14 @@ function recalcGatewaySum(day){
   updateRowComputed(day);
   updateMonthSummary();
   updateTopStats();
-  renderResumoMes();
+  renderResumoMes(); renderTodayPanel();
 }
 
 /* ---------- GASTO POR CONTA/FONTE (texto livre) ---------- */
 function adSpendRowsHtml(day, spends){
   const rows = spends.map((s,idx)=>`
     <div class="gateway-row">
-      <input type="text" value="${escapeHtml(s.fonte||'')}" placeholder="fonte de tráfego (ex: Meta Ads)" onchange="updateAdSpendField(${day},${idx},'fonte',this.value)" style="flex:1;min-width:110px;">
-      <input type="text" value="${escapeHtml(s.conta||'')}" placeholder="conta de anúncio" onchange="updateAdSpendField(${day},${idx},'conta',this.value)" style="flex:1;min-width:110px;">
+      <input type="text" value="${escapeHtml(s.conta||'')}" placeholder="conta de anúncio (ex: Conta 1)" onchange="updateAdSpendField(${day},${idx},'conta',this.value)" style="flex:1;min-width:150px;">
       <input type="number" value="${s.valor||''}" placeholder="R$" onchange="updateAdSpendField(${day},${idx},'valor',this.value)">
       <button class="del-btn" onclick="removeAdSpendRow(${day},${idx})">✕</button>
     </div>
@@ -1753,7 +1847,7 @@ function addAdSpendRow(day){
   const monthObj = ensureMonth(state.finance.currentMonth);
   const d = getDay(monthObj, day);
   if(!d.adSpends) d.adSpends = [];
-  d.adSpends.push({fonte:'', conta:'', valor:0});
+  d.adSpends.push({conta:'', valor:0});
   monthObj.days[day] = d;
   saveState();
   renderAdSpendDetail(day);
@@ -1788,7 +1882,7 @@ function recalcAdSpendSum(day){
   updateRowComputed(day);
   updateMonthSummary();
   updateTopStats();
-  renderResumoMes();
+  renderResumoMes(); renderTodayPanel();
 }
 
 function renderFinanceTable(){
@@ -1802,12 +1896,14 @@ function renderFinanceTable(){
     const d = getDay(monthObj, day);
     const lucro = d.faturamento - d.gasto;
     const margem = d.faturamento>0 ? (lucro/d.faturamento*100) : null;
+    const roas = d.gasto>0 ? (d.faturamento/d.gasto) : null;
     rows += `<tr data-day="${day}">
       <td style="font-family:var(--mono);color:var(--muted);">${day}</td>
       <td class="fin-num"><input class="day-cell-input" type="number" id="gasto-${day}" value="${d.gasto||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'gasto',this.value)"></td>
       <td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
+      <td class="fin-num" id="roas-${day}">${roas===null?'—':roas.toFixed(2)+'x'}</td>
       <td style="white-space:nowrap;">
         <button class="detail-btn" onclick="toggleDetail('gasto',${day})">contas ▾</button>
         <button class="detail-btn" onclick="toggleDetail('fat',${day})">gateways ▾</button>
@@ -1815,14 +1911,14 @@ function renderFinanceTable(){
     </tr>
     <tr class="detail-row" id="detail-gasto-${day}" style="display:none;">
       <td></td>
-      <td colspan="5">
-        <label class="field-label">detalhar gasto por fonte de tráfego e conta de anúncio</label>
+      <td colspan="6">
+        <label class="field-label">detalhar gasto por conta de anúncio</label>
         <div id="adspends-${day}">${adSpendRowsHtml(day, d.adSpends||[])}</div>
       </td>
     </tr>
     <tr class="detail-row" id="detail-fat-${day}" style="display:none;">
       <td></td>
-      <td colspan="5">
+      <td colspan="6">
         <label class="field-label">detalhar faturamento por gateway de pagamento</label>
         <div id="gateways-${day}">${gatewayRowsHtml(day, d.gateways||[])}</div>
       </td>
@@ -1856,7 +1952,7 @@ function updateImposto(value){
   saveState();
   updateMonthSummary();
   updateTopStats();
-  renderResumoMes();
+  renderResumoMes(); renderTodayPanel();
 }
 
 function monthLucroReal(key){
@@ -1883,6 +1979,56 @@ function addLog(){
   if(!input.value.trim()) return;
   state.logs.unshift({id:uid(), text:input.value.trim(), type, date:new Date().toLocaleDateString('pt-BR')});
   input.value=''; saveState(); render();
+}
+
+function scrollToPanel(id){
+  switchTab('home');
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 50);
+}
+
+function renderTodayPanel(){
+  const now = new Date();
+  const day = now.getDate();
+  const monthKey = currentMonthKey();
+  const monthObj = state.finance.months[monthKey];
+  const d = monthObj ? getDay(monthObj, day) : {gasto:0, faturamento:0};
+  const gasto = Number(d.gasto||0);
+  const fat = Number(d.faturamento||0);
+  const lucro = fat - gasto;
+  const roi = gasto>0 ? (fat/gasto) : null;
+  document.getElementById('todayDate').innerText = 'Hoje: ' + now.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+  document.getElementById('todayStats').innerHTML = `
+    <div class="today-stat"><div class="l">Gasto hoje</div><div class="v">${brl(gasto)}</div></div>
+    <div class="today-stat"><div class="l">Faturamento hoje</div><div class="v lime">${brl(fat)}</div></div>
+    <div class="today-stat"><div class="l">Lucro hoje</div><div class="v ${lucro>=0?'pos':'neg'}">${brl(lucro)}</div></div>
+    <div class="today-stat"><div class="l">ROI hoje</div><div class="v">${roi===null?'—':roi.toFixed(2)+'x'}</div></div>
+  `;
+}
+
+function renderOpSummary(){
+  const urgentPending = state.tasks.filter(t=>t.priority==='urgente' && t.status!=='done').length;
+  const validando = state.offers.filter(o=>o.status==='pending').length;
+  const escalando = state.offers.filter(o=>o.status==='done').length;
+  const infraProblemas = state.infra.filter(i=>i.status==='blocked').length;
+  const el = document.getElementById('opSummary');
+  if(!el) return;
+  el.innerHTML = `
+    <div class="op-card ${urgentPending>0?'crit':'ok'}" onclick="scrollToPanel('urgentList')">
+      <div class="n">${urgentPending}</div><div class="l">⚠ urgências</div>
+    </div>
+    <div class="op-card warn" onclick="scrollToPanel('offersList')">
+      <div class="n">${validando}</div><div class="l">🟡 ofertas validando</div>
+    </div>
+    <div class="op-card ok" onclick="scrollToPanel('offersList')">
+      <div class="n">${escalando}</div><div class="l">🟢 escalando</div>
+    </div>
+    <div class="op-card ${infraProblemas>0?'crit':'ok'}" onclick="scrollToPanel('infraList')">
+      <div class="n">${infraProblemas}</div><div class="l">🏗 infraestrutura</div>
+    </div>
+  `;
 }
 
 function updateTopStats(){
@@ -1919,6 +2065,8 @@ function render(){
   renderVideos();
   renderPlanner();
   renderResumoMes();
+  renderTodayPanel();
+  renderOpSummary();
   updateTopStats();
 }
 
