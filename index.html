@@ -406,8 +406,8 @@
   .video-del{position:absolute;top:6px;right:6px;background:rgba(13,11,20,0.7);border:none;color:var(--text);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;z-index:2;}
   .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
   .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
-  .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted);}
-  .mining-ads{font-family:var(--mono);font-size:11px;color:var(--lime);margin-left:auto;}
+  .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:2px 7px;color:var(--violet);}
+  .mining-ads-highlight{font-family:var(--mono);font-weight:800;font-size:15px;color:var(--lime);margin-left:auto;}
   .mining-desc{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
   .mining-link{font-size:11.5px;color:var(--violet);word-break:break-all;display:inline-block;margin-bottom:0;}
   .mining-links{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
@@ -418,13 +418,6 @@
   .mining-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:2px;}
   .mining-edit-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10.5px;border-radius:6px;padding:4px 9px;cursor:pointer;}
   .mining-edit-btn:hover{border-color:var(--violet);color:var(--violet);}
-  .mining-stats-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-  .mining-stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;min-width:100px;flex:1;}
-  .mining-stat-box .l{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
-  .mining-stat-box .v{font-family:var(--display);font-weight:700;font-size:17px;}
-  .mining-stat-box .v.small{font-size:13px;font-weight:600;}
-  .mining-stat-box.highlight{background:rgba(198,255,61,0.10);border-color:rgba(198,255,61,0.35);}
-  .mining-stat-box.highlight .v{color:var(--lime);}
   .asset-tipo{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;white-space:nowrap;}
   .asset-name{flex:1;font-size:13.5px;}
 
@@ -520,7 +513,6 @@
       <div class="eyebrow">painel de operação</div>
       <h1>Tráfego direto · Infoproduto</h1>
     </div>
-    <div class="stats" id="statsRow"></div>
   </div>
 
   <div id="loading" class="loading">carregando dados...</div>
@@ -540,7 +532,7 @@
       <span>📄</span>
       <div>
         <div class="onvio-title">Portal do Escritório Palombo (Onvio)</div>
-        <div class="onvio-sub">impostos, guias e documentos da empresa</div>
+        <div class="onvio-sub">impostos, guias e documentos da empresa • ⏰ abrir todos os dias 05, 10, 15, 20 do mês!</div>
       </div>
       <span class="onvio-arrow">→</span>
     </div>
@@ -555,32 +547,8 @@
 
     <div class="op-summary" id="opSummary"></div>
 
-    <div class="chart-row">
+    <div class="row-three" id="urgentPanel">
       <div class="panel">
-        <div class="panel-head">
-          <h2><span class="sub">evolução diária — gasto, faturamento e lucro</span>Resumo do mês</h2>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-            <span class="month-select" id="resumoMesLabel">—</span>
-            <button class="nav-btn" onclick="changeMonth(1)">›</button>
-          </div>
-        </div>
-        <div class="panel-stats-row">
-          <div class="pstat"><div class="l">investido</div><div class="v" id="resumoInvestido">R$ 0,00</div></div>
-          <div class="pstat"><div class="l">faturamento</div><div class="v lime" id="resumoRetornou">R$ 0,00</div></div>
-          <div class="pstat"><div class="l">lucro</div><div class="v" id="resumoLucro">R$ 0,00</div></div>
-          <div class="pstat"><div class="l">roi</div><div class="v" id="resumoRoi">—</div></div>
-        </div>
-        <div class="chart-legend">
-          <span><span class="dot" style="background:#3ADC8C;"></span>Faturamento</span>
-          <span><span class="dot" style="background:#8B5CF6;"></span>Gasto</span>
-          <span><span class="dot" style="background:#F5A623;"></span>Lucro</span>
-        </div>
-        <div id="resumoMesChart"></div>
-        <button class="goto-btn" onclick="switchTab('finance')" style="margin-top:10px;">ver detalhes ›</button>
-      </div>
-
-      <div class="panel" id="urgentPanel">
         <div class="panel-head"><h2>Urgências</h2></div>
         <div id="urgentList"></div>
         <div class="add-row">
@@ -588,10 +556,7 @@
           <button class="add" onclick="addTask('urgente')">+ add</button>
         </div>
       </div>
-    </div>
-
-    <div class="grid" id="offersPanel">
-      <div class="panel">
+      <div class="panel" id="offersPanel">
         <div class="panel-head"><h2>Ofertas em foco</h2></div>
         <div id="offersList"></div>
         <div class="add-row">
@@ -658,28 +623,6 @@
     </div>
 
     <div class="panel full">
-      <div class="panel-head">
-        <h2><span class="sub">acompanhe o mês inteiro num relance</span>Desempenho do mês</h2>
-      </div>
-      <div class="chart-row">
-        <div>
-          <div class="chart-legend">
-            <span><span class="dot" style="background:#3ADC8C;"></span>Faturamento</span>
-            <span><span class="dot" style="background:#8B5CF6;"></span>Gasto</span>
-            <span><span class="dot" style="background:#F5A623;"></span>Lucro</span>
-          </div>
-          <div id="desempenhoMesChart"></div>
-        </div>
-        <div class="donut-legend" style="justify-content:center;">
-          <div class="pstat"><div class="l">investimento total</div><div class="v" id="desInvestido">R$ 0,00</div></div>
-          <div class="pstat"><div class="l">faturamento total</div><div class="v lime" id="desFaturamento">R$ 0,00</div></div>
-          <div class="pstat"><div class="l">lucro total</div><div class="v" id="desLucro">R$ 0,00</div></div>
-          <div class="pstat"><div class="l">roi médio</div><div class="v" id="desRoi">—</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel full">
       <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
       <div class="planner-focus">
         <label class="field-label">foco da semana</label>
@@ -699,35 +642,19 @@
       </div>
     </div>
 
-    <div class="grid">
-      <div class="panel">
-        <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
-        <div id="phonesList"></div>
-        <div class="add-row">
-          <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
-          <input type="text" id="phoneProduto" placeholder="produto/uso">
-          <select id="phoneStatus">
-            <option value="ativo">ativo</option>
-            <option value="atencao">atenção</option>
-            <option value="queimado">queimado</option>
-          </select>
-          <button class="add" onclick="addPhone()">+ add</button>
-        </div>
+    <div class="panel full" id="infraPanel">
+      <div class="panel-head"><h2>Infraestrutura</h2></div>
+      <div id="infraList"></div>
+      <div class="add-row">
+        <input type="text" id="infraInput" placeholder="ex: BM 2 - verificação">
+        <select id="infraStatus">
+          <option value="pending">atenção</option>
+          <option value="done">ok</option>
+          <option value="blocked">bloqueado</option>
+        </select>
+        <button class="add" onclick="addInfra()">+ add</button>
       </div>
-
-      <div class="panel" id="infraPanel">
-        <div class="panel-head"><h2>Infraestrutura</h2></div>
-        <div id="infraList"></div>
-        <div class="add-row">
-          <input type="text" id="infraInput" placeholder="ex: BM 2 - verificação">
-          <select id="infraStatus">
-            <option value="pending">atenção</option>
-            <option value="done">ok</option>
-            <option value="blocked">bloqueado</option>
-          </select>
-          <button class="add" onclick="addInfra()">+ add</button>
-        </div>
-      </div>
+    </div>
 
       <div class="panel full">
         <div class="panel-head"><h2>Diário da operação</h2></div>
@@ -743,7 +670,6 @@
           </div>
         </div>
       </div>
-    </div>
 
     </div>
 
@@ -766,7 +692,7 @@
             <table class="fin-table">
               <thead><tr>
                 <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
-                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th><th></th>
+                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
               </tr></thead>
               <tbody id="finTableBody"></tbody>
             </table>
@@ -842,6 +768,21 @@
         </div>
 
         <div class="panel full">
+          <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
+          <div id="phonesList"></div>
+          <div class="add-row">
+            <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
+            <input type="text" id="phoneProduto" placeholder="produto/uso">
+            <select id="phoneStatus">
+              <option value="ativo">ativo</option>
+              <option value="atencao">atenção</option>
+              <option value="queimado">queimado</option>
+            </select>
+            <button class="add" onclick="addPhone()">+ add</button>
+          </div>
+        </div>
+
+        <div class="panel full">
           <div class="panel-head"><h2><span class="sub">🛡️ cada card é uma objeção diferente — nomeia, descreve, e monta a resposta em variações</span>Quebra de objeções</h2></div>
           <div id="objectionsStepsList" class="funnel-wrap"></div>
           <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
@@ -869,6 +810,7 @@
           <div class="add-row" style="flex-wrap:wrap;">
             <input type="text" id="miningLink" placeholder="link da biblioteca de anúncios (Meta)" style="flex:1;min-width:220px;">
             <input type="text" id="miningFunil" placeholder="link do funil/página de vendas" style="flex:1;min-width:220px;">
+            <input type="text" id="miningCheckoutLink" placeholder="link do checkout" style="flex:1;min-width:220px;">
           </div>
           <div class="add-row">
             <textarea id="miningDescricao" placeholder="descrição breve do produto/oferta..." style="flex:1;"></textarea>
@@ -1688,17 +1630,18 @@ function addMiningEntry(){
   const checkout = document.getElementById('miningCheckout').value;
   const link = document.getElementById('miningLink').value;
   const funil = document.getElementById('miningFunil').value;
+  const checkoutLink = document.getElementById('miningCheckoutLink').value;
   const descricao = document.getElementById('miningDescricao').value;
   const observacao = document.getElementById('miningObservacao').value;
   if(!nome.value.trim()) return;
   const today = new Date().toLocaleDateString('pt-BR');
   state.mining.push({
-    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, checkout, link, funil, descricao, observacao,
+    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, checkout, link, funil, checkoutLink, descricao, observacao,
     history: anuncios ? [{date:today, anuncios}] : []
   });
   nome.value=''; document.getElementById('miningPagina').value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
   document.getElementById('miningTicket').value=''; document.getElementById('miningCheckout').value='';
-  document.getElementById('miningLink').value=''; document.getElementById('miningFunil').value='';
+  document.getElementById('miningLink').value=''; document.getElementById('miningFunil').value=''; document.getElementById('miningCheckoutLink').value='';
   document.getElementById('miningDescricao').value=''; document.getElementById('miningObservacao').value='';
   toggleNewMiningForm(false);
   saveState(); renderMining();
@@ -1781,6 +1724,10 @@ function renderMining(){
               <input type="text" value="${escapeHtml(m.funil||'')}" onchange="updateMiningField('${m.id}','funil',this.value)">
             </div>
             <div class="mining-field mining-field-full">
+              <label>link do checkout</label>
+              <input type="text" value="${escapeHtml(m.checkoutLink||'')}" onchange="updateMiningField('${m.id}','checkoutLink',this.value)">
+            </div>
+            <div class="mining-field mining-field-full">
               <label>descrição</label>
               <textarea oninput="autoGrow(this)" onchange="updateMiningField('${m.id}','descricao',this.value)">${escapeHtml(m.descricao||'')}</textarea>
             </div>
@@ -1803,22 +1750,11 @@ function renderMining(){
       <div class="mining-head">
         <span class="mining-name">${escapeHtml(m.nome)}</span>
         ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
+        <span class="mining-ads-highlight">${m.anuncios||0} anúncios ativos</span>
       </div>
-      <div class="mining-stats-row">
-        <div class="mining-stat-box">
-          <div class="l">página</div>
-          <div class="v small">${m.pagina ? escapeHtml(m.pagina) : '—'}</div>
-        </div>
-        <div class="mining-stat-box">
-          <div class="l">anúncios ativos</div>
-          <div class="v">${m.anuncios||0}</div>
-        </div>
-        <div class="mining-stat-box highlight">
-          <div class="l">ticket do produto</div>
-          <div class="v">${m.ticket ? brl(m.ticket) : '—'}</div>
-        </div>
-      </div>
+      ${m.pagina ? `<div class="mining-sub">página: ${escapeHtml(m.pagina)}</div>` : ''}
       <div class="mining-meta-row">
+        ${m.ticket ? `<span class="mining-chip">🎟 ${brl(m.ticket)}</span>` : ''}
         ${m.checkout ? `<span class="mining-chip">💳 ${escapeHtml(m.checkout)}</span>` : ''}
       </div>
       ${m.observacao ? `<div class="mining-obs">⚠ ${escapeHtml(m.observacao)}</div>` : ''}
@@ -1826,6 +1762,7 @@ function renderMining(){
       <div class="mining-links">
         ${m.link ? `<a class="mining-link" href="${escapeHtml(m.link)}" target="_blank" rel="noopener">📚 biblioteca de anúncios</a>` : ''}
         ${m.funil ? `<a class="mining-link" href="${escapeHtml(m.funil)}" target="_blank" rel="noopener">🔗 funil/página de vendas</a>` : ''}
+        ${m.checkoutLink ? `<a class="mining-link" href="${escapeHtml(m.checkoutLink)}" target="_blank" rel="noopener">💳 link do checkout</a>` : ''}
       </div>
       <div class="mining-actions">
         <button class="mining-edit-btn" onclick="toggleMiningEdit('${m.id}')">✎ editar</button>
@@ -2009,138 +1946,6 @@ function updateRowComputed(day){
   }
 }
 
-function toggleDetail(type, day){
-  const row = document.getElementById('detail-'+type+'-'+day);
-  if(row) row.style.display = row.style.display==='none' ? 'table-row' : 'none';
-}
-
-const GATEWAY_OPTIONS = ['Pepper','iExperience/Doppus','Kirvano','Cakto','PerfectPay','Hotmart','Monetizze','Eduzz','Outro (escrever nome)'];
-
-function gatewayRowsHtml(day, gateways){
-  const rows = gateways.map((g,idx)=>{
-    const isCustom = g.gateway === 'Outro (escrever nome)';
-    return `
-    <div class="gateway-row">
-      <select onchange="updateGatewayField(${day},${idx},'gateway',this.value)">
-        ${GATEWAY_OPTIONS.map(opt=>`<option value="${opt}" ${g.gateway===opt?'selected':''}>${opt}</option>`).join('')}
-      </select>
-      ${isCustom ? `<input type="text" value="${escapeHtml(g.customName||'')}" placeholder="nome do gateway" onchange="updateGatewayField(${day},${idx},'customName',this.value)">` : ''}
-      <input type="number" value="${g.valor||''}" placeholder="R$" onchange="updateGatewayField(${day},${idx},'valor',this.value)">
-      <button class="del-btn" onclick="removeGatewayRow(${day},${idx})">✕</button>
-    </div>
-  `;}).join('');
-  return rows + `<button class="add" style="margin-top:6px;" onclick="addGatewayRow(${day})">+ adicionar gateway</button>`;
-}
-function renderGatewayDetail(day){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  if(!d.gateways) d.gateways = [];
-  const container = document.getElementById('gateways-'+day);
-  if(container) container.innerHTML = gatewayRowsHtml(day, d.gateways);
-}
-function addGatewayRow(day){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  if(!d.gateways) d.gateways = [];
-  d.gateways.push({gateway:GATEWAY_OPTIONS[0], valor:0, customName:''});
-  monthObj.days[day] = d;
-  saveState();
-  renderGatewayDetail(day);
-  recalcGatewaySum(day);
-}
-function removeGatewayRow(day, idx){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  d.gateways.splice(idx,1);
-  monthObj.days[day] = d;
-  saveState();
-  renderGatewayDetail(day);
-  recalcGatewaySum(day);
-}
-function updateGatewayField(day, idx, field, value){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  d.gateways[idx][field] = field==='valor' ? (Number(value)||0) : value;
-  monthObj.days[day] = d;
-  saveState();
-  if(field==='gateway') renderGatewayDetail(day);
-  recalcGatewaySum(day);
-}
-function recalcGatewaySum(day){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  const sum = (d.gateways||[]).reduce((s,g)=>s+Number(g.valor||0),0);
-  d.faturamento = sum;
-  monthObj.days[day] = d;
-  saveState();
-  const fatInput = document.getElementById('fat-'+day);
-  if(fatInput) fatInput.value = sum || '';
-  updateRowComputed(day);
-  updateMonthSummary();
-  updateTopStats();
-  renderResumoMes(); renderTodayPanel();
-}
-
-/* ---------- GASTO POR CONTA/FONTE (texto livre) ---------- */
-function adSpendRowsHtml(day, spends){
-  const rows = spends.map((s,idx)=>`
-    <div class="gateway-row">
-      <input type="text" value="${escapeHtml(s.conta||'')}" placeholder="conta de anúncio (ex: Conta 1)" onchange="updateAdSpendField(${day},${idx},'conta',this.value)" style="flex:1;min-width:150px;">
-      <input type="number" value="${s.valor||''}" placeholder="R$" onchange="updateAdSpendField(${day},${idx},'valor',this.value)">
-      <button class="del-btn" onclick="removeAdSpendRow(${day},${idx})">✕</button>
-    </div>
-  `).join('');
-  return rows + `<button class="add" style="margin-top:6px;" onclick="addAdSpendRow(${day})">+ adicionar conta</button>`;
-}
-function renderAdSpendDetail(day){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  if(!d.adSpends) d.adSpends = [];
-  const container = document.getElementById('adspends-'+day);
-  if(container) container.innerHTML = adSpendRowsHtml(day, d.adSpends);
-}
-function addAdSpendRow(day){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  if(!d.adSpends) d.adSpends = [];
-  d.adSpends.push({conta:'', valor:0});
-  monthObj.days[day] = d;
-  saveState();
-  renderAdSpendDetail(day);
-  recalcAdSpendSum(day);
-}
-function removeAdSpendRow(day, idx){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  d.adSpends.splice(idx,1);
-  monthObj.days[day] = d;
-  saveState();
-  renderAdSpendDetail(day);
-  recalcAdSpendSum(day);
-}
-function updateAdSpendField(day, idx, field, value){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  d.adSpends[idx][field] = field==='valor' ? (Number(value)||0) : value;
-  monthObj.days[day] = d;
-  saveState();
-  recalcAdSpendSum(day);
-}
-function recalcAdSpendSum(day){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  const sum = (d.adSpends||[]).reduce((s,a)=>s+Number(a.valor||0),0);
-  d.gasto = sum;
-  monthObj.days[day] = d;
-  saveState();
-  const gastoInput = document.getElementById('gasto-'+day);
-  if(gastoInput) gastoInput.value = sum || '';
-  updateRowComputed(day);
-  updateMonthSummary();
-  updateTopStats();
-  renderResumoMes(); renderTodayPanel();
-}
-
 function renderFinanceTable(){
   const key = state.finance.currentMonth;
   const monthObj = ensureMonth(key);
@@ -2160,24 +1965,6 @@ function renderFinanceTable(){
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
       <td class="fin-num" id="roas-${day}">${roas===null?'—':roas.toFixed(2)+'x'}</td>
-      <td style="white-space:nowrap;">
-        <button class="detail-btn" onclick="toggleDetail('gasto',${day})">contas ▾</button>
-        <button class="detail-btn" onclick="toggleDetail('fat',${day})">gateways ▾</button>
-      </td>
-    </tr>
-    <tr class="detail-row" id="detail-gasto-${day}" style="display:none;">
-      <td></td>
-      <td colspan="6">
-        <label class="field-label">detalhar gasto por conta de anúncio</label>
-        <div id="adspends-${day}">${adSpendRowsHtml(day, d.adSpends||[])}</div>
-      </td>
-    </tr>
-    <tr class="detail-row" id="detail-fat-${day}" style="display:none;">
-      <td></td>
-      <td colspan="6">
-        <label class="field-label">detalhar faturamento por gateway de pagamento</label>
-        <div id="gateways-${day}">${gatewayRowsHtml(day, d.gateways||[])}</div>
-      </td>
     </tr>`;
   }
   tbody.innerHTML = rows;
@@ -2245,44 +2032,55 @@ function scrollToPanel(id){
   }, 50);
 }
 
+function computeMonthTotalsSimple(key){
+  const monthObj = state.finance.months[key] || {days:{}};
+  let gasto=0, fat=0;
+  Object.values(monthObj.days).forEach(d=>{ gasto+=Number(d.gasto||0); fat+=Number(d.faturamento||0); });
+  return {gasto, fat, lucro: fat-gasto};
+}
+function trendBadgeMes(val){
+  if(val===null || !isFinite(val)) return '<span class="trend neutral">— vs mês anterior</span>';
+  const positive = val>=0;
+  const cls = positive ? 'pos':'neg';
+  const arrow = positive ? '▲':'▼';
+  return `<span class="trend ${cls}">${arrow} ${Math.abs(val).toFixed(0)}% vs mês anterior</span>`;
+}
 function renderTodayPanel(){
-  const now = new Date();
-  const today = dayFinance(now);
-  const yestDate = new Date(now); yestDate.setDate(now.getDate()-1);
-  const yesterday = dayFinance(yestDate);
-  const gasto = today.gasto, fat = today.faturamento, lucro = fat-gasto;
-  const roi = gasto>0 ? (fat/gasto) : null;
-  const yLucro = yesterday.faturamento - yesterday.gasto;
-  const yRoi = yesterday.gasto>0 ? (yesterday.faturamento/yesterday.gasto) : null;
-  const dGasto = pctChange(gasto, yesterday.gasto);
-  const dFat = pctChange(fat, yesterday.faturamento);
-  const dLucro = pctChange(lucro, yLucro);
-  const dRoi = (roi!==null && yRoi!==null) ? (roi-yRoi) : null;
-  const series = last7DaysSeries();
-  document.getElementById('todayDate').innerText = 'Hoje: ' + now.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+  const key = state.finance.currentMonth;
+  const prevKey = shiftMonthKey(key, -1);
+  const curr = computeMonthTotalsSimple(key);
+  const prev = computeMonthTotalsSimple(prevKey);
+  const roi = curr.gasto>0 ? (curr.fat/curr.gasto) : null;
+  const prevRoi = prev.gasto>0 ? (prev.fat/prev.gasto) : null;
+  const dGasto = pctChange(curr.gasto, prev.gasto);
+  const dFat = pctChange(curr.fat, prev.fat);
+  const dLucro = pctChange(curr.lucro, prev.lucro);
+  const dRoi = (roi!==null && prevRoi!==null) ? (roi-prevRoi) : null;
+  document.getElementById('todayDate').innerHTML = `
+    <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+    <span style="margin:0 8px;">${monthLabel(key)}</span>
+    <button class="nav-btn" onclick="changeMonth(1)">›</button>
+  `;
   document.getElementById('todayStats').innerHTML = `
     <div class="today-stat">
-      <div class="l">Gasto Hoje</div>
-      <div class="v">${brl(gasto)}</div>
-      ${trendBadgeHtml(dGasto)}
-      <div class="spark">${svgSparkline(series.gasto,'#8B5CF6')}</div>
+      <div class="l">Gasto do mês</div>
+      <div class="v">${brl(curr.gasto)}</div>
+      ${trendBadgeMes(dGasto)}
     </div>
     <div class="today-stat card-lime">
-      <div class="l">Faturamento Hoje</div>
-      <div class="v lime">${brl(fat)}</div>
-      ${trendBadgeHtml(dFat)}
-      <div class="spark">${svgSparkline(series.faturamento,'#3ADC8C')}</div>
+      <div class="l">Faturamento do mês</div>
+      <div class="v lime">${brl(curr.fat)}</div>
+      ${trendBadgeMes(dFat)}
     </div>
     <div class="today-stat card-warn">
-      <div class="l">Lucro Hoje</div>
-      <div class="v ${lucro>=0?'pos':'neg'}">${brl(lucro)}</div>
-      ${trendBadgeHtml(dLucro)}
-      <div class="spark">${svgSparkline(series.lucro,'#F5A623')}</div>
+      <div class="l">Lucro do mês</div>
+      <div class="v ${curr.lucro>=0?'pos':'neg'}">${brl(curr.lucro)}</div>
+      ${trendBadgeMes(dLucro)}
     </div>
     <div class="today-stat card-crit">
-      <div class="l">ROI Hoje</div>
+      <div class="l">ROI do mês</div>
       <div class="v">${roi===null?'—':roi.toFixed(2)+'x'}</div>
-      ${dRoi===null ? '<span class="trend neutral">— vs ontem</span>' : `<span class="trend ${dRoi>=0?'pos':'neg'}">${dRoi>=0?'▲':'▼'} ${Math.abs(dRoi).toFixed(2)} vs ontem</span>`}
+      ${dRoi===null ? '<span class="trend neutral">— vs mês anterior</span>' : `<span class="trend ${dRoi>=0?'pos':'neg'}">${dRoi>=0?'▲':'▼'} ${Math.abs(dRoi).toFixed(2)} vs mês anterior</span>`}
     </div>
   `;
 }
@@ -2315,21 +2113,7 @@ function renderOpSummary(){
 }
 
 function updateTopStats(){
-  const urgentPending = state.tasks.filter(t=>t.priority==='urgente' && t.status!=='done').length;
-  const blockedInfra = state.infra.filter(i=>i.status==='blocked').length;
-  const monthly = state.costs.reduce((sum,c)=>{
-    if(c.freq==='mensal') return sum+Number(c.amount||0);
-    if(c.freq==='anual') return sum+Number(c.amount||0)/12;
-    return sum;
-  },0);
-  const lucroMesAtual = monthLucroReal(state.finance.currentMonth);
-  const el = document.getElementById('statsRow');
-  el.innerHTML = `
-    <div class="stat crit"><div class="n">${urgentPending}</div><div class="l">urgentes</div></div>
-    <div class="stat ${blockedInfra>0?'crit':'ok'}"><div class="n">${blockedInfra}</div><div class="l">infra bloqueada</div></div>
-    <div class="stat warn"><div class="n">${brl(monthly)}</div><div class="l">custo fixo/mês</div></div>
-    <div class="stat ${lucroMesAtual>=0?'ok':'crit'}"><div class="n">${brl(lucroMesAtual)}</div><div class="l">lucro no mês</div></div>
-  `;
+  // hero stats row removido (agora tudo isso vive no painel "tráfego direto" e nos cards de operação)
 }
 
 function render(){
