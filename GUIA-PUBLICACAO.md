@@ -26,6 +26,29 @@ Isso não afeta a publicação abaixo — só recomendo trocar o token por segur
   resumo clicável de urgências / ofertas validando / escalando / infraestrutura
   no topo, antes do resto do painel.
 
+## Atualização — repaginação visual + melhorias de operação
+
+- **Nova identidade visual**: fim do roxo/lima, entrou preto/azul/verde, com
+  cards, sombras, tipografia e navegação em abas redesenhados (visual "SaaS"
+  mais tecnológico). Nenhuma funcionalidade ou dado foi removido — só a casca.
+- **Mineração**: botão "✓ Concluir edição" ficou verde, grande, com ícone e
+  pulso — impossível não ver. Adicionado **drag-and-drop** pra reordenar os
+  cards manualmente (ordem fica salva).
+- **Recuperação de vendas / Entrega do entregável**: cards de mensagem bem
+  maiores (mais altura, menos aperto).
+- **Financeiro**: clicar no faturamento do mês agora abre um **modal** de
+  gateway (Hotmart, Kiwify, PerfectPay, Monetizze, Braip, + outros já
+  cadastrados), com opção de cadastrar novos gateways.
+- **Custos fixos**: agora aceita valor **fixo (R$)** ou **percentual (%)** —
+  o percentual calcula automaticamente em cima do faturamento do mês. Total
+  do mês ficou bem mais destacado visualmente.
+- **Diário da operação**: registros antigos agora podem ser **editados**
+  (texto e correções), mantendo a data original e marcando "editado".
+- **Nova aba Ferramentas**: biblioteca pessoal (nome, categoria, descrição,
+  pra que serve, observações).
+- Responsividade revisada (mobile, tablet, desktop) — sem scroll horizontal,
+  sem cards quebrando.
+
 ## Como publicar (atualizar o repositório já existente)
 
 Você já tem o repositório `painel-laka` no GitHub. Pra atualizar:
