@@ -7,66 +7,68 @@
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0D0B14">
+<meta name="theme-color" content="#100E0C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Painel Op">
 <meta name="mobile-web-app-capable" content="yes">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --bg:#0D0B14;
-    --surface:#161320;
-    --surface2:#1C1829;
-    --surface3:#231E33;
-    --border:#2A2438;
-    --border-strong:#392F4D;
-    --text:#F2F0F7;
-    --muted:#9891A8;
-    --muted2:#665D7A;
-    --violet:#8B5CF6;
-    --violet-soft:rgba(139,92,246,0.12);
-    --lime:#C6FF3D;
-    --urgent:#FF4D6D;
-    --urgent-soft:rgba(255,77,109,0.10);
-    --ok:#3ADC8C;
-    --warn:#F5A623;
-    --neg:#FF6B7A;
-    --mono:'JetBrains Mono',ui-monospace,monospace;
-    --sans:'Inter',system-ui,sans-serif;
-    --display:'Plus Jakarta Sans','Inter',system-ui,sans-serif;
+    --bg:#100E0C;
+    --surface:#18160F;
+    --surface2:#201D15;
+    --surface3:#28241A;
+    --border:#332D20;
+    --border-strong:#443C28;
+    --text:#F3EEE2;
+    --muted:#A79A80;
+    --muted2:#71664F;
+    --violet:#CC8B49;
+    --violet-soft:rgba(204,139,73,0.14);
+    --lime:#8FBF9B;
+    --lime-soft:rgba(143,191,155,0.12);
+    --urgent:#E2584B;
+    --urgent-soft:rgba(226,88,75,0.10);
+    --ok:#8FBF9B;
+    --warn:#E0A85C;
+    --neg:#E2746B;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --sans:'Manrope',system-ui,sans-serif;
+    --display:'Fraunces','Manrope',system-ui,sans-serif;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     background:
-      radial-gradient(ellipse 1000px 550px at 10% -10%, rgba(139,92,246,0.14), transparent),
-      radial-gradient(ellipse 700px 400px at 100% 0%, rgba(198,255,61,0.06), transparent),
+      radial-gradient(ellipse 1100px 600px at 8% -12%, rgba(204,139,73,0.10), transparent),
+      radial-gradient(ellipse 800px 460px at 100% 0%, rgba(143,191,155,0.05), transparent),
       var(--bg);
     color:var(--text);
     font-family:var(--sans);
     padding:24px;
     min-height:100vh;
+    -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1220px;margin:0 auto;}
 
   /* ---------- HERO ---------- */
   .hero{
     display:flex;justify-content:space-between;align-items:flex-end;
-    flex-wrap:wrap;gap:18px;padding-bottom:22px;margin-bottom:22px;
+    flex-wrap:wrap;gap:18px;padding-bottom:26px;margin-bottom:26px;
     border-bottom:1px solid var(--border);position:relative;
   }
   .hero::before{
-    content:'';position:absolute;left:0;bottom:-1px;width:64px;height:3px;
+    content:'';position:absolute;left:0;bottom:-1px;width:56px;height:3px;
     background:linear-gradient(90deg,var(--violet),var(--lime));border-radius:2px;
   }
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--muted2);text-transform:uppercase;margin-bottom:6px;}
-  .hero h1{margin:0;font-family:var(--display);font-size:27px;font-weight:700;letter-spacing:-0.3px;}
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:3.5px;color:var(--muted2);text-transform:uppercase;margin-bottom:8px;}
+  .hero h1{margin:0;font-family:var(--display);font-size:32px;font-weight:600;letter-spacing:-0.4px;font-style:italic;}
   .stats{display:flex;gap:10px;flex-wrap:wrap;}
-  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 16px;min-width:112px;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:11px 17px;min-width:112px;}
   .stat .n{font-family:var(--mono);font-size:19px;font-weight:700;}
   .stat .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-top:2px;}
   .stat.crit .n{color:var(--urgent);}
@@ -92,78 +94,20 @@
   /* ---------- PANELS ---------- */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   @media(max-width:800px){.grid{grid-template-columns:1fr;}}
-  .today-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:16px;}
-  .today-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
-  .today-head .eyebrow{margin:0;}
-  .today-head .tdate{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
-  .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-  @media(max-width:800px){.today-stats{grid-template-columns:1fr 1fr;}}
-  .today-stat{background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--violet);border-radius:12px;padding:12px 14px;}
-  .today-stat.card-lime{border-top-color:var(--lime);}
-  .today-stat.card-warn{border-top-color:var(--warn);}
-  .today-stat.card-crit{border-top-color:var(--urgent);}
-  .today-stat .l{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
-  .today-stat .v{font-family:var(--display);font-size:20px;font-weight:700;}
-  .today-stat .v.pos{color:var(--ok);}
-  .today-stat .v.neg{color:var(--neg);}
-  .today-stat .v.lime{color:var(--lime);}
-  .today-stat .trend{display:block;font-family:var(--mono);font-size:10px;margin-top:3px;}
-  .today-stat .trend.pos{color:var(--ok);}
-  .today-stat .trend.neg{color:var(--neg);}
-  .today-stat .trend.neutral{color:var(--muted2);}
-  .today-stat .spark{margin-top:8px;line-height:0;opacity:0.85;}
-  .op-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;}
-  @media(max-width:900px){.op-summary{grid-template-columns:1fr 1fr 1fr;}}
-  @media(max-width:520px){.op-summary{grid-template-columns:1fr 1fr;}}
-  .op-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color .15s,transform .1s;}
-  .op-card:hover{border-color:var(--border-strong);transform:translateY(-1px);}
-  .op-card .n{font-family:var(--mono);font-size:22px;font-weight:700;}
-  .op-card .l{font-size:11px;color:var(--muted);margin-top:2px;}
-  .op-card.crit .n{color:var(--urgent);}
-  .op-card.warn .n{color:var(--warn);}
-  .op-card.ok .n{color:var(--ok);}
-  .op-card.info .n{color:var(--violet);}
-
-  /* ---------- CHARTS ---------- */
-  .chart-row{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;}
-  @media(max-width:900px){.chart-row{grid-template-columns:1fr;}}
-  .chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
-  .chart-legend span{font-family:var(--mono);font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:5px;}
-  .chart-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
-  .month-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:8px;padding:6px 10px;cursor:pointer;}
-  .panel-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
-  @media(max-width:700px){.panel-stats-row{grid-template-columns:1fr 1fr;}}
-  .pstat{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
-  .pstat .l{font-family:var(--mono);font-size:9.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:3px;}
-  .pstat .v{font-family:var(--display);font-size:17px;font-weight:700;}
-  .pstat .v.pos{color:var(--ok);}
-  .pstat .v.neg{color:var(--neg);}
-  .donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center;}
-  .donut-legend{display:flex;flex-direction:column;gap:10px;}
-  .donut-legend .dl-item{font-size:12px;}
-  .donut-legend .dl-item .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;}
-  .donut-legend .dl-item .val{font-family:var(--mono);color:var(--muted);margin-left:14px;}
-  .agg-table{width:100%;border-collapse:collapse;font-size:12.5px;}
-  .agg-table th{text-align:left;font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;padding:6px 8px;border-bottom:1px solid var(--border);}
-  .agg-table td{padding:8px;border-bottom:1px solid var(--border);}
-  .agg-table tr.total-row td{font-weight:700;color:var(--text);border-top:1px solid var(--border-strong);border-bottom:none;}
-  .agg-editable-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
-  .row-three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
-  @media(max-width:900px){.row-three{grid-template-columns:1fr;}}
-  .bottom-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(90deg,rgba(139,92,246,0.18),rgba(198,255,61,0.10));border:1px solid var(--border-strong);border-radius:16px;padding:16px 20px;margin-top:8px;flex-wrap:wrap;}
-  .bottom-banner .btxt{font-family:var(--display);font-weight:700;font-size:14px;}
-  .bottom-banner button{background:var(--violet);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:var(--sans);font-weight:700;font-size:12.5px;cursor:pointer;}
-  .finance-grid{display:grid;grid-template-columns:2.1fr 1fr;gap:16px;align-items:start;}
-  .finance-grid .costs-panel{position:sticky;top:16px;}
-  @media(max-width:1000px){.finance-grid{grid-template-columns:1fr;} .finance-grid .costs-panel{position:static;}}
-  .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.18);transition:border-color .2s;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 4px 18px rgba(0,0,0,0.22);transition:border-color .2s;}
   .panel:hover{border-color:var(--border-strong);}
-  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
-  .panel h2{font-family:var(--display);font-size:13.5px;letter-spacing:0.3px;color:var(--text);margin:0;font-weight:700;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .panel h2{font-family:var(--display);font-size:15px;letter-spacing:0.1px;color:var(--text);margin:0;font-weight:600;}
   .panel h2 .sub{display:block;font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:500;}
   .panel-total{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--text);}
   .panel-total.pos{color:var(--ok);}
   .panel-total.neg{color:var(--neg);}
+  .panel-total.highlight{
+    background:var(--violet-soft);color:var(--violet);border:1px solid rgba(204,139,73,0.35);
+    border-radius:999px;padding:6px 14px;font-size:14.5px;font-weight:800;
+  }
+  .cost-row.percentual .cost-amount-pct{color:var(--warn);}
+  .cost-pct-value{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;}
 
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
@@ -185,7 +129,7 @@
   }
   .check-box:hover{border-color:var(--violet);}
   .check-box.checked{background:var(--ok);border-color:var(--ok);}
-  .check-box.checked::after{content:'✓';color:#0D0B14;font-size:12px;font-weight:700;line-height:1;}
+  .check-box.checked::after{content:'✓';color:#100E0C;font-size:12px;font-weight:700;line-height:1;}
   .task-tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px;cursor:pointer;display:inline-block;margin-top:4px;}
   .task-tag.none{color:var(--muted2);background:transparent;border:1px dashed var(--border-strong);}
   .task-tag.delegada{color:var(--violet);background:rgba(139,92,246,.15);}
@@ -249,6 +193,19 @@
   .msum .v.pos{color:var(--ok);}
   .msum .v.neg{color:var(--neg);}
   .msum.imposto-box input{width:100%;background:transparent;border:none;color:var(--warn);font-family:var(--mono);font-size:16px;font-weight:700;padding:0;}
+  .msum.clickable{cursor:pointer;position:relative;transition:border-color .15s;}
+  .msum.clickable:hover{border-color:var(--violet);}
+  .msum.clickable .l::after{content:' 🔽';font-size:9px;}
+  .gateway-month-panel{
+    background:var(--surface2);border:1px solid var(--border-strong);border-radius:12px;padding:14px 16px;margin:-4px 0 16px 0;
+  }
+  .gwm-select-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+  .gwm-select-row select{flex:1;min-width:180px;}
+  .gwm-selected-total{font-family:var(--mono);font-weight:700;color:var(--lime);font-size:15px;}
+  .gwm-list{display:flex;flex-direction:column;gap:6px;}
+  .gwm-row{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12.5px;}
+  .gwm-row .gwm-name{color:var(--text);}
+  .gwm-row .gwm-val{font-family:var(--mono);color:var(--ok);font-weight:600;}
 
   .day-cell-input{
     background:transparent;border:1px solid transparent;color:var(--text);
@@ -281,16 +238,24 @@
   input[type=number]{width:100px;}
   input[type=date]{width:140px;}
   textarea{width:100%;resize:vertical;min-height:44px;font-family:var(--sans);}
-  button.add{background:var(--violet);border:none;color:#0D0B14;font-weight:700;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;}
-  button.add:hover{opacity:0.85;background:var(--lime);}
+  button.add{background:var(--violet);border:none;color:#100E0C;font-weight:700;border-radius:999px;padding:9px 16px;cursor:pointer;font-size:13px;letter-spacing:0.2px;transition:transform .12s, background .15s;}
+  button.add:hover{transform:translateY(-1px);background:var(--lime);}
+  button.add:active{transform:translateY(0);}
   .empty{color:var(--muted2);font-size:12.5px;font-style:italic;padding:6px 0;}
 
   /* ---------- LOG ---------- */
   .log-entry{border-left:2px solid var(--border);padding:6px 0 6px 10px;margin-bottom:8px;}
   .log-entry.win{border-left-color:var(--ok);}
   .log-entry.problem{border-left-color:var(--urgent);}
-  .log-meta{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:2px;}
-  .log-text{font-size:13px;line-height:1.4;}
+  .log-meta{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:2px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .log-text{font-size:13px;line-height:1.4;white-space:pre-wrap;word-break:break-word;cursor:text;}
+  .log-actions{display:flex;gap:4px;}
+  .log-edit-btn, .log-del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:11px;padding:0 3px;}
+  .log-edit-btn:hover{color:var(--violet);}
+  .log-del-btn:hover{color:var(--urgent);}
+  .log-entry textarea{width:100%;font-size:13px;min-height:56px;margin-top:2px;}
+  .log-edit-actions{display:flex;gap:6px;margin-top:6px;}
+  .log-edit-actions button{font-size:11px;padding:5px 10px;}
 
   .loading{color:var(--muted);font-family:var(--mono);font-size:12px;padding:40px;text-align:center;}
   .full{grid-column:1/-1;}
@@ -324,15 +289,26 @@
     .add-row input, .add-row select, .add-row textarea{ min-width:0; flex:1 1 100%; }
     .grid{ gap:12px; }
     .panel{ padding:14px; }
+    .mining-fields{ grid-template-columns:1fr; }
+    .mining-card-head{ flex-wrap:wrap; }
+    .mining-collapsed{ flex-wrap:wrap; }
+    .mining-edit-btn{ flex:1 1 auto; }
+    .gwm-select-row{ flex-direction:column; align-items:stretch; }
+    .gwm-select-row select{ width:100%; }
+    .tab-nav{ width:100%; }
+    .hero h1{ font-size:20px; }
+    #recoveryStepsList .variation-row textarea, #deliveryStepsList .variation-row textarea{ min-height:100px; }
+    .log-meta{ flex-wrap:wrap; }
   }
 
   /* ---------- TABS ---------- */
-  .tab-nav{display:flex;gap:8px;margin-bottom:22px;border-bottom:1px solid var(--border);}
+  .tab-nav{display:flex;gap:6px;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px;width:fit-content;max-width:100%;}
   .tab-btn{
-    background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:700;
-    font-size:14px;padding:10px 4px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+    background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:600;
+    font-size:13.5px;padding:9px 18px;cursor:pointer;border-radius:999px;transition:background .15s,color .15s;white-space:nowrap;
   }
-  .tab-btn.active{color:var(--text);border-bottom-color:var(--violet);}
+  .tab-btn.active{color:#100E0C;background:var(--violet);}
+  .tab-btn:not(.active):hover{color:var(--text);}
   .tab-view{display:none;}
   .tab-view.active{display:block;}
 
@@ -359,7 +335,7 @@
   .resumo-mes .rstat .v.neg{color:var(--neg);}
   .resumo-mes .rstat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
   .resumo-mes .goto-btn{
-    background:var(--violet);color:#0D0B14;border:none;border-radius:8px;padding:8px 14px;
+    background:var(--violet);color:#100E0C;border:none;border-radius:8px;padding:8px 14px;
     font-weight:700;font-size:12.5px;cursor:pointer;
   }
 
@@ -367,6 +343,21 @@
   .asset-row{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
   .mining-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:12px;transition:border-color .15s;}
   .mining-card:hover{border-color:var(--border-strong);}
+  .mining-card.dragging{opacity:0.4;border-color:var(--violet);}
+  .mining-card-head{display:flex;align-items:flex-start;gap:10px;}
+  .mining-card .drag-handle{padding-top:4px;font-size:15px;}
+  .mining-conclude-btn{
+    background:linear-gradient(135deg,var(--lime),var(--violet));border:none;color:#100E0C;font-weight:800;
+    border-radius:999px;padding:10px 18px;cursor:pointer;font-size:12.5px;letter-spacing:0.3px;width:100%;margin-top:12px;
+    box-shadow:0 4px 14px rgba(204,139,73,0.28);transition:transform .12s;
+  }
+  .mining-conclude-btn:hover{transform:translateY(-1px);}
+  .mining-collapsed{display:flex;align-items:center;gap:12px;}
+  .mining-collapsed-body{flex:1;min-width:0;}
+  .mining-collapsed-name{font-family:var(--display);font-weight:600;font-size:14.5px;}
+  .mining-collapsed-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .mining-edit-btn{background:var(--surface3);border:1px solid var(--border-strong);color:var(--text);border-radius:999px;padding:6px 14px;font-size:11.5px;cursor:pointer;white-space:nowrap;}
+  .mining-edit-btn:hover{border-color:var(--violet);color:var(--violet);}
   .mining-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;}
   .mining-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;}
   .mining-field-full{grid-column:1/-1;}
@@ -397,28 +388,19 @@
   .video-thumb{width:100%;aspect-ratio:16/9;background:var(--bg) center/cover no-repeat;position:relative;}
   .video-play{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:40px;height:40px;background:rgba(13,11,20,0.75);border-radius:50%;
+    width:40px;height:40px;background:rgba(16,14,12,0.78);border-radius:50%;
     display:flex;align-items:center;justify-content:center;color:var(--lime);font-size:15px;
   }
   .video-info{padding:10px 12px;}
   .video-title{font-family:var(--display);font-weight:700;font-size:12.5px;margin-bottom:3px;}
   .video-nota{font-size:11px;color:var(--muted);}
-  .video-del{position:absolute;top:6px;right:6px;background:rgba(13,11,20,0.7);border:none;color:var(--text);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;z-index:2;}
+  .video-del{position:absolute;top:6px;right:6px;background:rgba(16,14,12,0.72);border:none;color:var(--text);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;z-index:2;}
   .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
   .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
-  .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:2px 7px;color:var(--violet);}
-  .mining-ads-highlight{font-family:var(--mono);font-weight:800;font-size:15px;color:var(--lime);margin-left:auto;}
+  .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted);}
+  .mining-ads{font-family:var(--mono);font-size:11px;color:var(--lime);margin-left:auto;}
   .mining-desc{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
-  .mining-link{font-size:11.5px;color:var(--violet);word-break:break-all;display:inline-block;margin-bottom:0;}
-  .mining-links{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
-  .mining-sub{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-bottom:6px;}
-  .mining-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
-  .mining-chip{font-family:var(--mono);font-size:10.5px;background:var(--violet-soft);color:var(--violet);border-radius:6px;padding:3px 8px;}
-  .mining-chip-ticket{font-family:var(--mono);font-size:10.5px;background:rgba(198,255,61,0.12);color:var(--lime);border-radius:6px;padding:3px 8px;font-weight:700;}
-  .mining-obs{background:rgba(245,166,35,0.12);border:1px solid rgba(245,166,35,0.35);color:var(--warn);border-radius:8px;padding:7px 10px;font-size:11.5px;margin-bottom:8px;}
-  .mining-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:2px;}
-  .mining-edit-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10.5px;border-radius:6px;padding:4px 9px;cursor:pointer;}
-  .mining-edit-btn:hover{border-color:var(--violet);color:var(--violet);}
+  .mining-link{font-size:11.5px;color:var(--violet);word-break:break-all;}
   .asset-tipo{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;white-space:nowrap;}
   .asset-name{flex:1;font-size:13.5px;}
 
@@ -441,7 +423,7 @@
   .planner-item .del-btn{font-size:11px;padding:0;}
   .planner-add{display:flex;gap:4px;margin-top:6px;}
   .planner-add input{font-size:11.5px;padding:5px 6px;flex:1;min-width:0;}
-  .planner-add button{background:var(--violet);border:none;color:#0D0B14;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;}
+  .planner-add button{background:var(--violet);border:none;color:#100E0C;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;}
 
   /* ---------- ONVIO LINK ---------- */
   .onvio-link{
@@ -480,15 +462,16 @@
   .funnel-link-stage{display:flex;align-items:center;gap:10px;}
   .funnel-link-name{font-family:var(--display);font-weight:700;font-size:13.5px;}
   .funnel-link-url{font-size:11.5px;color:var(--violet);word-break:break-all;}
-  .funnel-link-open{margin-left:auto;background:var(--violet);color:#0D0B14;border:none;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;}
+  .funnel-link-open{margin-left:auto;background:var(--violet);color:#100E0C;border:none;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;}
 
   /* whatsapp message stage */
   .wa-stage-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
   .wa-icon{color:#25D366;font-size:16px;}
   .wa-stage-title{font-family:var(--display);font-weight:700;font-size:13px;}
-  .variation-row{display:flex;gap:8px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:8px;}
+  .variation-row{display:flex;gap:8px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:8px;}
   .variation-label{font-family:var(--mono);font-size:9.5px;color:var(--muted2);white-space:nowrap;padding-top:6px;}
-  .variation-row textarea{flex:1;min-height:64px;font-size:12.5px;resize:none;overflow:hidden;line-height:1.5;}
+  .variation-row textarea{flex:1;min-height:110px;font-size:13px;resize:vertical;overflow:hidden;line-height:1.55;}
+  #recoveryStepsList .variation-row textarea, #deliveryStepsList .variation-row textarea{min-height:140px;}
   .step-name-input{
     background:transparent;border:1px solid transparent;color:var(--text);font-family:var(--display);
     font-weight:700;font-size:13.5px;padding:4px 7px;border-radius:6px;width:100%;
@@ -514,6 +497,7 @@
       <div class="eyebrow">painel de operação</div>
       <h1>Tráfego direto · Infoproduto</h1>
     </div>
+    <div class="stats" id="statsRow"></div>
   </div>
 
   <div id="loading" class="loading">carregando dados...</div>
@@ -533,66 +517,22 @@
       <span>📄</span>
       <div>
         <div class="onvio-title">Portal do Escritório Palombo (Onvio)</div>
-        <div class="onvio-sub">impostos, guias e documentos da empresa • ⏰ abrir todos os dias 05, 10, 15, 20 do mês!</div>
+        <div class="onvio-sub">impostos, guias e documentos da empresa</div>
       </div>
       <span class="onvio-arrow">→</span>
     </div>
 
-    <div class="today-panel">
-      <div class="today-head">
-        <div class="eyebrow">tráfego direto • infoprodutos</div>
-        <div class="tdate" id="todayDate">—</div>
+    <div class="resumo-mes">
+      <div>
+        <div class="rsub">resumo do mês · financeiro</div>
+        <div class="rtitle" id="resumoMesLabel">—</div>
       </div>
-      <div class="today-stats" id="todayStats"></div>
-    </div>
-
-    <div class="op-summary" id="opSummary"></div>
-
-    <div class="row-three" id="urgentPanel">
-      <div class="panel">
-        <div class="panel-head"><h2>Urgências</h2></div>
-        <div id="urgentList"></div>
-        <div class="add-row">
-          <input type="text" id="urgentInput" placeholder="nova tarefa urgente...">
-          <button class="add" onclick="addTask('urgente')">+ add</button>
-        </div>
+      <div class="rstats">
+        <div class="rstat"><div class="v" id="resumoInvestido">R$ 0,00</div><div class="l">investido</div></div>
+        <div class="rstat"><div class="v" id="resumoRetornou">R$ 0,00</div><div class="l">voltou (faturamento)</div></div>
+        <div class="rstat"><div class="v" id="resumoLucro">R$ 0,00</div><div class="l">lucro real</div></div>
       </div>
-      <div class="panel" id="offersPanel">
-        <div class="panel-head"><h2>Ofertas em foco</h2></div>
-        <div id="offersList"></div>
-        <div class="add-row">
-          <input type="text" id="offerInput" placeholder="nome da oferta...">
-          <select id="offerStatus">
-            <option value="pending">validando</option>
-            <option value="done">escalando</option>
-            <option value="blocked">pausada/matada</option>
-          </select>
-          <button class="add" onclick="addOffer()">+ add</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Estrutura pra escalar</h2></div>
-        <div id="structuralList"></div>
-        <div class="add-row">
-          <input type="text" id="structuralInput" placeholder="nova tarefa estrutural...">
-          <button class="add" onclick="addTask('estrutural')">+ add</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel full">
-      <div class="panel-head"><h2>Diário da operação</h2></div>
-      <div id="logList"></div>
-      <div class="add-row" style="flex-direction:column;">
-        <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
-        <div style="display:flex;gap:6px;">
-          <select id="logType" style="flex:1;">
-            <option value="win">funcionou</option>
-            <option value="problem">travou / problema</option>
-          </select>
-          <button class="add" onclick="addLog()">+ registrar</button>
-        </div>
-      </div>
+      <button class="goto-btn" onclick="switchTab('finance')">ver detalhes ›</button>
     </div>
 
     <div class="panel full">
@@ -602,6 +542,39 @@
         <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
       </div>
       <div class="planner-days" id="plannerDays"></div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head">
+        <h2><span class="sub">reseta todo dia — hábitos de execução</span>Checklist diário</h2>
+        <div class="panel-total" id="checklistProgress">—</div>
+      </div>
+      <div id="checklistList"></div>
+      <div class="add-row">
+        <input type="text" id="checklistInput" placeholder="novo hábito recorrente (ex: subir criativo novo)">
+        <button class="add" onclick="addChecklistTemplateItem()">+ add</button>
+      </div>
+    </div>
+
+    <div class="priority-grid">
+      <div class="priority-card urgent">
+        <div class="priority-head"><span class="dotbig"></span><h2>Urgente agora</h2></div>
+        <div class="priority-sub">destrava a operação — sem isso, nada escala</div>
+        <div id="urgentList"></div>
+        <div class="add-row">
+          <input type="text" id="urgentInput" placeholder="nova tarefa urgente...">
+          <button class="add" onclick="addTask('urgente')">+ add</button>
+        </div>
+      </div>
+      <div class="priority-card structural">
+        <div class="priority-head"><span class="dotbig"></span><h2>Estrutura pra escalar</h2></div>
+        <div class="priority-sub">mantém constante e crescendo, sem pressa de hoje</div>
+        <div id="structuralList"></div>
+        <div class="add-row">
+          <input type="text" id="structuralInput" placeholder="nova tarefa estrutural...">
+          <button class="add" onclick="addTask('estrutural')">+ add</button>
+        </div>
+      </div>
     </div>
 
     <div class="panel full">
@@ -615,7 +588,22 @@
       </div>
     </div>
 
-    <div class="row-three">
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
+        <div id="phonesList"></div>
+        <div class="add-row">
+          <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
+          <input type="text" id="phoneProduto" placeholder="produto/uso">
+          <select id="phoneStatus">
+            <option value="ativo">ativo</option>
+            <option value="atencao">atenção</option>
+            <option value="queimado">queimado</option>
+          </select>
+          <button class="add" onclick="addPhone()">+ add</button>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="panel-head"><h2>Gerentes de conta</h2></div>
         <div id="managersList"></div>
@@ -646,83 +634,110 @@
       </div>
 
       <div class="panel">
-        <div class="panel-head">
-          <h2>Plano do dia</h2>
-          <div class="panel-total" id="checklistProgress">—</div>
-        </div>
-        <div id="checklistList"></div>
+        <div class="panel-head"><h2>Infraestrutura</h2></div>
+        <div id="infraList"></div>
         <div class="add-row">
-          <input type="text" id="checklistInput" placeholder="novo hábito recorrente (ex: subir criativo novo)">
-          <button class="add" onclick="addChecklistTemplateItem()">+ add</button>
+          <input type="text" id="infraInput" placeholder="ex: BM 2 - verificação">
+          <select id="infraStatus">
+            <option value="pending">atenção</option>
+            <option value="done">ok</option>
+            <option value="blocked">bloqueado</option>
+          </select>
+          <button class="add" onclick="addInfra()">+ add</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Ofertas em teste</h2></div>
+        <div id="offersList"></div>
+        <div class="add-row">
+          <input type="text" id="offerInput" placeholder="nome da oferta...">
+          <select id="offerStatus">
+            <option value="pending">validando</option>
+            <option value="done">escalando</option>
+            <option value="blocked">pausada/matada</option>
+          </select>
+          <button class="add" onclick="addOffer()">+ add</button>
+        </div>
+      </div>
+
+      <div class="panel full">
+        <div class="panel-head"><h2>Diário da operação</h2></div>
+        <div id="logList"></div>
+        <div class="add-row" style="flex-direction:column;">
+          <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
+          <div style="display:flex;gap:6px;">
+            <select id="logType" style="flex:1;">
+              <option value="win">funcionou</option>
+              <option value="problem">travou / problema</option>
+            </select>
+            <button class="add" onclick="addLog()">+ registrar</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="panel full" id="infraPanel">
-      <div class="panel-head"><h2>Infraestrutura</h2></div>
-      <div id="infraList"></div>
+    <div class="panel full">
+      <div class="panel-head"><h2><span class="sub">ferramentas que você conheceu e pode acabar usando futuramente</span>Ferramentas pra explorar</h2></div>
+      <div id="toolsList"></div>
       <div class="add-row">
-        <input type="text" id="infraInput" placeholder="ex: BM 2 - verificação">
-        <select id="infraStatus">
-          <option value="pending">atenção</option>
-          <option value="done">ok</option>
-          <option value="blocked">bloqueado</option>
-        </select>
-        <button class="add" onclick="addInfra()">+ add</button>
+        <input type="text" id="toolNome" placeholder="nome da ferramenta (ex: ClickUp)">
+        <input type="text" id="toolDescricao" placeholder="o que ela faz / pra que serve">
+        <button class="add" onclick="addTool()">+ add</button>
       </div>
     </div>
 
     </div>
 
     <div class="tab-view" id="financeView">
-      <div class="finance-grid">
-        <div class="panel full">
-          <div class="panel-head">
-            <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
-          </div>
-
-          <div class="month-nav">
-            <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-            <div class="month-label" id="monthLabel">—</div>
-            <button class="nav-btn" onclick="changeMonth(1)">›</button>
-          </div>
-
-          <div class="month-summary" id="monthSummary"></div>
-
-          <div class="fin-table-wrap">
-            <table class="fin-table">
-              <thead><tr>
-                <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
-                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
-              </tr></thead>
-              <tbody id="finTableBody"></tbody>
-            </table>
-          </div>
+      <div class="panel full">
+        <div class="panel-head">
+          <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
         </div>
 
-        <div class="panel full costs-panel">
-          <div class="panel-head">
-            <h2><span class="sub">o que sai todo mês, independente de faturar ou não</span>Custos fixos</h2>
-            <div class="panel-total" id="costTotal">—</div>
-          </div>
-          <div id="costsList"></div>
-          <div class="add-row" style="flex-direction:column;">
-            <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
-            <input type="number" id="costAmount" placeholder="R$ 0,00">
-            <select id="costFreq">
-              <option value="mensal">mensal</option>
-              <option value="anual">anual</option>
-              <option value="variavel">variável</option>
-            </select>
-            <select id="costCat">
-              <option value="ferramenta">ferramenta</option>
-              <option value="imposto">imposto</option>
-              <option value="contabilidade">contabilidade</option>
-              <option value="hospedagem">hospedagem</option>
-              <option value="outro">outro</option>
-            </select>
-            <button class="add" onclick="addCost()">+ adicionar custo</button>
-          </div>
+        <div class="month-nav">
+          <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+          <div class="month-label" id="monthLabel">—</div>
+          <button class="nav-btn" onclick="changeMonth(1)">›</button>
+        </div>
+
+        <div class="month-summary" id="monthSummary"></div>
+        <div class="gateway-month-panel" id="gatewayMonthPanel" style="display:none;"></div>
+
+        <div class="fin-table-wrap">
+          <table class="fin-table">
+            <thead><tr>
+              <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
+              <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th></th>
+            </tr></thead>
+            <tbody id="finTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel full">
+        <div class="panel-head">
+          <h2><span class="sub">o que sai todo mês, independente de faturar ou não</span>Custos fixos da operação</h2>
+          <div class="panel-total highlight" id="costTotal">—</div>
+        </div>
+        <div id="costsList"></div>
+        <div class="add-row">
+          <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger)">
+          <input type="number" id="costAmount" placeholder="R$ 0,00">
+          <select id="costFreq">
+            <option value="mensal">mensal</option>
+            <option value="anual">anual</option>
+            <option value="percentual">% do faturamento (ex: imposto)</option>
+            <option value="variavel">variável</option>
+          </select>
+          <select id="costCat">
+            <option value="ferramenta">ferramenta</option>
+            <option value="imposto">imposto</option>
+            <option value="contabilidade">contabilidade</option>
+            <option value="hospedagem">hospedagem</option>
+            <option value="outro">outro</option>
+          </select>
+          <button class="add" onclick="addCost()">+ add</button>
         </div>
       </div>
     </div>
@@ -756,31 +771,14 @@
         </div>
 
         <div class="panel full">
-          <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
-          <div id="phonesList"></div>
-          <div class="add-row">
-            <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
-            <input type="text" id="phoneProduto" placeholder="produto/uso">
-            <select id="phoneStatus">
-              <option value="ativo">ativo</option>
-              <option value="atencao">atenção</option>
-              <option value="queimado">queimado</option>
-            </select>
-            <button class="add" onclick="addPhone()">+ add</button>
-          </div>
+          <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Recuperação de vendas</h2></div>
+          <div id="recoveryStepsList" class="funnel-wrap"></div>
+          <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('recovery')">+ nova etapa</button>
         </div>
-
-        <div class="grid">
-          <div class="panel">
-            <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Recuperação de vendas</h2></div>
-            <div id="recoveryStepsList" class="funnel-wrap"></div>
-            <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('recovery')">+ nova etapa</button>
-          </div>
-          <div class="panel">
-            <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Entrega do entregável</h2></div>
-            <div id="deliveryStepsList" class="funnel-wrap"></div>
-            <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('delivery')">+ nova etapa</button>
-          </div>
+        <div class="panel full">
+          <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Entrega do entregável</h2></div>
+          <div id="deliveryStepsList" class="funnel-wrap"></div>
+          <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('delivery')">+ nova etapa</button>
         </div>
 
         <div class="panel full">
@@ -796,34 +794,17 @@
       <div class="panel full">
         <div class="panel-head"><h2><span class="sub">ofertas de concorrentes pra analisar e modelar</span>Mineração de ofertas</h2></div>
         <div id="miningList"></div>
-
-        <button class="add" id="newMiningToggleBtn" onclick="toggleNewMiningForm(true)">+ cadastrar nova oferta</button>
-
-        <div id="newMiningRow" style="display:none;">
-          <div class="add-row" style="flex-wrap:wrap;">
-            <input type="text" id="miningNome" placeholder="nome do produto/oferta">
-            <input type="text" id="miningPagina" placeholder="nome da página">
-            <input type="text" id="miningNicho" placeholder="nicho (ex: emagrecimento, finanças)">
-            <input type="number" id="miningAnuncios" placeholder="qtd anúncios ativos">
-            <input type="number" id="miningTicket" placeholder="ticket do produto (R$)">
-            <input type="text" id="miningCheckout" placeholder="checkout usado (ex: Kirvano)">
-          </div>
-          <div class="add-row" style="flex-wrap:wrap;">
-            <input type="text" id="miningLink" placeholder="link da biblioteca de anúncios (Meta)" style="flex:1;min-width:220px;">
-            <input type="text" id="miningFunil" placeholder="link do funil/página de vendas" style="flex:1;min-width:220px;">
-            <input type="text" id="miningCheckoutLink" placeholder="link do checkout" style="flex:1;min-width:220px;">
-          </div>
-          <div class="add-row">
-            <textarea id="miningDescricao" placeholder="descrição breve do produto/oferta..." style="flex:1;"></textarea>
-          </div>
-          <div class="add-row">
-            <textarea id="miningObservacao" placeholder="observações (ex: está usando cloaker, redirecionamento, etc)" style="flex:1;"></textarea>
-          </div>
-          <div class="add-row">
-            <button class="add" onclick="addMiningEntry()">+ adicionar à mineração</button>
-            <button class="mining-edit-btn" onclick="toggleNewMiningForm(false)">cancelar</button>
-          </div>
+        <div class="add-row" style="flex-wrap:wrap;">
+          <input type="text" id="miningNome" placeholder="nome do produto/oferta">
+          <input type="text" id="miningPagina" placeholder="nome da página">
+          <input type="text" id="miningNicho" placeholder="nicho (ex: emagrecimento, finanças)">
+          <input type="number" id="miningAnuncios" placeholder="qtd anúncios ativos">
+          <input type="text" id="miningLink" placeholder="link da biblioteca de anúncios (Meta)">
         </div>
+        <div class="add-row">
+          <textarea id="miningDescricao" placeholder="descrição breve do produto/oferta..." style="flex:1;"></textarea>
+        </div>
+        <button class="add" onclick="addMiningEntry()">+ adicionar à mineração</button>
       </div>
     </div>
 
@@ -859,7 +840,15 @@ const defaultState = {
   offers: [
     { id:'o1', text:'Oferta atual em rodagem', status:'pending', note:'vende, lucro inconsistente — potencial de escala não validado' }
   ],
-  costs: [],
+  costs: [
+    { id:'c1', name:'Contador', amount:0, freq:'mensal', cat:'contabilidade', note:'preencher valor' },
+    { id:'c2', name:'Hospedagem (Hostinger)', amount:0, freq:'mensal', cat:'hospedagem', note:'preencher valor' },
+    { id:'c3', name:'VTurb', amount:0, freq:'mensal', cat:'ferramenta', note:'preencher valor' },
+    { id:'c4', name:'UTMify', amount:0, freq:'mensal', cat:'ferramenta', note:'preencher valor' },
+    { id:'c5', name:'Imposto sobre anúncios (Meta)', amount:0, freq:'variavel', cat:'imposto', note:'cobrado sobre o valor investido' },
+    { id:'c6', name:'DAS (Simples Nacional/MEI)', amount:0, freq:'mensal', cat:'imposto', note:'guia unificada - se estiver no MEI ou Simples' },
+    { id:'c7', name:'DARF (IRPJ/CSLL/PIS/COFINS)', amount:0, freq:'mensal', cat:'imposto', note:'só se estiver em Lucro Presumido/Real' }
+  ],
   logs: [
     { id:'l1', text:'Já foi possível escalar a operação a R$300k de faturamento/mês com mais de R$100k de lucro no passado — a estrutura de funil já provou que funciona.', type:'win', date:new Date().toLocaleDateString('pt-BR') },
     { id:'l2', text:'Conta de anúncio principal foi desabilitada; BMs não verificadas deixam a operação vulnerável. Número de WhatsApp da entrega/recuperação foi perdido.', type:'problem', date:new Date().toLocaleDateString('pt-BR') },
@@ -878,6 +867,7 @@ const defaultState = {
   currentProductId: null,
   mining: [],
   videos: [],
+  tools: [],
   checklist: {
     template: [
       {id:'ck1', text:'Subir criativo novo'},
@@ -895,7 +885,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -904,100 +894,6 @@ function brDate(iso){
   if(!iso) return '';
   const [y,m,d] = iso.split('-');
   return `${d}/${m}/${y}`;
-}
-
-/* ---------- CHART HELPERS (SVG, sem libs) ---------- */
-function svgLineChart(seriesDefs, totalDays, opts){
-  opts = opts||{};
-  const w = opts.width||600, h = opts.height||220;
-  const padL=42, padR=10, padT=10, padB=22;
-  const innerW = Math.max(1,w-padL-padR), innerH = Math.max(1,h-padT-padB);
-  const allVals = seriesDefs.reduce((a,s)=>a.concat(s.data),[0]);
-  const maxV = Math.max(1, ...allVals);
-  const minV = Math.min(0, ...allVals);
-  const range = (maxV-minV)||1;
-  const n = Math.max(1,totalDays);
-  const xFor = i => padL + (n<=1?0:(i/(n-1))*innerW);
-  const yFor = v => padT + innerH - ((v-minV)/range)*innerH;
-  const gridLines = 4;
-  let gridHtml='';
-  for(let i=0;i<=gridLines;i++){
-    const yy = padT + (innerH/gridLines)*i;
-    const val = maxV - (range/gridLines)*i;
-    gridHtml += `<line x1="${padL}" y1="${yy}" x2="${w-padR}" y2="${yy}" stroke="var(--border)" stroke-width="1"/>`;
-    gridHtml += `<text x="${padL-6}" y="${yy+3}" text-anchor="end" font-size="9" fill="var(--muted2)">${Math.round(val)}</text>`;
-  }
-  const dayTicks = [1,5,10,15,20,25,n].filter((v,i,arr)=>arr.indexOf(v)===i && v<=n);
-  const xTicksHtml = dayTicks.map(d=>{
-    const x = xFor(d-1);
-    return `<text x="${x}" y="${h-4}" text-anchor="middle" font-size="9" fill="var(--muted2)">${d}</text>`;
-  }).join('');
-  const pathsHtml = seriesDefs.map(s=>{
-    const pts = s.data.map((v,i)=>`${xFor(i).toFixed(1)},${yFor(v).toFixed(1)}`).join(' ');
-    return `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
-  }).join('');
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;font-family:var(--mono);">${gridHtml}${pathsHtml}${xTicksHtml}</svg>`;
-}
-function svgSparkline(data, color){
-  const w=110,h=32;
-  const vals = data.length? data : [0];
-  const maxV=Math.max(1,...vals), minV=Math.min(0,...vals);
-  const range=(maxV-minV)||1;
-  const pts = vals.map((v,i)=> `${((i/(Math.max(1,vals.length-1)))*w).toFixed(1)},${(h-((v-minV)/range)*h).toFixed(1)}`).join(' ');
-  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:32px;display:block;"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2"/></svg>`;
-}
-function svgDonut(segments){
-  const total = segments.reduce((s,seg)=>s+Math.max(0,seg.value),0)||1;
-  const r=48, cx=64, cy=64, circumference=2*Math.PI*r;
-  let offset=0;
-  const circles = segments.map(seg=>{
-    const frac = Math.max(0,seg.value)/total;
-    const dash = frac*circumference;
-    const gap = circumference-dash;
-    const circle = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="17" stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}" stroke-dashoffset="${(-offset).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;
-    offset += dash;
-    return circle;
-  }).join('');
-  return `<svg viewBox="0 0 128 128" style="width:132px;height:132px;">${circles}</svg>`;
-}
-function computeMonthSeries(monthKey){
-  const monthObj = state.finance.months[monthKey] || {days:{}};
-  const totalDays = daysInMonth(monthKey);
-  const gasto=[], faturamento=[], lucro=[];
-  for(let day=1; day<=totalDays; day++){
-    const d = getDay(monthObj, day);
-    const g = Number(d.gasto||0), f=Number(d.faturamento||0);
-    gasto.push(g); faturamento.push(f); lucro.push(f-g);
-  }
-  return {totalDays, gasto, faturamento, lucro};
-}
-function dayFinance(dateObj){
-  const mk = dateObj.getFullYear()+'-'+String(dateObj.getMonth()+1).padStart(2,'0');
-  const day = dateObj.getDate();
-  const monthObj = state.finance.months[mk];
-  const d = monthObj? getDay(monthObj, day) : {gasto:0, faturamento:0};
-  return {gasto:Number(d.gasto||0), faturamento:Number(d.faturamento||0)};
-}
-function last7DaysSeries(){
-  const now = new Date();
-  const vals = {gasto:[], faturamento:[], lucro:[]};
-  for(let i=6;i>=0;i--){
-    const dt = new Date(now); dt.setDate(now.getDate()-i);
-    const f = dayFinance(dt);
-    vals.gasto.push(f.gasto); vals.faturamento.push(f.faturamento); vals.lucro.push(f.faturamento-f.gasto);
-  }
-  return vals;
-}
-function pctChange(curr, prev){
-  if(prev===0) return curr===0 ? 0 : null;
-  return ((curr-prev)/Math.abs(prev))*100;
-}
-function trendBadgeHtml(val){
-  if(val===null || !isFinite(val)) return '<span class="trend neutral">— vs ontem</span>';
-  const positive = val>=0;
-  const cls = positive ? 'pos':'neg';
-  const arrow = positive ? '▲':'▼';
-  return `<span class="trend ${cls}">${arrow} ${Math.abs(val).toFixed(0)}% vs ontem</span>`;
 }
 
 const SUPABASE_URL = 'https://otbisnouqcevacfokwhz.supabase.co';
@@ -1011,7 +907,7 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -1019,6 +915,7 @@ async function loadState(){
       if(!state.products) state.products = [];
       if(!state.mining) state.mining = [];
       if(!state.videos) state.videos = [];
+      if(!state.tools) state.tools = [];
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
         if(!p.objections) p.objections = [];
@@ -1184,22 +1081,16 @@ function addOffer(){
 }
 
 /* ---------- GERENTES DE CONTA ---------- */
-function waLink(numero){
-  const digits = (numero||'').replace(/\D/g,'');
-  return digits ? `https://wa.me/${digits}` : '';
-}
 function renderManagers(){
   const el = document.getElementById('managersList');
   if(state.managers.length===0){ el.innerHTML='<div class="empty">nenhum gerente cadastrado.</div>'; return; }
-  el.innerHTML = state.managers.map(m=>{
-    const link = waLink(m.numero);
-    return `
+  el.innerHTML = state.managers.map(m=>`
     <div class="asset-row" data-id="${m.id}">
       <span class="asset-tipo">${escapeHtml(m.gateway||'—')}</span>
-      <div class="asset-name">${escapeHtml(m.nome)} ${m.numero? (link ? `<a href="${link}" target="_blank" rel="noopener" style="color:#25D366;font-size:11.5px;text-decoration:none;">· 💬 ${escapeHtml(m.numero)}</a>` : `<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(m.numero)}</span>`) : ''}</div>
+      <div class="asset-name">${escapeHtml(m.nome)} ${m.numero?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(m.numero)}</span>`:''}</div>
       <button class="del-btn" onclick="removeManager('${m.id}')">✕</button>
-    </div>`;
-  }).join('');
+    </div>
+  `).join('');
 }
 function addManager(){
   const nome = document.getElementById('managerNome');
@@ -1234,6 +1125,33 @@ function addAsset(){
   saveState(); renderAssets();
 }
 function removeAsset(id){ state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets(); }
+
+/* ---------- FERRAMENTAS PRA EXPLORAR ---------- */
+function renderTools(){
+  const el = document.getElementById('toolsList');
+  if(!el) return;
+  if(!state.tools || state.tools.length===0){ el.innerHTML = '<div class="empty">nenhuma ferramenta salva ainda.</div>'; return; }
+  el.innerHTML = state.tools.map(t=>`
+    <div class="asset-row" data-id="${t.id}">
+      <span class="asset-tipo">🔧</span>
+      <div class="asset-name">${escapeHtml(t.nome)} ${t.descricao?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(t.descricao)}</span>`:''}</div>
+      <button class="del-btn" onclick="removeTool('${t.id}')">✕</button>
+    </div>
+  `).join('');
+}
+function addTool(){
+  const nome = document.getElementById('toolNome');
+  const descricao = document.getElementById('toolDescricao').value;
+  if(!nome.value.trim()) return;
+  if(!state.tools) state.tools = [];
+  state.tools.push({id:uid(), nome:nome.value.trim(), descricao});
+  nome.value=''; document.getElementById('toolDescricao').value='';
+  saveState(); renderTools();
+}
+function removeTool(id){
+  state.tools = state.tools.filter(t=>t.id!==id);
+  saveState(); renderTools();
+}
 
 /* ---------- PLANEJAMENTO ---------- */
 const WEEK_DAYS = [
@@ -1610,45 +1528,24 @@ function renderVideos(){
 }
 
 /* ---------- MINERAÇÃO DE OFERTAS ---------- */
-let miningEditingId = null;
-function toggleNewMiningForm(show){
-  document.getElementById('newMiningRow').style.display = show ? 'block' : 'none';
-  document.getElementById('newMiningToggleBtn').style.display = show ? 'none' : 'block';
-  if(show) document.getElementById('miningNome').focus();
-}
-function toggleMiningEdit(id){
-  miningEditingId = (miningEditingId===id) ? null : id;
-  renderMining();
-}
 function addMiningEntry(){
   const nome = document.getElementById('miningNome');
   const pagina = document.getElementById('miningPagina').value;
   const nicho = document.getElementById('miningNicho').value;
   const anuncios = Number(document.getElementById('miningAnuncios').value)||0;
-  const ticket = Number(document.getElementById('miningTicket').value)||0;
-  const checkout = document.getElementById('miningCheckout').value;
   const link = document.getElementById('miningLink').value;
-  const funil = document.getElementById('miningFunil').value;
-  const checkoutLink = document.getElementById('miningCheckoutLink').value;
   const descricao = document.getElementById('miningDescricao').value;
-  const observacao = document.getElementById('miningObservacao').value;
   if(!nome.value.trim()) return;
   const today = new Date().toLocaleDateString('pt-BR');
   state.mining.push({
-    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, checkout, link, funil, checkoutLink, descricao, observacao,
+    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, link, descricao,
     history: anuncios ? [{date:today, anuncios}] : []
   });
   nome.value=''; document.getElementById('miningPagina').value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
-  document.getElementById('miningTicket').value=''; document.getElementById('miningCheckout').value='';
-  document.getElementById('miningLink').value=''; document.getElementById('miningFunil').value=''; document.getElementById('miningCheckoutLink').value='';
-  document.getElementById('miningDescricao').value=''; document.getElementById('miningObservacao').value='';
-  toggleNewMiningForm(false);
+  document.getElementById('miningLink').value=''; document.getElementById('miningDescricao').value='';
   saveState(); renderMining();
 }
 function removeMiningEntry(id){
-  const item = state.mining.find(m=>m.id===id);
-  const nome = item ? item.nome : 'esta oferta';
-  if(!confirm(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`)) return;
   state.mining = state.mining.filter(m=>m.id!==id);
   saveState(); renderMining();
 }
@@ -1671,6 +1568,12 @@ function toggleMiningHistory(id){
   const el = document.getElementById('mining-hist-'+id);
   if(el) el.classList.toggle('open');
 }
+function setMiningCollapsed(id, val){
+  const item = state.mining.find(m=>m.id===id);
+  if(!item) return;
+  item.collapsed = val;
+  saveState(); renderMining();
+}
 function renderMining(){
   const el = document.getElementById('miningList');
   if(!el) return;
@@ -1679,95 +1582,63 @@ function renderMining(){
     const history = m.history || [];
     const historyHtml = history.length===0 ? '<div class="empty" style="padding:4px 0;">sem histórico ainda.</div>' :
       [...history].reverse().map(h=>`<div class="mining-history-entry"><span class="hd">${h.date}</span><span class="hv">${h.anuncios} anúncios ativos</span></div>`).join('');
-    const historyBlock = `
-      <div class="mining-history">
-        <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📈 histórico de anúncios (${history.length}) ▾</button>
-        <div class="mining-history-list" id="mining-hist-${m.id}">${historyHtml}</div>
-      </div>`;
 
-    if(miningEditingId === m.id){
+    if(m.collapsed){
       return `
       <div class="mining-card" data-id="${m.id}">
-        <div class="mining-top">
-          <div class="mining-fields">
-            <div class="mining-field">
-              <label>nome do produto/oferta</label>
-              <input type="text" value="${escapeHtml(m.nome)}" onchange="updateMiningField('${m.id}','nome',this.value)">
-            </div>
-            <div class="mining-field">
-              <label>nome da página</label>
-              <input type="text" value="${escapeHtml(m.pagina||'')}" onchange="updateMiningField('${m.id}','pagina',this.value)">
-            </div>
-            <div class="mining-field">
-              <label>nicho</label>
-              <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
-            </div>
-            <div class="mining-field">
-              <label>anúncios ativos</label>
-              <input type="number" value="${m.anuncios||''}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
-            </div>
-            <div class="mining-field">
-              <label>ticket do produto</label>
-              <input type="number" value="${m.ticket||''}" placeholder="R$" onchange="updateMiningField('${m.id}','ticket',this.value)">
-            </div>
-            <div class="mining-field">
-              <label>checkout usado</label>
-              <input type="text" value="${escapeHtml(m.checkout||'')}" placeholder="ex: Kirvano, Hotmart" onchange="updateMiningField('${m.id}','checkout',this.value)">
-            </div>
-            <div class="mining-field mining-field-full">
-              <label>link da biblioteca de anúncios</label>
-              <input type="text" value="${escapeHtml(m.link||'')}" onchange="updateMiningField('${m.id}','link',this.value)">
-            </div>
-            <div class="mining-field mining-field-full">
-              <label>link do funil/página de vendas</label>
-              <input type="text" value="${escapeHtml(m.funil||'')}" onchange="updateMiningField('${m.id}','funil',this.value)">
-            </div>
-            <div class="mining-field mining-field-full">
-              <label>link do checkout</label>
-              <input type="text" value="${escapeHtml(m.checkoutLink||'')}" onchange="updateMiningField('${m.id}','checkoutLink',this.value)">
-            </div>
-            <div class="mining-field mining-field-full">
-              <label>descrição</label>
-              <textarea oninput="autoGrow(this)" onchange="updateMiningField('${m.id}','descricao',this.value)">${escapeHtml(m.descricao||'')}</textarea>
-            </div>
-            <div class="mining-field mining-field-full">
-              <label>observações (ex: cloaker, redirecionamento...)</label>
-              <textarea oninput="autoGrow(this)" onchange="updateMiningField('${m.id}','observacao',this.value)">${escapeHtml(m.observacao||'')}</textarea>
+        <div class="mining-collapsed">
+          <span class="drag-handle">⠿</span>
+          <div class="mining-collapsed-body">
+            <div class="mining-collapsed-name">${escapeHtml(m.nome||'sem nome')}</div>
+            <div class="mining-collapsed-meta">
+              ${m.pagina?`<span class="tag">${escapeHtml(m.pagina)}</span>`:''}
+              ${m.nicho?`<span class="tag">${escapeHtml(m.nicho)}</span>`:''}
+              ${m.anuncios?`<span class="tag">${m.anuncios} anúncios ativos</span>`:''}
             </div>
           </div>
+          <button class="mining-edit-btn" onclick="setMiningCollapsed('${m.id}',false)">✎ editar</button>
           <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
         </div>
-        <div class="mining-actions">
-          <button class="mining-edit-btn" onclick="toggleMiningEdit('${m.id}')">✓ concluir edição</button>
-        </div>
-        ${historyBlock}
       </div>`;
     }
 
     return `
     <div class="mining-card" data-id="${m.id}">
-      <div class="mining-head">
-        <span class="mining-name">${escapeHtml(m.nome)}</span>
-        ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
-        <span class="mining-ads-highlight">${m.anuncios||0} anúncios ativos</span>
-      </div>
-      ${m.pagina ? `<div class="mining-sub">página: ${escapeHtml(m.pagina)}</div>` : ''}
-      <div class="mining-meta-row">
-        ${m.ticket ? `<span class="mining-chip-ticket">🎟 ${brl(m.ticket)}</span>` : ''}
-        ${m.checkout ? `<span class="mining-chip">💳 ${escapeHtml(m.checkout)}</span>` : ''}
-      </div>
-      ${m.observacao ? `<div class="mining-obs">⚠ ${escapeHtml(m.observacao)}</div>` : ''}
-      ${m.descricao ? `<div class="mining-desc">${escapeHtml(m.descricao)}</div>` : ''}
-      <div class="mining-links">
-        ${m.link ? `<a class="mining-link" href="${escapeHtml(m.link)}" target="_blank" rel="noopener">📚 biblioteca de anúncios</a>` : ''}
-        ${m.funil ? `<a class="mining-link" href="${escapeHtml(m.funil)}" target="_blank" rel="noopener">🔗 funil/página de vendas</a>` : ''}
-        ${m.checkoutLink ? `<a class="mining-link" href="${escapeHtml(m.checkoutLink)}" target="_blank" rel="noopener">💳 link do checkout</a>` : ''}
-      </div>
-      <div class="mining-actions">
-        <button class="mining-edit-btn" onclick="toggleMiningEdit('${m.id}')">✎ editar</button>
+      <div class="mining-card-head">
+        <span class="drag-handle">⠿</span>
+        <div class="mining-fields">
+          <div class="mining-field">
+            <label>nome do produto/oferta</label>
+            <input type="text" value="${escapeHtml(m.nome)}" onchange="updateMiningField('${m.id}','nome',this.value)">
+          </div>
+          <div class="mining-field">
+            <label>nome da página</label>
+            <input type="text" value="${escapeHtml(m.pagina||'')}" onchange="updateMiningField('${m.id}','pagina',this.value)">
+          </div>
+          <div class="mining-field">
+            <label>nicho</label>
+            <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
+          </div>
+          <div class="mining-field">
+            <label>anúncios ativos</label>
+            <input type="number" value="${m.anuncios||''}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
+          </div>
+          <div class="mining-field mining-field-full">
+            <label>link da biblioteca de anúncios</label>
+            <input type="text" value="${escapeHtml(m.link||'')}" onchange="updateMiningField('${m.id}','link',this.value)">
+          </div>
+          <div class="mining-field mining-field-full">
+            <label>descrição</label>
+            <textarea oninput="autoGrow(this)" onchange="updateMiningField('${m.id}','descricao',this.value)">${escapeHtml(m.descricao||'')}</textarea>
+          </div>
+        </div>
         <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
       </div>
-      ${historyBlock}
+      <div class="mining-history">
+        <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📈 histórico de anúncios (${history.length}) ▾</button>
+        <div class="mining-history-list" id="mining-hist-${m.id}">${historyHtml}</div>
+      </div>
+      <button class="mining-conclude-btn" onclick="setMiningCollapsed('${m.id}',true)">✓ concluir edição</button>
     </div>`;
   }).join('');
   setTimeout(()=>growAllTextareas('miningList'), 0);
@@ -1776,8 +1647,7 @@ function renderMining(){
 /* ---------- RESUMO DO MÊS (home) ---------- */
 function renderResumoMes(){
   const key = state.finance.currentMonth;
-  const labelEl = document.getElementById('resumoMesLabel');
-  if(labelEl) labelEl.innerText = monthLabel(key);
+  document.getElementById('resumoMesLabel').innerText = monthLabel(key);
   const monthObj = state.finance.months[key];
   let totalGasto=0, totalFat=0;
   if(monthObj){
@@ -1785,40 +1655,11 @@ function renderResumoMes(){
   }
   const imposto = monthObj ? Number(monthObj.imposto||0) : 0;
   const lucroReal = (totalFat - totalGasto) - imposto;
-  const roi = totalGasto>0 ? (totalFat/totalGasto) : null;
-  const investidoEl = document.getElementById('resumoInvestido');
-  const retornouEl = document.getElementById('resumoRetornou');
+  document.getElementById('resumoInvestido').innerText = brl(totalGasto);
+  document.getElementById('resumoRetornou').innerText = brl(totalFat);
   const lucroEl = document.getElementById('resumoLucro');
-  const roiEl = document.getElementById('resumoRoi');
-  if(investidoEl) investidoEl.innerText = brl(totalGasto);
-  if(retornouEl) retornouEl.innerText = brl(totalFat);
-  if(lucroEl){ lucroEl.innerText = brl(lucroReal); lucroEl.className = 'v ' + (lucroReal>=0?'pos':'neg'); }
-  if(roiEl) roiEl.innerText = roi===null ? '—' : roi.toFixed(2)+'x';
-
-  const chartEl = document.getElementById('resumoMesChart');
-  if(chartEl){
-    const series = computeMonthSeries(key);
-    const chartSvg = svgLineChart([
-      {data:series.faturamento, color:'#3ADC8C'},
-      {data:series.gasto, color:'#8B5CF6'},
-      {data:series.lucro, color:'#F5A623'}
-    ], series.totalDays, {height:220});
-    chartEl.innerHTML = chartSvg;
-    const bigChartEl = document.getElementById('desempenhoMesChart');
-    if(bigChartEl) bigChartEl.innerHTML = svgLineChart([
-      {data:series.faturamento, color:'#3ADC8C'},
-      {data:series.gasto, color:'#8B5CF6'},
-      {data:series.lucro, color:'#F5A623'}
-    ], series.totalDays, {height:240});
-  }
-  const desInvestido = document.getElementById('desInvestido');
-  const desFaturamento = document.getElementById('desFaturamento');
-  const desLucro = document.getElementById('desLucro');
-  const desRoi = document.getElementById('desRoi');
-  if(desInvestido) desInvestido.innerText = brl(totalGasto);
-  if(desFaturamento) desFaturamento.innerText = brl(totalFat);
-  if(desLucro){ desLucro.innerText = brl(lucroReal); desLucro.className = 'v ' + (lucroReal>=0?'pos':'neg'); }
-  if(desRoi) desRoi.innerText = roi===null ? '—' : roi.toFixed(2)+'x';
+  lucroEl.innerText = brl(lucroReal);
+  lucroEl.className = 'v ' + (lucroReal>=0?'pos':'neg');
 }
 
 function switchTab(tab){
@@ -1833,29 +1674,44 @@ function switchTab(tab){
   window.scrollTo(0,0);
 }
 
+function monthFaturamento(key){
+  const monthObj = state.finance.months[key];
+  if(!monthObj) return 0;
+  return Object.values(monthObj.days).reduce((sum,d)=>sum+Number(d.faturamento||0),0);
+}
+function costMonthlyValue(c){
+  if(c.freq==='mensal') return Number(c.amount||0);
+  if(c.freq==='anual') return Number(c.amount||0)/12;
+  if(c.freq==='percentual') return monthFaturamento(state.finance.currentMonth) * (Number(c.amount||0)/100);
+  return 0;
+}
+function totalMonthlyCosts(){
+  return state.costs.reduce((sum,c)=>sum + costMonthlyValue(c), 0);
+}
 function renderCosts(){
   const el = document.getElementById('costsList');
-  if(state.costs.length===0){ el.innerHTML='<div class="empty">nenhum custo fixo cadastrado ainda — use o + adicionar custo abaixo pra começar.</div>'; return; }
-  el.innerHTML = state.costs.map(c=>`
-    <div class="cost-row" data-id="${c.id}">
+  if(state.costs.length===0){ el.innerHTML='<div class="empty">nenhum custo cadastrado.</div>'; return; }
+  el.innerHTML = state.costs.map(c=>{
+    const isPct = c.freq==='percentual';
+    return `
+    <div class="cost-row ${isPct?'percentual':''}" data-id="${c.id}">
       <span class="drag-handle">⠿</span>
       <select onchange="updateCostField('${c.id}','cat',this.value)">
         ${['ferramenta','imposto','contabilidade','hospedagem','outro'].map(opt=>`<option value="${opt}" ${c.cat===opt?'selected':''}>${opt}</option>`).join('')}
       </select>
-      <input type="text" class="cost-name" value="${escapeHtml(c.name)}" onchange="updateCostField('${c.id}','name',this.value)">
+      <input type="text" class="cost-name" value="${escapeHtml(c.name)}" placeholder="ex: Imposto" onchange="updateCostField('${c.id}','name',this.value)">
       <select onchange="updateCostField('${c.id}','freq',this.value)">
-        ${['mensal','anual','variavel'].map(opt=>`<option value="${opt}" ${c.freq===opt?'selected':''}>${opt}</option>`).join('')}
+        ${['mensal','anual','percentual','variavel'].map(opt=>`<option value="${opt}" ${c.freq===opt?'selected':''}>${opt==='percentual'?'% faturamento':opt}</option>`).join('')}
       </select>
-      <input type="number" value="${c.amount||''}" placeholder="R$ 0" onchange="updateCostField('${c.id}','amount',this.value)">
+      ${isPct
+        ? `<input type="number" step="0.01" value="${c.amount||''}" placeholder="% ex: 6" onchange="updateCostField('${c.id}','amount',this.value)">
+           <span class="cost-pct-value">${brl(costMonthlyValue(c))} este mês</span>`
+        : `<input type="number" value="${c.amount||''}" placeholder="R$ 0" onchange="updateCostField('${c.id}','amount',this.value)">`
+      }
       <button class="del-btn" onclick="removeCost('${c.id}')">✕</button>
     </div>
-  `).join('');
-  const monthly = state.costs.reduce((sum,c)=>{
-    if(c.freq==='mensal') return sum + Number(c.amount||0);
-    if(c.freq==='anual') return sum + Number(c.amount||0)/12;
-    return sum;
-  },0);
-  document.getElementById('costTotal').innerText = brl(monthly) + ' /mês (fixo)';
+  `;}).join('');
+  document.getElementById('costTotal').innerText = brl(totalMonthlyCosts()) + ' /mês (fixo)';
 }
 function updateCostField(id, field, value){
   const c = state.costs.find(c=>c.id===id);
@@ -1902,7 +1758,7 @@ function changeMonth(delta){
   ensureMonth(state.finance.currentMonth);
   saveState();
   renderFinanceTable();
-  renderResumoMes(); renderTodayPanel();
+  renderResumoMes();
 }
 
 function getDay(monthObj, day){
@@ -1918,7 +1774,7 @@ function handleDayChange(day, field, value){
   updateRowComputed(day);
   updateMonthSummary();
   updateTopStats();
-  renderResumoMes(); renderTodayPanel();
+  renderResumoMes();
 }
 
 function updateRowComputed(day){
@@ -1931,7 +1787,6 @@ function updateRowComputed(day){
   const margem = fat>0 ? (lucro/fat*100) : null;
   const lucroCell = document.getElementById('lucro-'+day);
   const margemCell = document.getElementById('margem-'+day);
-  const roasCell = document.getElementById('roas-'+day);
   if(lucroCell){
     lucroCell.innerText = brl(lucro);
     lucroCell.className = 'fin-num ' + (lucro>=0?'pos':'neg');
@@ -1939,10 +1794,139 @@ function updateRowComputed(day){
   if(margemCell){
     margemCell.innerText = margem===null ? '—' : margem.toFixed(1)+'%';
   }
-  if(roasCell){
-    const roas = gasto>0 ? (fat/gasto) : null;
-    roasCell.innerText = roas===null ? '—' : roas.toFixed(2)+'x';
-  }
+}
+
+function toggleDetail(type, day){
+  const row = document.getElementById('detail-'+type+'-'+day);
+  if(row) row.style.display = row.style.display==='none' ? 'table-row' : 'none';
+}
+
+const GATEWAY_OPTIONS = ['Pepper','iExperience/Doppus','Kirvano','Cakto','PerfectPay','Hotmart','Monetizze','Eduzz','Outro (escrever nome)'];
+
+function gatewayRowsHtml(day, gateways){
+  const rows = gateways.map((g,idx)=>{
+    const isCustom = g.gateway === 'Outro (escrever nome)';
+    return `
+    <div class="gateway-row">
+      <select onchange="updateGatewayField(${day},${idx},'gateway',this.value)">
+        ${GATEWAY_OPTIONS.map(opt=>`<option value="${opt}" ${g.gateway===opt?'selected':''}>${opt}</option>`).join('')}
+      </select>
+      ${isCustom ? `<input type="text" value="${escapeHtml(g.customName||'')}" placeholder="nome do gateway" onchange="updateGatewayField(${day},${idx},'customName',this.value)">` : ''}
+      <input type="number" value="${g.valor||''}" placeholder="R$" onchange="updateGatewayField(${day},${idx},'valor',this.value)">
+      <button class="del-btn" onclick="removeGatewayRow(${day},${idx})">✕</button>
+    </div>
+  `;}).join('');
+  return rows + `<button class="add" style="margin-top:6px;" onclick="addGatewayRow(${day})">+ adicionar gateway</button>`;
+}
+function renderGatewayDetail(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  if(!d.gateways) d.gateways = [];
+  const container = document.getElementById('gateways-'+day);
+  if(container) container.innerHTML = gatewayRowsHtml(day, d.gateways);
+}
+function addGatewayRow(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  if(!d.gateways) d.gateways = [];
+  d.gateways.push({gateway:GATEWAY_OPTIONS[0], valor:0, customName:''});
+  monthObj.days[day] = d;
+  saveState();
+  renderGatewayDetail(day);
+  recalcGatewaySum(day);
+}
+function removeGatewayRow(day, idx){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d.gateways.splice(idx,1);
+  monthObj.days[day] = d;
+  saveState();
+  renderGatewayDetail(day);
+  recalcGatewaySum(day);
+}
+function updateGatewayField(day, idx, field, value){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d.gateways[idx][field] = field==='valor' ? (Number(value)||0) : value;
+  monthObj.days[day] = d;
+  saveState();
+  if(field==='gateway') renderGatewayDetail(day);
+  recalcGatewaySum(day);
+}
+function recalcGatewaySum(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  const sum = (d.gateways||[]).reduce((s,g)=>s+Number(g.valor||0),0);
+  d.faturamento = sum;
+  monthObj.days[day] = d;
+  saveState();
+  const fatInput = document.getElementById('fat-'+day);
+  if(fatInput) fatInput.value = sum || '';
+  updateRowComputed(day);
+  updateMonthSummary();
+  updateTopStats();
+  renderResumoMes();
+}
+
+/* ---------- GASTO POR CONTA/FONTE (texto livre) ---------- */
+function adSpendRowsHtml(day, spends){
+  const rows = spends.map((s,idx)=>`
+    <div class="gateway-row">
+      <input type="text" value="${escapeHtml(s.fonte||'')}" placeholder="fonte de tráfego (ex: Meta Ads)" onchange="updateAdSpendField(${day},${idx},'fonte',this.value)" style="flex:1;min-width:110px;">
+      <input type="text" value="${escapeHtml(s.conta||'')}" placeholder="conta de anúncio" onchange="updateAdSpendField(${day},${idx},'conta',this.value)" style="flex:1;min-width:110px;">
+      <input type="number" value="${s.valor||''}" placeholder="R$" onchange="updateAdSpendField(${day},${idx},'valor',this.value)">
+      <button class="del-btn" onclick="removeAdSpendRow(${day},${idx})">✕</button>
+    </div>
+  `).join('');
+  return rows + `<button class="add" style="margin-top:6px;" onclick="addAdSpendRow(${day})">+ adicionar conta</button>`;
+}
+function renderAdSpendDetail(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  if(!d.adSpends) d.adSpends = [];
+  const container = document.getElementById('adspends-'+day);
+  if(container) container.innerHTML = adSpendRowsHtml(day, d.adSpends);
+}
+function addAdSpendRow(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  if(!d.adSpends) d.adSpends = [];
+  d.adSpends.push({fonte:'', conta:'', valor:0});
+  monthObj.days[day] = d;
+  saveState();
+  renderAdSpendDetail(day);
+  recalcAdSpendSum(day);
+}
+function removeAdSpendRow(day, idx){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d.adSpends.splice(idx,1);
+  monthObj.days[day] = d;
+  saveState();
+  renderAdSpendDetail(day);
+  recalcAdSpendSum(day);
+}
+function updateAdSpendField(day, idx, field, value){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  d.adSpends[idx][field] = field==='valor' ? (Number(value)||0) : value;
+  monthObj.days[day] = d;
+  saveState();
+  recalcAdSpendSum(day);
+}
+function recalcAdSpendSum(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  const sum = (d.adSpends||[]).reduce((s,a)=>s+Number(a.valor||0),0);
+  d.gasto = sum;
+  monthObj.days[day] = d;
+  saveState();
+  const gastoInput = document.getElementById('gasto-'+day);
+  if(gastoInput) gastoInput.value = sum || '';
+  updateRowComputed(day);
+  updateMonthSummary();
+  updateTopStats();
+  renderResumoMes();
 }
 
 function renderFinanceTable(){
@@ -1956,31 +1940,36 @@ function renderFinanceTable(){
     const d = getDay(monthObj, day);
     const lucro = d.faturamento - d.gasto;
     const margem = d.faturamento>0 ? (lucro/d.faturamento*100) : null;
-    const roas = d.gasto>0 ? (d.faturamento/d.gasto) : null;
     rows += `<tr data-day="${day}">
       <td style="font-family:var(--mono);color:var(--muted);">${day}</td>
       <td class="fin-num"><input class="day-cell-input" type="number" id="gasto-${day}" value="${d.gasto||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'gasto',this.value)"></td>
       <td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
-      <td class="fin-num" id="roas-${day}">${roas===null?'—':roas.toFixed(2)+'x'}</td>
+      <td style="white-space:nowrap;">
+        <button class="detail-btn" onclick="toggleDetail('gasto',${day})">contas ▾</button>
+        <button class="detail-btn" onclick="toggleDetail('fat',${day})">gateways ▾</button>
+      </td>
+    </tr>
+    <tr class="detail-row" id="detail-gasto-${day}" style="display:none;">
+      <td></td>
+      <td colspan="5">
+        <label class="field-label">detalhar gasto por fonte de tráfego e conta de anúncio</label>
+        <div id="adspends-${day}">${adSpendRowsHtml(day, d.adSpends||[])}</div>
+      </td>
+    </tr>
+    <tr class="detail-row" id="detail-fat-${day}" style="display:none;">
+      <td></td>
+      <td colspan="5">
+        <label class="field-label">detalhar faturamento por gateway de pagamento</label>
+        <div id="gateways-${day}">${gatewayRowsHtml(day, d.gateways||[])}</div>
+      </td>
     </tr>`;
   }
   tbody.innerHTML = rows;
   updateMonthSummary();
 }
 
-const GATEWAY_LIST = ['Pepper','iExperience/Doppus','Kirvano','Cakto','PerfectPay','Hotmart','Monetizze','Eduzz','Outro'];
-function toggleGatewaySelect(){
-  const el = document.getElementById('gatewaySelectWrap');
-  if(el) el.style.display = el.style.display==='none' ? 'block' : 'none';
-}
-function setMonthGateway(value){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  monthObj.gateway = value;
-  saveState();
-  updateMonthSummary();
-}
 function updateMonthSummary(){
   const key = state.finance.currentMonth;
   const monthObj = ensureMonth(key);
@@ -1992,22 +1981,68 @@ function updateMonthSummary(){
   const el = document.getElementById('monthSummary');
   el.innerHTML = `
     <div class="msum"><div class="l">Gasto do mês</div><div class="v">${brl(totalGasto)}</div></div>
-    <div class="msum">
-      <div class="l">Faturamento do mês</div>
-      <div class="v" style="cursor:pointer;" onclick="toggleGatewaySelect()" title="clique pra escolher o gateway do mês">${brl(totalFat)}</div>
-      ${monthObj.gateway ? `<div style="font-family:var(--mono);font-size:10px;color:var(--violet);margin-top:4px;">gateway: ${escapeHtml(monthObj.gateway)}</div>` : ''}
-      <div id="gatewaySelectWrap" style="display:none;margin-top:6px;">
-        <select onchange="setMonthGateway(this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px;font-family:var(--mono);font-size:11px;">
-          <option value="">selecionar gateway do mês...</option>
-          ${GATEWAY_LIST.map(g=>`<option value="${g}" ${monthObj.gateway===g?'selected':''}>${g}</option>`).join('')}
-        </select>
-      </div>
-    </div>
+    <div class="msum clickable" onclick="toggleGatewayMonthPanel()"><div class="l">Faturamento do mês</div><div class="v">${brl(totalFat)}</div></div>
     <div class="msum"><div class="l">Lucro pré-imposto</div><div class="v ${lucroPre>=0?'pos':'neg'}">${brl(lucroPre)}</div></div>
     <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="R$ 0" onchange="updateImposto(this.value)"></div>
     <div class="msum"><div class="l">Lucro real pós-imposto</div><div class="v ${lucroReal>=0?'pos':'neg'}">${brl(lucroReal)}</div></div>
   `;
+  renderGatewayMonthPanel();
   return lucroReal;
+}
+
+/* ---------- SELETOR DE GATEWAY DO FATURAMENTO DO MÊS ---------- */
+function gatewayNameOf(g){ return g.gateway==='Outro (escrever nome)' ? (g.customName||'outro') : g.gateway; }
+function gatewayTotalsForMonth(key){
+  const monthObj = state.finance.months[key];
+  const totals = {};
+  if(monthObj){
+    Object.values(monthObj.days).forEach(d=>{
+      (d.gateways||[]).forEach(g=>{
+        const name = gatewayNameOf(g) || 'sem nome';
+        totals[name] = (totals[name]||0) + Number(g.valor||0);
+      });
+    });
+  }
+  return totals;
+}
+function toggleGatewayMonthPanel(){
+  const panel = document.getElementById('gatewayMonthPanel');
+  if(!panel) return;
+  const show = panel.style.display === 'none';
+  panel.style.display = show ? 'block' : 'none';
+  if(show) renderGatewayMonthPanel();
+}
+function renderGatewayMonthPanel(){
+  const panel = document.getElementById('gatewayMonthPanel');
+  if(!panel || panel.style.display==='none') return;
+  const key = state.finance.currentMonth;
+  const totals = gatewayTotalsForMonth(key);
+  const names = Object.keys(totals);
+  if(names.length===0){
+    panel.innerHTML = `<div class="empty">nenhum gateway lançado ainda esse mês. Detalha o faturamento de um dia (na tabela abaixo, botão "gateways ▾") pra ver o total por gateway aqui.</div>`;
+    return;
+  }
+  panel.innerHTML = `
+    <div class="gwm-select-row">
+      <label class="field-label" style="margin:0;">gateway usado no mês</label>
+      <select id="gwmSelect" onchange="updateGwmSelected(this.value)">
+        <option value="">todos os gateways</option>
+        ${names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('')}
+      </select>
+      <span class="gwm-selected-total" id="gwmSelectedTotal">${brl(names.reduce((s,n)=>s+totals[n],0))}</span>
+    </div>
+    <div class="gwm-list">
+      ${names.map(n=>`<div class="gwm-row"><span class="gwm-name">${escapeHtml(n)}</span><span class="gwm-val">${brl(totals[n])}</span></div>`).join('')}
+    </div>
+  `;
+}
+function updateGwmSelected(name){
+  const key = state.finance.currentMonth;
+  const totals = gatewayTotalsForMonth(key);
+  const el = document.getElementById('gwmSelectedTotal');
+  if(!el) return;
+  if(!name){ el.innerText = brl(Object.values(totals).reduce((s,v)=>s+v,0)); return; }
+  el.innerText = brl(totals[name]||0);
 }
 function updateImposto(value){
   const monthObj = ensureMonth(state.finance.currentMonth);
@@ -2015,7 +2050,7 @@ function updateImposto(value){
   saveState();
   updateMonthSummary();
   updateTopStats();
-  renderResumoMes(); renderTodayPanel();
+  renderResumoMes();
 }
 
 function monthLucroReal(key){
@@ -2026,15 +2061,49 @@ function monthLucroReal(key){
   return (totalFat - totalGasto) - Number(monthObj.imposto||0);
 }
 
+let editingLogId = null;
 function renderLogs(){
   const el = document.getElementById('logList');
   if(state.logs.length===0){ el.innerHTML='<div class="empty">nenhum registro ainda.</div>'; return; }
-  el.innerHTML = state.logs.slice(0,25).map(l=>`
+  el.innerHTML = state.logs.slice(0,25).map(l=>{
+    if(l.id === editingLogId){
+      return `
+      <div class="log-entry ${l.type}">
+        <div class="log-meta">${l.date} · ${l.type==='win'?'funcionou':'travou'}</div>
+        <textarea id="logEdit-${l.id}" oninput="autoGrow(this)">${escapeHtml(l.text)}</textarea>
+        <div class="log-edit-actions">
+          <button class="add" onclick="saveLogEdit('${l.id}')">salvar</button>
+          <button class="add" style="background:var(--surface3);color:var(--muted);" onclick="cancelLogEdit()">cancelar</button>
+        </div>
+      </div>`;
+    }
+    return `
     <div class="log-entry ${l.type}">
-      <div class="log-meta">${l.date} · ${l.type==='win'?'funcionou':'travou'}</div>
-      <div class="log-text">${escapeHtml(l.text)}</div>
+      <div class="log-meta">
+        <span>${l.date} · ${l.type==='win'?'funcionou':'travou'}</span>
+        <span class="log-actions">
+          <button class="log-edit-btn" onclick="startLogEdit('${l.id}')" title="editar">✎ editar</button>
+          <button class="log-del-btn" onclick="removeLog('${l.id}')" title="excluir">✕</button>
+        </span>
+      </div>
+      <div class="log-text" onclick="startLogEdit('${l.id}')">${escapeHtml(l.text)}</div>
     </div>
-  `).join('');
+  `;}).join('');
+  setTimeout(()=>growAllTextareas('logList'), 0);
+}
+function startLogEdit(id){ editingLogId = id; renderLogs(); }
+function cancelLogEdit(){ editingLogId = null; renderLogs(); }
+function saveLogEdit(id){
+  const ta = document.getElementById('logEdit-'+id);
+  if(!ta) return;
+  const l = state.logs.find(l=>l.id===id);
+  if(l){ l.text = ta.value.trim() || l.text; }
+  editingLogId = null;
+  saveState(); renderLogs();
+}
+function removeLog(id){
+  state.logs = state.logs.filter(l=>l.id!==id);
+  saveState(); renderLogs();
 }
 function addLog(){
   const input = document.getElementById('logInput');
@@ -2044,96 +2113,18 @@ function addLog(){
   input.value=''; saveState(); render();
 }
 
-function scrollToPanel(id){
-  switchTab('home');
-  setTimeout(()=>{
-    const el = document.getElementById(id);
-    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  }, 50);
-}
-
-function computeMonthTotalsSimple(key){
-  const monthObj = state.finance.months[key] || {days:{}};
-  let gasto=0, fat=0;
-  Object.values(monthObj.days).forEach(d=>{ gasto+=Number(d.gasto||0); fat+=Number(d.faturamento||0); });
-  return {gasto, fat, lucro: fat-gasto};
-}
-function trendBadgeMes(val){
-  if(val===null || !isFinite(val)) return '<span class="trend neutral">— vs mês anterior</span>';
-  const positive = val>=0;
-  const cls = positive ? 'pos':'neg';
-  const arrow = positive ? '▲':'▼';
-  return `<span class="trend ${cls}">${arrow} ${Math.abs(val).toFixed(0)}% vs mês anterior</span>`;
-}
-function renderTodayPanel(){
-  const key = state.finance.currentMonth;
-  const prevKey = shiftMonthKey(key, -1);
-  const curr = computeMonthTotalsSimple(key);
-  const prev = computeMonthTotalsSimple(prevKey);
-  const roi = curr.gasto>0 ? (curr.fat/curr.gasto) : null;
-  const prevRoi = prev.gasto>0 ? (prev.fat/prev.gasto) : null;
-  const dGasto = pctChange(curr.gasto, prev.gasto);
-  const dFat = pctChange(curr.fat, prev.fat);
-  const dLucro = pctChange(curr.lucro, prev.lucro);
-  const dRoi = (roi!==null && prevRoi!==null) ? (roi-prevRoi) : null;
-  document.getElementById('todayDate').innerHTML = `
-    <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-    <span style="margin:0 8px;">${monthLabel(key)}</span>
-    <button class="nav-btn" onclick="changeMonth(1)">›</button>
-  `;
-  document.getElementById('todayStats').innerHTML = `
-    <div class="today-stat">
-      <div class="l">Gasto do mês</div>
-      <div class="v">${brl(curr.gasto)}</div>
-      ${trendBadgeMes(dGasto)}
-    </div>
-    <div class="today-stat card-lime">
-      <div class="l">Faturamento do mês</div>
-      <div class="v lime">${brl(curr.fat)}</div>
-      ${trendBadgeMes(dFat)}
-    </div>
-    <div class="today-stat card-warn">
-      <div class="l">Lucro do mês</div>
-      <div class="v ${curr.lucro>=0?'pos':'neg'}">${brl(curr.lucro)}</div>
-      ${trendBadgeMes(dLucro)}
-    </div>
-    <div class="today-stat card-crit">
-      <div class="l">ROI do mês</div>
-      <div class="v">${roi===null?'—':roi.toFixed(2)+'x'}</div>
-      ${dRoi===null ? '<span class="trend neutral">— vs mês anterior</span>' : `<span class="trend ${dRoi>=0?'pos':'neg'}">${dRoi>=0?'▲':'▼'} ${Math.abs(dRoi).toFixed(2)} vs mês anterior</span>`}
-    </div>
-  `;
-}
-
-function renderOpSummary(){
-  const urgentPending = state.tasks.filter(t=>t.priority==='urgente' && t.status!=='done').length;
-  const validando = state.offers.filter(o=>o.status==='pending').length;
-  const escalando = state.offers.filter(o=>o.status==='done').length;
-  const infraProblemas = state.infra.filter(i=>i.status==='blocked').length;
-  const minerados = state.mining.length;
-  const el = document.getElementById('opSummary');
-  if(!el) return;
-  el.innerHTML = `
-    <div class="op-card ${urgentPending>0?'crit':'ok'}" onclick="scrollToPanel('urgentPanel')">
-      <div class="n">${urgentPending}</div><div class="l">Urgências</div>
-    </div>
-    <div class="op-card warn" onclick="scrollToPanel('offersPanel')">
-      <div class="n">${validando}</div><div class="l">Ofertas Validando</div>
-    </div>
-    <div class="op-card ok" onclick="scrollToPanel('offersPanel')">
-      <div class="n">${escalando}</div><div class="l">Ofertas Escalando</div>
-    </div>
-    <div class="op-card ${infraProblemas>0?'crit':'ok'}" onclick="scrollToPanel('infraPanel')">
-      <div class="n">${infraProblemas}</div><div class="l">Infraestrutura</div>
-    </div>
-    <div class="op-card info" onclick="switchTab('mining')">
-      <div class="n">${minerados}</div><div class="l">Produtos Minerados</div>
-    </div>
-  `;
-}
-
 function updateTopStats(){
-  // hero stats row removido (agora tudo isso vive no painel "tráfego direto" e nos cards de operação)
+  const urgentPending = state.tasks.filter(t=>t.priority==='urgente' && t.status!=='done').length;
+  const blockedInfra = state.infra.filter(i=>i.status==='blocked').length;
+  const monthly = totalMonthlyCosts();
+  const lucroMesAtual = monthLucroReal(state.finance.currentMonth);
+  const el = document.getElementById('statsRow');
+  el.innerHTML = `
+    <div class="stat crit"><div class="n">${urgentPending}</div><div class="l">urgentes</div></div>
+    <div class="stat ${blockedInfra>0?'crit':'ok'}"><div class="n">${blockedInfra}</div><div class="l">infra bloqueada</div></div>
+    <div class="stat warn"><div class="n">${brl(monthly)}</div><div class="l">custo fixo/mês</div></div>
+    <div class="stat ${lucroMesAtual>=0?'ok':'crit'}"><div class="n">${brl(lucroMesAtual)}</div><div class="l">lucro no mês</div></div>
+  `;
 }
 
 function render(){
@@ -2150,10 +2141,9 @@ function render(){
   renderProducts();
   renderMining();
   renderVideos();
+  renderTools();
   renderPlanner();
   renderResumoMes();
-  renderTodayPanel();
-  renderOpSummary();
   updateTopStats();
 }
 
@@ -2213,6 +2203,7 @@ function setupDragHandlers(){
   attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
+  attachSortable('miningList', ids=>reorderArray('mining', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
