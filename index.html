@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Painel de Operação</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
@@ -86,9 +87,10 @@
     width:38px;height:38px;border-radius:11px;flex-shrink:0;
     background:linear-gradient(145deg,var(--blue),var(--green));
     display:flex;align-items:center;justify-content:center;
-    font-family:var(--display);font-weight:800;font-size:15px;color:#04120a;
     box-shadow:var(--shadow-glow-blue);
+    padding:7px;
   }
+  .hero-mark svg{width:100%;height:100%;display:block;}
   .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:2.6px;color:var(--muted2);text-transform:uppercase;margin-bottom:5px;}
   .hero h1{margin:0;font-family:var(--display);font-size:25px;font-weight:700;letter-spacing:-0.4px;}
   .stats{display:flex;gap:10px;flex-wrap:wrap;}
@@ -122,6 +124,18 @@
   .today-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
   .today-head .eyebrow{margin:0;}
   .today-head .tdate{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .hide-values-btn{
+    background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+    border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:14px;
+    display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;
+  }
+  .hide-values-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .hide-values-btn.active{background:var(--blue-soft);border-color:var(--blue);color:var(--blue-bright);}
+  body.hide-financials .today-stat .v,
+  body.hide-financials .resumo-mes .rstat .v{
+    filter:blur(7px);user-select:none;transition:filter .15s;
+  }
+  body.hide-financials .today-stat .trend{filter:blur(4px);user-select:none;}
   .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
   @media(max-width:800px){.today-stats{grid-template-columns:1fr 1fr;}}
   .today-stat{background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:12px 14px;}
@@ -194,12 +208,31 @@
     font-size:22px;color:#fff;background:linear-gradient(135deg, rgba(240,69,92,0.18), rgba(240,69,92,0.06));
     border:1px solid rgba(240,69,92,0.35);border-radius:10px;padding:6px 14px;
   }
-  .cost-computed{font-family:var(--mono);font-size:11.5px;color:var(--green);white-space:nowrap;}
+  .cost-computed{font-family:var(--mono);font-size:11.5px;color:var(--green);white-space:nowrap;display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+  .cost-base-note{font-family:var(--sans);font-size:9.5px;color:var(--muted2);text-transform:none;font-weight:400;}
+  .add-cost-toggle-btn{
+    width:100%;background:var(--surface2);border:1px dashed var(--border-strong);color:var(--muted);
+    border-radius:10px;padding:11px 14px;font-family:var(--sans);font-weight:600;font-size:13px;
+    cursor:pointer;transition:all .15s;margin-top:2px;
+  }
+  .add-cost-toggle-btn:hover{border-color:var(--blue);color:var(--blue-bright);background:var(--blue-soft);}
+  .add-cost-form{animation:fadein .18s ease;}
+  .add-cost-cancel-btn{
+    background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;
+    padding:10px 16px;font-family:var(--sans);font-size:12.5px;cursor:pointer;
+  }
+  .add-cost-cancel-btn:hover{border-color:var(--urgent);color:var(--urgent);}
 
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
-  .item.dragging, .cost-row.dragging, .fin-row.dragging{opacity:0.4;border-color:var(--blue);}
-  .drag-handle{cursor:grab;color:var(--muted2);font-size:13px;line-height:1;padding:2px 4px;touch-action:none;user-select:none;flex-shrink:0;margin-top:2px;}
+  .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
+  .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging{
+    opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;
+    box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright), var(--shadow-glow-blue);
+    will-change:transform;
+  }
+  .drag-handle{cursor:grab;color:var(--muted2);font-size:13px;line-height:1;padding:2px 4px;touch-action:none;user-select:none;flex-shrink:0;margin-top:2px;transition:color .15s;}
+  .drag-handle:hover{color:var(--blue-bright);}
   .drag-handle:active{cursor:grabbing;}
   .item.done{opacity:0.4;}
   .item.done .item-text{text-decoration:line-through;}
@@ -564,7 +597,7 @@
   .wa-stage-title{font-family:var(--display);font-weight:700;font-size:13px;}
   .variation-row{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
   .variation-label{font-family:var(--mono);font-size:9.5px;color:var(--muted2);white-space:nowrap;padding-top:8px;}
-  .variation-row textarea{flex:1;min-height:130px;font-size:13.5px;resize:vertical;overflow:hidden;line-height:1.6;}
+  .variation-row textarea{flex:1;min-height:130px;font-size:13.5px;resize:none;overflow:hidden;line-height:1.6;}
   .wa-wrap .funnel-stage{padding:16px 20px;}
   @media(min-width:900px){ .wa-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;} .wa-wrap .funnel-connector{display:none;} }
   .step-name-input{
@@ -627,7 +660,16 @@
 
   <div class="hero">
     <div class="hero-brand">
-      <div class="hero-mark">L</div>
+      <div class="hero-mark" aria-hidden="true">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <rect x="26" y="54" width="10" height="20" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+          <rect x="42" y="42" width="10" height="32" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+          <rect x="58" y="28" width="10" height="46" rx="3.2" fill="#ffffff"/>
+          <polyline points="22,66 31,50 47,38 63,24" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="63" cy="24" r="7" fill="#ffffff"/>
+          <circle cx="22" cy="66" r="4" fill="#ffffff" fill-opacity="0.82"/>
+        </svg>
+      </div>
       <div>
         <div class="eyebrow">painel laka · operação</div>
         <h1>Tráfego direto · Infoproduto</h1>
@@ -661,7 +703,12 @@
     <div class="today-panel">
       <div class="today-head">
         <div class="eyebrow">tráfego direto • infoprodutos</div>
-        <div class="tdate" id="todayDate">—</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button class="hide-values-btn" id="hideValuesBtn" onclick="toggleHideValues()" title="ocultar valores financeiros">
+            <span id="hideValuesIcon">👁️</span>
+          </button>
+          <div class="tdate" id="todayDate">—</div>
+        </div>
       </div>
       <div class="today-stats" id="todayStats"></div>
     </div>
@@ -861,16 +908,21 @@
             <div class="panel-total" id="costTotal">—</div>
           </div>
           <div id="costsList"></div>
-          <div class="add-row" style="flex-direction:column;">
+          <button class="add-cost-toggle-btn" id="costAddToggleBtn" onclick="toggleCostAddForm()">+ Adicionar custo</button>
+          <div class="add-row add-cost-form" id="costAddForm" style="flex-direction:column;display:none;">
             <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger, Meta Ads, Imposto)">
             <div class="add-row" style="margin-top:0;">
               <select id="costValueType" onchange="toggleCostAmountUI()" style="flex:1;min-width:140px;">
                 <option value="fixo">valor fixo (R$)</option>
-                <option value="percentual">percentual (% do faturamento)</option>
+                <option value="percentual">percentual (%)</option>
               </select>
               <input type="number" id="costAmount" placeholder="R$ 0,00" style="flex:1;min-width:100px;">
               <input type="number" id="costPercent" placeholder="% ex: 6" step="0.1" style="flex:1;min-width:100px;display:none;">
             </div>
+            <select id="costBase" style="display:none;">
+              <option value="faturamento">% sobre o faturamento do mês</option>
+              <option value="gasto">% sobre o investimento em anúncios do mês</option>
+            </select>
             <select id="costFreq">
               <option value="mensal">mensal</option>
               <option value="anual">anual</option>
@@ -884,7 +936,10 @@
               <option value="trafego">tráfego/anúncios</option>
               <option value="outro">outro</option>
             </select>
-            <button class="add" onclick="addCost()">+ adicionar custo</button>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addCost()">+ adicionar custo</button>
+              <button class="add-cost-cancel-btn" onclick="closeCostAddForm()">cancelar</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1216,7 +1271,7 @@ async function loadState(){
       if(!state.videos) state.videos = [];
       if(!state.tools) state.tools = [];
       if(!state.customGateways) state.customGateways = [];
-      state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; });
+      state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
         if(!p.objections) p.objections = [];
@@ -2084,6 +2139,22 @@ function renderResumoMes(){
   if(desRoi) desRoi.innerText = roi===null ? '—' : roi.toFixed(2)+'x';
 }
 
+function toggleHideValues(){
+  const hidden = !document.body.classList.contains('hide-financials');
+  document.body.classList.toggle('hide-financials', hidden);
+  document.getElementById('hideValuesIcon').innerText = hidden ? '🙈' : '👁️';
+  document.getElementById('hideValuesBtn').classList.toggle('active', hidden);
+  try{ localStorage.setItem('laka_hide_values', hidden ? '1' : '0'); }catch(e){}
+}
+function applyHideValuesPreference(){
+  let hidden = false;
+  try{ hidden = localStorage.getItem('laka_hide_values') === '1'; }catch(e){}
+  document.body.classList.toggle('hide-financials', hidden);
+  const icon = document.getElementById('hideValuesIcon');
+  const btn = document.getElementById('hideValuesBtn');
+  if(icon) icon.innerText = hidden ? '🙈' : '👁️';
+  if(btn) btn.classList.toggle('active', hidden);
+}
 function switchTab(tab){
   document.getElementById('homeView').classList.toggle('active', tab==='home');
   document.getElementById('financeView').classList.toggle('active', tab==='finance');
@@ -2096,15 +2167,28 @@ function switchTab(tab){
   document.getElementById('tabBtnMining').classList.toggle('active', tab==='mining');
   document.getElementById('tabBtnTools').classList.toggle('active', tab==='tools');
   window.scrollTo(0,0);
+  if(tab==='products'){
+    setTimeout(()=>{
+      growAllTextareas('recoveryStepsList');
+      growAllTextareas('deliveryStepsList');
+      growAllTextareas('objectionsStepsList');
+    }, 0);
+  }
 }
 
 function costMonthRevenue(){
   return computeMonthTotalsSimple(state.finance.currentMonth).fat;
 }
+function costMonthAdSpend(){
+  return computeMonthTotalsSimple(state.finance.currentMonth).gasto;
+}
+function costBaseValue(base){
+  return base==='gasto' ? costMonthAdSpend() : costMonthRevenue();
+}
 function costComputedValue(c){
   if(c.valueType==='percentual'){
-    const fat = costMonthRevenue();
-    return fat * (Number(c.percent||0)/100);
+    const base = costBaseValue(c.revenueBase || 'faturamento');
+    return base * (Number(c.percent||0)/100);
   }
   return Number(c.amount||0);
 }
@@ -2112,13 +2196,35 @@ function toggleCostAmountUI(){
   const isPct = document.getElementById('costValueType').value==='percentual';
   document.getElementById('costAmount').style.display = isPct ? 'none' : '';
   document.getElementById('costPercent').style.display = isPct ? '' : 'none';
+  document.getElementById('costBase').style.display = isPct ? '' : 'none';
+}
+function toggleCostAddForm(){
+  const form = document.getElementById('costAddForm');
+  const btn = document.getElementById('costAddToggleBtn');
+  const open = form.style.display === 'none';
+  form.style.display = open ? 'flex' : 'none';
+  btn.style.display = open ? 'none' : '';
+  if(open) document.getElementById('costName').focus();
+}
+function closeCostAddForm(){
+  document.getElementById('costName').value='';
+  document.getElementById('costAmount').value='';
+  document.getElementById('costPercent').value='';
+  document.getElementById('costValueType').value='fixo';
+  document.getElementById('costBase').value='faturamento';
+  toggleCostAmountUI();
+  document.getElementById('costAddForm').style.display = 'none';
+  document.getElementById('costAddToggleBtn').style.display = '';
+}
+function costBaseLabel(base){
+  return base==='gasto' ? 'do investimento em anúncios' : 'do faturamento';
 }
 function renderCosts(){
   const el = document.getElementById('costsList');
   if(state.costs.length===0){ el.innerHTML='<div class="empty">nenhum custo fixo cadastrado ainda — use o + adicionar custo abaixo pra começar.</div>'; return; }
-  const fat = costMonthRevenue();
   el.innerHTML = state.costs.map(c=>{
     const isPct = c.valueType==='percentual';
+    const base = c.revenueBase || 'faturamento';
     const computed = costComputedValue(c);
     return `
     <div class="cost-row" data-id="${c.id}">
@@ -2136,7 +2242,11 @@ function renderCosts(){
       </select>
       ${isPct
         ? `<input type="number" step="0.1" value="${c.percent||''}" placeholder="% ex: 6" onchange="updateCostField('${c.id}','percent',this.value)">
-           <span class="cost-computed">= ${brl(computed)}</span>`
+           <select onchange="updateCostField('${c.id}','revenueBase',this.value)" title="base do cálculo">
+             <option value="faturamento" ${base==='faturamento'?'selected':''}>% faturamento</option>
+             <option value="gasto" ${base==='gasto'?'selected':''}>% investimento ads</option>
+           </select>
+           <span class="cost-computed">= ${brl(computed)} <span class="cost-base-note">${costBaseLabel(base)}</span></span>`
         : `<input type="number" value="${c.amount||''}" placeholder="R$ 0" onchange="updateCostField('${c.id}','amount',this.value)">`
       }
       <button class="del-btn" onclick="removeCost('${c.id}')">✕</button>
@@ -2164,12 +2274,13 @@ function addCost(){
   const valueType = document.getElementById('costValueType').value;
   const amount = document.getElementById('costAmount').value;
   const percent = document.getElementById('costPercent').value;
+  const revenueBase = document.getElementById('costBase').value;
   const freq = document.getElementById('costFreq').value;
   const cat = document.getElementById('costCat').value;
   if(!name.value.trim()) return;
-  state.costs.push({id:uid(), name:name.value.trim(), valueType, amount:Number(amount)||0, percent:Number(percent)||0, freq, cat});
-  name.value=''; document.getElementById('costAmount').value=''; document.getElementById('costPercent').value='';
+  state.costs.push({id:uid(), name:name.value.trim(), valueType, amount:Number(amount)||0, percent:Number(percent)||0, revenueBase, freq, cat});
   saveState(); render();
+  closeCostAddForm();
 }
 function removeCost(id){ state.costs = state.costs.filter(c=>c.id!==id); saveState(); render(); }
 
@@ -2499,9 +2610,9 @@ function render(){
   updateTopStats();
 }
 
-/* ---------- DRAG & DROP ---------- */
+/* ---------- DRAG & DROP (fluid, Trello/Notion-style, FLIP animated) ---------- */
 function getAfterElement(container, y, dragging){
-  const els = [...container.querySelectorAll('[data-id]')].filter(el=>el!==dragging);
+  const els = [...container.querySelectorAll(':scope > [data-id]')].filter(el=>el!==dragging);
   return els.reduce((closest, child)=>{
     const box = child.getBoundingClientRect();
     const offset = y - box.top - box.height/2;
@@ -2516,22 +2627,64 @@ function attachSortable(containerId, onReordered){
     const handle = e.target.closest('.drag-handle');
     if(!handle) return;
     const dragging = handle.closest('[data-id]');
-    if(!dragging) return;
+    if(!dragging || dragging.parentElement !== container) return;
     e.preventDefault();
+
+    const startY = e.clientY;
+    const baseTop = dragging.getBoundingClientRect().top;
+    let moved = false;
+
     dragging.classList.add('dragging');
     handle.setPointerCapture(e.pointerId);
+
+    const siblings = ()=> [...container.querySelectorAll(':scope > [data-id]')].filter(el=>el!==dragging);
+    const captureRects = ()=>{
+      const map = new Map();
+      siblings().forEach(el=> map.set(el, el.getBoundingClientRect()));
+      return map;
+    };
+    const flip = (before)=>{
+      siblings().forEach(el=>{
+        const prev = before.get(el);
+        if(!prev) return;
+        const now = el.getBoundingClientRect();
+        const dy = prev.top - now.top;
+        if(Math.abs(dy) > 0.5){
+          el.style.transition = 'none';
+          el.style.transform = `translateY(${dy}px)`;
+          requestAnimationFrame(()=>{
+            el.style.transition = 'transform .22s cubic-bezier(.22,.85,.32,1)';
+            el.style.transform = '';
+          });
+        }
+      });
+    };
+
     const onMove = (ev)=>{
+      if(Math.abs(ev.clientY - startY) > 2) moved = true;
+      const before = captureRects();
       const after = getAfterElement(container, ev.clientY, dragging);
-      if(after == null) container.appendChild(dragging);
-      else container.insertBefore(dragging, after);
+      const prevNext = dragging.nextElementSibling;
+      if(after == null){ if(container.lastElementChild!==dragging) container.appendChild(dragging); }
+      else if(after !== dragging && after !== prevNext) container.insertBefore(dragging, after);
+      dragging.style.transform = '';
+      const newTop = dragging.getBoundingClientRect().top;
+      const desiredTop = baseTop + (ev.clientY - startY);
+      dragging.style.transform = `translateY(${desiredTop - newTop}px) scale(1.015)`;
+      flip(before);
     };
     const onUp = ()=>{
       dragging.classList.remove('dragging');
+      dragging.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
+      dragging.style.transform = '';
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       handle.removeEventListener('pointercancel', onUp);
-      const ids = Array.from(container.querySelectorAll('[data-id]')).map(el=>el.dataset.id);
-      onReordered(ids);
+      setTimeout(()=>{ dragging.style.transition = ''; }, 200);
+      if(moved){
+        const ids = Array.from(container.querySelectorAll(':scope > [data-id]')).map(el=>el.dataset.id);
+        onReordered(ids);
+      }
     };
     handle.addEventListener('pointermove', onMove);
     handle.addEventListener('pointerup', onUp);
@@ -2563,6 +2716,7 @@ function setupDragHandlers(){
 }
 
 loadState().then(setupDragHandlers);
+applyHideValuesPreference();
 </script>
 </body>
 </html>
