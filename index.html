@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Painel de Operação</title>
-<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-<link rel="icon" type="image/png" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png?v=2">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.json?v=2">
 <meta name="theme-color" content="#06080c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -130,6 +131,8 @@
     display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;
   }
   .hide-values-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .eye-icon{display:inline-flex;width:17px;height:17px;}
+  .eye-icon svg{width:100%;height:100%;}
   .hide-values-btn.active{background:var(--blue-soft);border-color:var(--blue);color:var(--blue-bright);}
   body.hide-financials .today-stat .v,
   body.hide-financials .resumo-mes .rstat .v{
@@ -170,6 +173,20 @@
   .chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
   .chart-legend span{font-family:var(--mono);font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:5px;}
   .chart-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .fin-chart-wrap{position:relative;user-select:none;-webkit-user-select:none;}
+  .fin-chart-wrap svg{display:block;width:100%;touch-action:pan-y;cursor:crosshair;}
+  .fin-chart-tooltip{
+    position:absolute;top:0;left:0;pointer-events:none;z-index:5;
+    background:var(--surface3);border:1px solid var(--border-strong);border-radius:10px;
+    padding:9px 12px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text);
+    box-shadow:var(--shadow-md);white-space:nowrap;opacity:0;transform:translate(-50%,-108%);
+    transition:opacity .1s;
+  }
+  .fin-chart-tooltip.show{opacity:1;}
+  .fin-chart-tooltip .tt-day{font-family:var(--display);font-weight:700;font-size:11.5px;margin-bottom:4px;color:var(--text);}
+  .fin-chart-tooltip .tt-row{display:flex;justify-content:space-between;gap:14px;}
+  .fin-chart-tooltip .tt-row .k{color:var(--muted);}
+  .fin-chart-tooltip .tt-row.roi .k, .fin-chart-tooltip .tt-row.roi .v{color:var(--green);font-weight:700;}
   .month-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:8px;padding:6px 10px;cursor:pointer;}
   .panel-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
   @media(max-width:700px){.panel-stats-row{grid-template-columns:1fr 1fr;}}
@@ -190,6 +207,12 @@
   .agg-editable-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
   .row-three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
   @media(max-width:900px){.row-three{grid-template-columns:1fr;}}
+  .row-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:800px){.row-two{grid-template-columns:1fr;}}
+  .panel-head-icon{width:26px;height:26px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:var(--blue-soft);color:var(--blue-bright);margin-right:8px;flex-shrink:0;}
+  .panel-head-icon svg{width:15px;height:15px;}
+  .manager-wa-ico{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;color:var(--green);flex-shrink:0;}
+  .manager-wa-ico svg{width:100%;height:100%;}
   .bottom-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(90deg,rgba(59,130,246,0.18),rgba(34,197,94,0.10));border:1px solid var(--border-strong);border-radius:16px;padding:16px 20px;margin-top:8px;flex-wrap:wrap;}
   .bottom-banner .btxt{font-family:var(--display);font-weight:700;font-size:14px;}
   .bottom-banner button{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:var(--sans);font-weight:700;font-size:12.5px;cursor:pointer;}
@@ -653,6 +676,8 @@
   .tool-field-label{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 2px 0;}
   .tool-field-value{font-size:12.5px;color:var(--muted);line-height:1.5;white-space:pre-wrap;}
   .tool-edit-row{display:flex;flex-direction:column;gap:8px;}
+  .tool-open-btn{display:block;text-align:center;margin-top:12px;padding:8px 12px;border-radius:9px;background:var(--blue-soft);color:var(--blue-bright);font-size:12.5px;font-weight:700;text-decoration:none;border:1px solid rgba(59,130,246,0.25);transition:background .15s,border-color .15s;}
+  .tool-open-btn:hover{background:rgba(59,130,246,0.2);border-color:var(--blue);}
 </style>
 </head>
 <body>
@@ -686,7 +711,8 @@
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
       <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
       <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
-      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
+      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Central de ferramentas</button>
+      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
     </div>
 
     <div class="tab-view active" id="homeView">
@@ -705,7 +731,11 @@
         <div class="eyebrow">tráfego direto • infoprodutos</div>
         <div style="display:flex;align-items:center;gap:10px;">
           <button class="hide-values-btn" id="hideValuesBtn" onclick="toggleHideValues()" title="ocultar valores financeiros">
-            <span id="hideValuesIcon">👁️</span>
+            <span id="hideValuesIcon" class="eye-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </span>
           </button>
           <div class="tdate" id="todayDate">—</div>
         </div>
@@ -732,11 +762,11 @@
     <div class="panel full">
       <div class="panel-head"><h2><span class="sub">faturamento, gasto e lucro dia a dia — mês selecionado no financeiro</span>Evolução do mês</h2></div>
       <div class="chart-legend">
-        <span><span class="dot" style="background:#3ADC8C;"></span>faturamento</span>
-        <span><span class="dot" style="background:#3B82F6;"></span>gasto</span>
-        <span><span class="dot" style="background:#F5A623;"></span>lucro</span>
+        <span><span class="dot" style="background:#F0455C;"></span>valor investido</span>
+        <span><span class="dot" style="background:#3B82F6;"></span>faturamento</span>
+        <span><span class="dot" style="background:#22C55E;"></span>lucro</span>
       </div>
-      <div id="resumoMesChart"></div>
+      <div id="resumoMesChart" class="fin-chart-wrap"></div>
     </div>
 
     <div class="row-three" id="urgentPanel">
@@ -806,18 +836,7 @@
       </div>
     </div>
 
-    <div class="row-three">
-      <div class="panel">
-        <div class="panel-head"><h2>Gerentes de conta</h2></div>
-        <div id="managersList"></div>
-        <div class="add-row">
-          <input type="text" id="managerNome" placeholder="nome do gerente">
-          <input type="text" id="managerNumero" placeholder="número/contato">
-          <input type="text" id="managerGateway" placeholder="gateway/dashboard (ex: Kirvano)">
-          <button class="add" onclick="addManager()">+ add</button>
-        </div>
-      </div>
-
+    <div class="row-two">
       <div class="panel">
         <div class="panel-head"><h2>Meus ativos</h2></div>
         <div id="assetsList"></div>
@@ -838,13 +857,22 @@
 
       <div class="panel">
         <div class="panel-head">
-          <h2>Plano do dia</h2>
-          <div class="panel-total" id="checklistProgress">—</div>
+          <h2 style="display:flex;align-items:center;">
+            <span class="panel-head-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </span>
+            Gerentes de conta
+          </h2>
         </div>
-        <div id="checklistList"></div>
+        <div id="managersList"></div>
         <div class="add-row">
-          <input type="text" id="checklistInput" placeholder="novo hábito recorrente (ex: subir criativo novo)">
-          <button class="add" onclick="addChecklistTemplateItem()">+ add</button>
+          <input type="text" id="managerNome" placeholder="nome do gerente">
+          <input type="text" id="managerNumero" placeholder="número/contato">
+          <input type="text" id="managerGateway" placeholder="gateway/dashboard (ex: Kirvano)">
+          <button class="add" onclick="addManager()">+ add</button>
         </div>
       </div>
     </div>
@@ -869,7 +897,7 @@
       <div class="finance-grid">
         <div class="panel full">
           <div class="panel-head">
-            <h2><span class="sub">gastos, faturamento e lucro — igual sua planilha, por mês</span>Financeiro</h2>
+            <h2>Financeiro</h2>
           </div>
 
           <div class="month-nav">
@@ -877,8 +905,6 @@
             <div class="month-label" id="monthLabel">—</div>
             <button class="nav-btn" onclick="changeMonth(1)">›</button>
           </div>
-
-          <div class="month-summary" id="monthSummary"></div>
 
           <div class="panel" style="margin-bottom:16px;">
             <div class="panel-head"><h2><span class="sub">visão geral do mês em gráfico</span>Desempenho do mês</h2></div>
@@ -888,7 +914,12 @@
               <div class="pstat"><div class="l">lucro</div><div class="v" id="desLucro">—</div></div>
               <div class="pstat"><div class="l">roi</div><div class="v" id="desRoi">—</div></div>
             </div>
-            <div id="desempenhoMesChart"></div>
+            <div class="chart-legend">
+              <span><span class="dot" style="background:#F0455C;"></span>valor investido</span>
+              <span><span class="dot" style="background:#3B82F6;"></span>faturamento</span>
+              <span><span class="dot" style="background:#22C55E;"></span>lucro</span>
+            </div>
+            <div id="desempenhoMesChart" class="fin-chart-wrap"></div>
           </div>
 
           <div class="fin-table-wrap">
@@ -900,6 +931,8 @@
               <tbody id="finTableBody"></tbody>
             </table>
           </div>
+
+          <div class="month-summary" id="monthSummary"></div>
         </div>
 
         <div class="panel full costs-panel">
@@ -1045,17 +1078,48 @@
 
     <div class="tab-view" id="toolsView">
       <div class="panel full">
-        <div class="panel-head"><h2><span class="sub">biblioteca pessoal de ferramentas que uso ou posso usar no futuro</span>Ferramentas</h2></div>
+        <div class="panel-head"><h2><span class="sub">recursos utilizados na operação</span>Central de ferramentas</h2></div>
         <div id="toolsList" class="tools-grid"></div>
-        <div class="add-row" style="flex-direction:column;margin-top:16px;">
+        <button class="add" id="newToolToggleBtn" style="background:var(--blue-soft);color:var(--blue);border:1px dashed var(--blue);" onclick="toggleNewToolForm(true)">+ Adicionar Recurso</button>
+        <div class="add-row" id="newToolRow" style="flex-direction:column;margin-top:14px;display:none;">
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="toolNome" placeholder="nome (ex: Canva)">
             <input type="text" id="toolCategoria" placeholder="categoria (ex: Criação de criativos)">
           </div>
           <textarea id="toolDescricao" placeholder="descrição..."></textarea>
-          <textarea id="toolParaQueServe" placeholder="para que serve..."></textarea>
+          <input type="text" id="toolLink" placeholder="link para acessar ou instalar">
           <textarea id="toolObservacoes" placeholder="observações (opcional)..."></textarea>
-          <button class="add" onclick="addTool()">+ adicionar ferramenta</button>
+          <div class="add-row" style="margin-top:0;">
+            <button class="add" style="flex:1;" onclick="addTool()">+ adicionar recurso</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewToolForm(false)">cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-view" id="warmupView">
+      <div class="panel full">
+        <div class="panel-head"><h2><span class="sub">grupos usados no processo de aquecimento de novos números</span>📱 Aquecimento de Chip</h2></div>
+        <div class="panel-head" style="margin-bottom:10px;padding-bottom:0;border:none;"><h2 style="font-size:13px;color:var(--muted);font-weight:700;">Grupos</h2></div>
+        <div id="warmupGroupsList" class="tools-grid"></div>
+        <button class="add" id="newWarmupToggleBtn" style="background:var(--blue-soft);color:var(--blue);border:1px dashed var(--blue);" onclick="toggleNewWarmupForm(true)">+ Adicionar Grupo</button>
+        <div class="add-row" id="newWarmupRow" style="flex-direction:column;margin-top:14px;display:none;">
+          <div class="add-row" style="margin-top:0;">
+            <input type="text" id="warmupNome" placeholder="nome do grupo">
+            <input type="text" id="warmupCategoria" placeholder="categoria">
+            <select id="warmupPlataforma">
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Telegram">Telegram</option>
+              <option value="Discord">Discord</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <input type="text" id="warmupLink" placeholder="link do grupo">
+          <textarea id="warmupObservacoes" placeholder="observações (opcional)..."></textarea>
+          <div class="add-row" style="margin-top:0;">
+            <button class="add" style="flex:1;" onclick="addWarmupGroup()">+ adicionar grupo</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewWarmupForm(false)">cancelar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1127,6 +1191,7 @@ const defaultState = {
   mining: [],
   videos: [],
   tools: [],
+  warmupGroups: [],
   customGateways: [],
   checklist: {
     template: [
@@ -1145,7 +1210,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], customGateways:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -1210,6 +1275,112 @@ function svgDonut(segments){
   }).join('');
   return `<svg viewBox="0 0 128 128" style="width:132px;height:132px;">${circles}</svg>`;
 }
+function renderFinanceChart(containerId, series, totalDays, opts){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  opts = opts||{};
+  const w = 700, h = opts.height||240;
+  const padL=46, padR=10, padT=14, padB=24;
+  const innerW = Math.max(1,w-padL-padR), innerH = Math.max(1,h-padT-padB);
+  const n = Math.max(1, totalDays);
+  const gid = containerId+'_grad';
+  const allVals = [0].concat(series.gasto, series.faturamento, series.lucro);
+  const maxV = Math.max(1, ...allVals);
+  const minV = Math.min(0, ...allVals);
+  const range = (maxV-minV)||1;
+  const xFor = i => padL + (n<=1?0:(i/(n-1))*innerW);
+  const yFor = v => padT + innerH - ((v-minV)/range)*innerH;
+  const baseY = yFor(Math.max(minV,0));
+
+  const gridCount = 4;
+  let gridHtml='';
+  for(let i=0;i<=gridCount;i++){
+    const yy = padT + (innerH/gridCount)*i;
+    const val = maxV - (range/gridCount)*i;
+    gridHtml += `<line x1="${padL}" y1="${yy.toFixed(1)}" x2="${w-padR}" y2="${yy.toFixed(1)}" stroke="var(--border)" stroke-width="1"/>`;
+    gridHtml += `<text x="${padL-8}" y="${(yy+3).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--muted2)">${Math.round(val/1000)}k</text>`;
+  }
+  const dayTicks = [1,5,10,15,20,25,n].filter((v,i,arr)=>arr.indexOf(v)===i && v>=1 && v<=n);
+  const xTicksHtml = dayTicks.map(d=>`<text x="${xFor(d-1).toFixed(1)}" y="${h-6}" text-anchor="middle" font-size="9" fill="var(--muted2)">${d}</text>`).join('');
+
+  function lineFor(data){ return data.map((v,i)=>`${xFor(i).toFixed(1)},${yFor(v).toFixed(1)}`).join(' L '); }
+  const lucroArea = `M ${xFor(0).toFixed(1)},${baseY.toFixed(1)} L ${lineFor(series.lucro)} L ${xFor(series.lucro.length-1).toFixed(1)},${baseY.toFixed(1)} Z`;
+
+  const linesHtml = [
+    {data:series.lucro, color:'#22C55E'},
+    {data:series.faturamento, color:'#3B82F6'},
+    {data:series.gasto, color:'#F0455C'}
+  ].map(s=>`<path d="M ${lineFor(s.data)}" fill="none" stroke="${s.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`).join('');
+
+  const dotsHtml = ['gasto','faturamento','lucro'].map(k=>{
+    const color = k==='gasto'?'#F0455C':k==='faturamento'?'#3B82F6':'#22C55E';
+    return `<circle class="fc-dot fc-dot-${k}" r="4" fill="${color}" stroke="var(--surface)" stroke-width="2" style="display:none;"/>`;
+  }).join('');
+
+  el.innerHTML = `
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;font-family:var(--mono);" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#22C55E" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#22C55E" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      ${gridHtml}
+      <path d="${lucroArea}" fill="url(#${gid})" stroke="none"/>
+      ${linesHtml}
+      ${xTicksHtml}
+      <line class="fc-crosshair" x1="0" y1="${padT}" x2="0" y2="${h-padB}" stroke="var(--border-strong)" stroke-width="1" stroke-dasharray="3 3" style="display:none;"/>
+      ${dotsHtml}
+      <rect class="fc-overlay" x="${padL}" y="0" width="${innerW}" height="${h}" fill="transparent"/>
+    </svg>
+    <div class="fin-chart-tooltip"></div>
+  `;
+
+  const svg = el.querySelector('svg');
+  const overlay = el.querySelector('.fc-overlay');
+  const crosshair = el.querySelector('.fc-crosshair');
+  const tooltip = el.querySelector('.fin-chart-tooltip');
+  const dotGasto = el.querySelector('.fc-dot-gasto');
+  const dotFat = el.querySelector('.fc-dot-faturamento');
+  const dotLucro = el.querySelector('.fc-dot-lucro');
+
+  function showAt(clientX, clientY){
+    const rect = svg.getBoundingClientRect();
+    const scaleX = w/rect.width;
+    const localX = (clientX-rect.left)*scaleX;
+    let idx = Math.round(((localX-padL)/innerW)*(n-1));
+    idx = Math.max(0, Math.min(n-1, idx));
+    const x = xFor(idx);
+    const g = series.gasto[idx]||0, f = series.faturamento[idx]||0, l = series.lucro[idx]||0;
+    const roi = g>0 ? (f/g) : null;
+    crosshair.setAttribute('x1', x); crosshair.setAttribute('x2', x); crosshair.style.display='block';
+    dotGasto.setAttribute('cx', x); dotGasto.setAttribute('cy', yFor(g)); dotGasto.style.display='block';
+    dotFat.setAttribute('cx', x); dotFat.setAttribute('cy', yFor(f)); dotFat.style.display='block';
+    dotLucro.setAttribute('cx', x); dotLucro.setAttribute('cy', yFor(l)); dotLucro.style.display='block';
+    tooltip.innerHTML = `
+      <div class="tt-day">Dia ${idx+1}</div>
+      <div class="tt-row"><span class="k">investido</span><span class="v">${brl(g)}</span></div>
+      <div class="tt-row"><span class="k">faturamento</span><span class="v">${brl(f)}</span></div>
+      <div class="tt-row"><span class="k">lucro</span><span class="v">${brl(l)}</span></div>
+      <div class="tt-row roi"><span class="k">roi</span><span class="v">${roi===null?'—':roi.toFixed(2)+'x'}</span></div>
+    `;
+    const elRect = el.getBoundingClientRect();
+    const tipX = (x/w)*elRect.width;
+    const tipY = (yFor(l)/h)*elRect.height;
+    tooltip.style.left = tipX+'px';
+    tooltip.style.top = Math.max(10,tipY)+'px';
+    tooltip.classList.add('show');
+  }
+  function hide(){
+    tooltip.classList.remove('show'); crosshair.style.display='none';
+    [dotGasto,dotFat,dotLucro].forEach(d=>d.style.display='none');
+  }
+  el.addEventListener('mousemove', e=>showAt(e.clientX, e.clientY));
+  el.addEventListener('mouseleave', hide);
+  el.addEventListener('touchstart', e=>{ if(e.touches[0]) showAt(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+  el.addEventListener('touchmove', e=>{ if(e.touches[0]){ showAt(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); } }, {passive:false});
+  el.addEventListener('touchend', hide);
+}
 function computeMonthSeries(monthKey){
   const monthObj = state.finance.months[monthKey] || {days:{}};
   const totalDays = daysInMonth(monthKey);
@@ -1270,6 +1441,7 @@ async function loadState(){
       if(!state.mining) state.mining = [];
       if(!state.videos) state.videos = [];
       if(!state.tools) state.tools = [];
+      if(!state.warmupGroups) state.warmupGroups = [];
       if(!state.customGateways) state.customGateways = [];
       state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
       state.products.forEach(p=>{
@@ -1449,7 +1621,7 @@ function renderManagers(){
     return `
     <div class="asset-row" data-id="${m.id}">
       <span class="asset-tipo">${escapeHtml(m.gateway||'—')}</span>
-      <div class="asset-name">${escapeHtml(m.nome)} ${m.numero? (link ? `<a href="${link}" target="_blank" rel="noopener" style="color:#25D366;font-size:11.5px;text-decoration:none;">· 💬 ${escapeHtml(m.numero)}</a>` : `<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(m.numero)}</span>`) : ''}</div>
+      <div class="asset-name">${escapeHtml(m.nome)} ${m.numero? (link ? `<a href="${link}" target="_blank" rel="noopener" style="color:#25D366;font-size:11.5px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">· <span class="manager-wa-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.79 14.13c-.24.68-1.4 1.3-1.93 1.35-.5.05-1.02.24-3.42-.71-2.9-1.15-4.76-4.12-4.9-4.31-.14-.19-1.17-1.56-1.17-2.98s.74-2.11 1-2.4c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.14.07.14.12.31.02.5-.1.19-.14.3-.29.47-.14.16-.3.36-.43.48-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.29 2.33 1.44.29.14.46.12.62-.07.17-.19.71-.83.9-1.11.19-.29.38-.24.63-.14.26.1 1.65.78 1.94.92.29.14.48.21.55.33.07.12.07.67-.17 1.36z"/></svg></span> ${escapeHtml(m.numero)}</a>` : `<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(m.numero)}</span>`) : ''}</div>
       <button class="del-btn" onclick="removeManager('${m.id}')">✕</button>
     </div>`;
   }).join('');
@@ -1862,19 +2034,27 @@ function renderVideos(){
   }).join('');
 }
 
-/* ---------- BIBLIOTECA DE FERRAMENTAS ---------- */
+/* ---------- CENTRAL DE FERRAMENTAS ---------- */
+function toggleNewToolForm(show){
+  document.getElementById('newToolRow').style.display = show ? 'flex' : 'none';
+  document.getElementById('newToolToggleBtn').style.display = show ? 'none' : 'block';
+  if(show){ document.getElementById('toolNome').focus(); }
+  else{
+    document.getElementById('toolNome').value=''; document.getElementById('toolCategoria').value='';
+    document.getElementById('toolDescricao').value=''; document.getElementById('toolLink').value='';
+    document.getElementById('toolObservacoes').value='';
+  }
+}
 function addTool(){
   const nome = document.getElementById('toolNome');
   const categoria = document.getElementById('toolCategoria').value.trim();
   const descricao = document.getElementById('toolDescricao').value.trim();
-  const paraQueServe = document.getElementById('toolParaQueServe').value.trim();
+  const link = document.getElementById('toolLink').value.trim();
   const observacoes = document.getElementById('toolObservacoes').value.trim();
   if(!nome.value.trim()) return;
-  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, descricao, paraQueServe, observacoes});
-  nome.value=''; document.getElementById('toolCategoria').value='';
-  document.getElementById('toolDescricao').value=''; document.getElementById('toolParaQueServe').value='';
-  document.getElementById('toolObservacoes').value='';
+  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, descricao, link, observacoes});
   saveState(); renderTools();
+  toggleNewToolForm(false);
 }
 function removeTool(id){
   state.tools = state.tools.filter(t=>t.id!==id);
@@ -1903,7 +2083,7 @@ function renderTools(){
           <input type="text" value="${escapeHtml(t.nome)}" placeholder="nome" onchange="updateToolField('${t.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(t.categoria||'')}" placeholder="categoria" onchange="updateToolField('${t.id}','categoria',this.value)">
           <textarea placeholder="descrição" onchange="updateToolField('${t.id}','descricao',this.value)">${escapeHtml(t.descricao||'')}</textarea>
-          <textarea placeholder="para que serve" onchange="updateToolField('${t.id}','paraQueServe',this.value)">${escapeHtml(t.paraQueServe||'')}</textarea>
+          <input type="text" value="${escapeHtml(t.link||'')}" placeholder="link para acessar ou instalar" onchange="updateToolField('${t.id}','link',this.value)">
           <textarea placeholder="observações" onchange="updateToolField('${t.id}','observacoes',this.value)">${escapeHtml(t.observacoes||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="removeTool('${t.id}')">✕ excluir</button>
@@ -1920,8 +2100,86 @@ function renderTools(){
       </div>
       ${t.categoria ? `<span class="tool-cat">${escapeHtml(t.categoria)}</span>` : ''}
       ${t.descricao ? `<div class="tool-field-label">descrição</div><div class="tool-field-value">${escapeHtml(t.descricao)}</div>` : ''}
-      ${t.paraQueServe ? `<div class="tool-field-label">para que serve</div><div class="tool-field-value">${escapeHtml(t.paraQueServe)}</div>` : ''}
       ${t.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(t.observacoes)}</div>` : ''}
+      ${t.link ? `<a class="tool-open-btn" href="${escapeHtml(t.link)}" target="_blank" rel="noopener">Abrir / instalar →</a>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ---------- AQUECIMENTO DE CHIP (GRUPOS) ---------- */
+function toggleNewWarmupForm(show){
+  document.getElementById('newWarmupRow').style.display = show ? 'flex' : 'none';
+  document.getElementById('newWarmupToggleBtn').style.display = show ? 'none' : 'block';
+  if(show){ document.getElementById('warmupNome').focus(); }
+  else{
+    document.getElementById('warmupNome').value=''; document.getElementById('warmupCategoria').value='';
+    document.getElementById('warmupPlataforma').value='WhatsApp';
+    document.getElementById('warmupLink').value=''; document.getElementById('warmupObservacoes').value='';
+  }
+}
+function addWarmupGroup(){
+  const nome = document.getElementById('warmupNome');
+  const categoria = document.getElementById('warmupCategoria').value.trim();
+  const plataforma = document.getElementById('warmupPlataforma').value;
+  const link = document.getElementById('warmupLink').value.trim();
+  const observacoes = document.getElementById('warmupObservacoes').value.trim();
+  if(!nome.value.trim()) return;
+  state.warmupGroups.push({id:uid(), nome:nome.value.trim(), categoria, plataforma, link, observacoes});
+  saveState(); renderWarmupGroups();
+  toggleNewWarmupForm(false);
+}
+function removeWarmupGroup(id){
+  state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
+  saveState(); renderWarmupGroups();
+}
+let warmupEditingId = null;
+function toggleWarmupEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  warmupEditingId = (warmupEditingId===id) ? null : id;
+  renderWarmupGroups();
+}
+function updateWarmupField(id, field, value){
+  const g = state.warmupGroups.find(g=>g.id===id);
+  if(!g) return;
+  g[field] = value;
+  saveState();
+}
+function openWarmupGroup(link){
+  if(link) window.open(link, '_blank');
+}
+function renderWarmupGroups(){
+  const el = document.getElementById('warmupGroupsList');
+  if(!el) return;
+  if(!state.warmupGroups || state.warmupGroups.length===0){ el.innerHTML = '<div class="empty">nenhum grupo cadastrado ainda.</div>'; return; }
+  el.innerHTML = state.warmupGroups.map(g=>{
+    if(warmupEditingId===g.id){
+      return `
+      <div class="tool-card">
+        <div class="tool-edit-row">
+          <input type="text" value="${escapeHtml(g.nome)}" placeholder="nome" onchange="updateWarmupField('${g.id}','nome',this.value)">
+          <input type="text" value="${escapeHtml(g.categoria||'')}" placeholder="categoria" onchange="updateWarmupField('${g.id}','categoria',this.value)">
+          <select onchange="updateWarmupField('${g.id}','plataforma',this.value)">
+            ${['WhatsApp','Telegram','Discord','Outro'].map(p=>`<option value="${p}" ${g.plataforma===p?'selected':''}>${p}</option>`).join('')}
+          </select>
+          <input type="text" value="${escapeHtml(g.link||'')}" placeholder="link do grupo" onchange="updateWarmupField('${g.id}','link',this.value)">
+          <textarea placeholder="observações" onchange="updateWarmupField('${g.id}','observacoes',this.value)">${escapeHtml(g.observacoes||'')}</textarea>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeWarmupGroup('${g.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleWarmupEdit('${g.id}')"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="tool-card" style="cursor:pointer;" onclick="openWarmupGroup('${escapeHtml(g.link||'')}')">
+      <div class="tool-card-head">
+        <div class="tool-name">${escapeHtml(g.nome)}</div>
+        <button class="mining-edit-btn" onclick="toggleWarmupEdit('${g.id}', event)">✎ editar</button>
+      </div>
+      ${g.categoria ? `<span class="tool-cat">${escapeHtml(g.categoria)}</span>` : ''}
+      <span class="tool-cat" style="background:var(--blue-soft);color:var(--blue-bright);margin-left:6px;">${escapeHtml(g.plataforma||'WhatsApp')}</span>
+      ${g.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(g.observacoes)}</div>` : ''}
+      ${g.link ? `<a class="tool-open-btn" href="${escapeHtml(g.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir Grupo →</a>` : ''}
     </div>`;
   }).join('');
 }
@@ -2116,18 +2374,8 @@ function renderResumoMes(){
   const chartEl = document.getElementById('resumoMesChart');
   if(chartEl){
     const series = computeMonthSeries(key);
-    const chartSvg = svgLineChart([
-      {data:series.faturamento, color:'#3ADC8C'},
-      {data:series.gasto, color:'#3B82F6'},
-      {data:series.lucro, color:'#F5A623'}
-    ], series.totalDays, {height:220});
-    chartEl.innerHTML = chartSvg;
-    const bigChartEl = document.getElementById('desempenhoMesChart');
-    if(bigChartEl) bigChartEl.innerHTML = svgLineChart([
-      {data:series.faturamento, color:'#3ADC8C'},
-      {data:series.gasto, color:'#3B82F6'},
-      {data:series.lucro, color:'#F5A623'}
-    ], series.totalDays, {height:240});
+    renderFinanceChart('resumoMesChart', series, series.totalDays, {height:220});
+    if(document.getElementById('desempenhoMesChart')) renderFinanceChart('desempenhoMesChart', series, series.totalDays, {height:240});
   }
   const desInvestido = document.getElementById('desInvestido');
   const desFaturamento = document.getElementById('desFaturamento');
@@ -2139,10 +2387,12 @@ function renderResumoMes(){
   if(desRoi) desRoi.innerText = roi===null ? '—' : roi.toFixed(2)+'x';
 }
 
+const EYE_OPEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_CLOSED_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a20.3 20.3 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a20.4 20.4 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 function toggleHideValues(){
   const hidden = !document.body.classList.contains('hide-financials');
   document.body.classList.toggle('hide-financials', hidden);
-  document.getElementById('hideValuesIcon').innerText = hidden ? '🙈' : '👁️';
+  document.getElementById('hideValuesIcon').innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
   document.getElementById('hideValuesBtn').classList.toggle('active', hidden);
   try{ localStorage.setItem('laka_hide_values', hidden ? '1' : '0'); }catch(e){}
 }
@@ -2152,7 +2402,7 @@ function applyHideValuesPreference(){
   document.body.classList.toggle('hide-financials', hidden);
   const icon = document.getElementById('hideValuesIcon');
   const btn = document.getElementById('hideValuesBtn');
-  if(icon) icon.innerText = hidden ? '🙈' : '👁️';
+  if(icon) icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
   if(btn) btn.classList.toggle('active', hidden);
 }
 function switchTab(tab){
@@ -2161,11 +2411,13 @@ function switchTab(tab){
   document.getElementById('productsView').classList.toggle('active', tab==='products');
   document.getElementById('miningView').classList.toggle('active', tab==='mining');
   document.getElementById('toolsView').classList.toggle('active', tab==='tools');
+  document.getElementById('warmupView').classList.toggle('active', tab==='warmup');
   document.getElementById('tabBtnHome').classList.toggle('active', tab==='home');
   document.getElementById('tabBtnFinance').classList.toggle('active', tab==='finance');
   document.getElementById('tabBtnProducts').classList.toggle('active', tab==='products');
   document.getElementById('tabBtnMining').classList.toggle('active', tab==='mining');
   document.getElementById('tabBtnTools').classList.toggle('active', tab==='tools');
+  document.getElementById('tabBtnWarmup').classList.toggle('active', tab==='warmup');
   window.scrollTo(0,0);
   if(tab==='products'){
     setTimeout(()=>{
@@ -2598,10 +2850,10 @@ function render(){
   renderManagers();
   renderAssets();
   renderPhones();
-  renderChecklist();
   renderProducts();
   renderMining();
   renderTools();
+  renderWarmupGroups();
   renderVideos();
   renderPlanner();
   renderResumoMes();
