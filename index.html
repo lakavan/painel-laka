@@ -419,15 +419,16 @@
   .empty{color:var(--muted2);font-size:12.5px;font-style:italic;padding:6px 0;}
 
   /* ---------- LOG ---------- */
-  .log-entry{position:relative;border-left:2px solid var(--border);padding:8px 34px 8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;transition:background .15s;}
+  .log-entry{position:relative;border-left:2px solid var(--border);padding:8px 62px 8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;transition:background .15s;}
   .log-entry:hover{background:var(--surface2);}
   .log-entry.win{border-left-color:var(--ok);}
   .log-entry.problem{border-left-color:var(--urgent);}
   .log-meta{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:3px;}
   .log-edited-tag{color:var(--blue);}
   .log-text{font-size:13px;line-height:1.5;}
-  .log-edit-btn{position:absolute;top:8px;right:8px;opacity:0;transition:opacity .15s;}
-  .log-entry:hover .log-edit-btn{opacity:1;}
+  .log-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:opacity .15s;}
+  .log-entry:hover .log-actions{opacity:1;}
+  .log-del-btn:hover{color:var(--urgent);border-color:var(--urgent);}
   .log-editing{padding:10px 12px;background:var(--surface2);}
   .log-edit-textarea{width:100%;min-height:70px;margin-bottom:8px;}
 
@@ -530,6 +531,31 @@
   }
   .mining-field input:focus, .mining-field textarea:focus{border-color:var(--blue);}
   .mining-field textarea{resize:none;min-height:38px;}
+  .mining-anuncios-highlight{
+    background:linear-gradient(135deg,var(--blue-soft),rgba(16,185,129,0.08));border:1.5px solid var(--blue);
+    border-radius:12px;padding:12px 14px;margin-bottom:12px;
+  }
+  .mining-anuncios-highlight label{
+    font-family:var(--mono);font-size:10px;color:var(--blue-bright);text-transform:uppercase;letter-spacing:0.5px;
+    display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;
+  }
+  .mining-highlight-tag{
+    font-family:var(--sans);font-size:9.5px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);
+    background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;
+  }
+  .mining-highlight-row{display:flex;align-items:center;gap:10px;}
+  .mining-highlight-input{
+    flex:1;font-family:var(--display);font-size:26px;font-weight:800;color:var(--text);
+    background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;
+    padding:8px 12px;text-align:center;
+  }
+  .mining-highlight-input:focus{border-color:var(--blue-bright);}
+  .mining-stepper{
+    width:40px;height:40px;flex-shrink:0;border-radius:10px;border:1px solid var(--border-strong);
+    background:var(--surface);color:var(--text);font-size:19px;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;
+  }
+  .mining-stepper:hover{background:var(--blue-soft);border-color:var(--blue);color:var(--blue-bright);}
   .mining-history{
     margin-top:10px;border-top:1px solid var(--border);padding-top:8px;
   }
@@ -539,31 +565,51 @@
   .mining-history-entry{display:flex;gap:8px;font-size:11.5px;color:var(--muted);padding:3px 0;font-family:var(--mono);}
   .mining-history-entry .hd{color:var(--muted2);min-width:80px;}
   .mining-history-entry .hv{color:var(--green);}
+  .mining-stats-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .mining-sparkline{width:100%;height:44px;display:block;margin-bottom:8px;}
+  .mining-sparkline .spark-area{fill:currentColor;opacity:0.14;stroke:none;}
+  .mining-sparkline .spark-line{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .mining-sparkline .spark-dot{fill:currentColor;}
+  .mining-sparkline.spark-alta{color:var(--ok);}
+  .mining-sparkline.spark-queda{color:var(--urgent);}
+  .mining-sparkline.spark-estavel{color:var(--muted);}
+  .mining-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;}
+  .mining-stat{display:flex;flex-direction:column;gap:2px;}
+  .ms-label{font-family:var(--mono);font-size:8.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.4px;}
+  .ms-value{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);}
+  .ms-value.trend-alta{color:var(--ok);}
+  .ms-value.trend-queda{color:var(--urgent);}
+  .ms-value.trend-estavel{color:var(--muted);}
+  .ms-value.pos{color:var(--ok);}
+  .ms-value.neg{color:var(--urgent);}
 
   /* ---------- VÍDEOS ---------- */
-  .videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:6px;}
-  .video-card{
-    background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;
-    cursor:pointer;transition:border-color .15s,transform .15s;position:relative;
+  .videos-list{display:flex;flex-direction:column;gap:7px;margin-bottom:6px;}
+  .video-row{
+    background:var(--surface2);border:1px solid var(--border);border-radius:11px;overflow:hidden;
+    cursor:pointer;transition:border-color .15s,background .15s;position:relative;
+    display:flex;align-items:center;gap:11px;padding:10px 12px;
   }
-  .video-card:hover{border-color:var(--blue);transform:translateY(-2px);}
-  .video-thumb{width:100%;aspect-ratio:16/9;background:var(--bg) center/cover no-repeat;position:relative;}
-  .video-thumb-empty{background:linear-gradient(135deg,var(--surface3),var(--bg));}
-  .video-platform-badge{
-    position:absolute;bottom:6px;left:6px;font-family:var(--mono);font-size:9px;font-weight:700;
-    text-transform:uppercase;letter-spacing:0.4px;padding:3px 7px;border-radius:5px;color:#fff;
+  .video-row:hover{border-color:var(--blue);background:var(--surface3);}
+  .video-row.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
+  .video-row .drag-handle{flex-shrink:0;color:var(--muted2);cursor:grab;padding:2px;}
+  .video-platform-ico{
+    flex-shrink:0;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-size:15px;color:#fff;
   }
-  .video-platform-badge.ig{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);}
-  .video-platform-badge.tt{background:#010101;border:1px solid #25F4EE;}
-  .video-play{
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:40px;height:40px;background:rgba(13,11,20,0.75);border-radius:50%;
-    display:flex;align-items:center;justify-content:center;color:var(--green);font-size:15px;
-  }
-  .video-info{padding:10px 12px;}
-  .video-title{font-family:var(--display);font-weight:700;font-size:12.5px;margin-bottom:3px;}
-  .video-nota{font-size:11px;color:var(--muted);}
-  .video-del{position:absolute;top:6px;right:6px;background:rgba(13,11,20,0.7);border:none;color:var(--text);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;z-index:2;}
+  .video-platform-ico.youtube{background:#FF0000;}
+  .video-platform-ico.instagram{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);}
+  .video-platform-ico.tiktok{background:#010101;border:1px solid #25F4EE;}
+  .video-platform-ico.link{background:var(--surface3);color:var(--muted);border:1px solid var(--border-strong);}
+  .video-row-body{flex:1;min-width:0;}
+  .video-title{font-family:var(--display);font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .video-meta{display:flex;align-items:center;gap:6px;margin-top:2px;}
+  .video-platform-label{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted2);}
+  .video-nota{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .video-open-ico{flex-shrink:0;color:var(--muted2);font-size:15px;transition:color .15s,transform .15s;}
+  .video-row:hover .video-open-ico{color:var(--blue-bright);transform:translateX(2px);}
+  .video-del{flex-shrink:0;background:none;border:none;color:var(--muted2);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;z-index:2;transition:color .15s,background .15s;}
+  .video-del:hover{color:var(--urgent);background:var(--urgent-soft);}
   .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
   .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
   .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:rgba(59,130,246,0.10);border:1px solid rgba(59,130,246,0.3);border-radius:4px;padding:2px 7px;color:var(--blue);}
@@ -878,7 +924,7 @@
         <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2>
         <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
       </div>
-      <div id="videosList" class="videos-grid"></div>
+      <div id="videosList" class="videos-list"></div>
       <div class="add-form" id="newVideoRow">
       <div class="add-row">
         <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
@@ -1053,20 +1099,24 @@
     </div>
 
     <div class="tab-view" id="productsView">
-      <div class="panel full">
-        <div class="panel-head"><h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2></div>
+      <div class="panel full" id="productsPanel">
+        <div class="panel-head">
+          <h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2>
+          <button class="add-tool-btn" id="newProductToggleBtn" onclick="toggleNewProductRow(true)">+ Criar novo produto</button>
+        </div>
         <label class="field-label">produto selecionado</label>
         <select id="productSelect" onchange="selectProduct(this.value)" style="width:100%;margin-bottom:14px;"></select>
 
-        <div id="newProductRow" style="display:none;">
+        <div class="add-form" id="newProductRow">
+        <div>
           <label class="field-label">nome do novo produto</label>
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="newProductName" placeholder="ex: Curso X, Mentoria Y...">
             <button class="add" onclick="addProduct()">criar produto</button>
-            <button class="add" style="background:var(--surface2);color:var(--muted);" onclick="toggleNewProductRow(false)">cancelar</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewProductRow(false)">cancelar</button>
           </div>
         </div>
-        <button class="add" id="newProductToggleBtn" style="background:var(--blue-soft);color:var(--blue);border:1px dashed var(--blue);" onclick="toggleNewProductRow(true)">+ criar novo produto</button>
+        </div>
       </div>
 
       <div id="productDetail" style="display:none;">
@@ -1900,9 +1950,11 @@ function renderProductSelect(){
     state.products.map(p=>`<option value="${p.id}" ${state.currentProductId===p.id?'selected':''}>${escapeHtml(p.nome)}</option>`).join('');
 }
 function toggleNewProductRow(show){
-  document.getElementById('newProductRow').style.display = show ? 'block' : 'none';
-  document.getElementById('newProductToggleBtn').style.display = show ? 'none' : 'block';
+  document.getElementById('newProductRow').classList.toggle('open', show);
+  document.getElementById('newProductToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('productsPanel').classList.toggle('panel-editing', show);
   if(show) document.getElementById('newProductName').focus();
+  else document.getElementById('newProductName').value = '';
 }
 function addProduct(){
   const input = document.getElementById('newProductName');
@@ -1913,6 +1965,7 @@ function addProduct(){
   state.currentProductId = id;
   toggleNewProductRow(false);
   saveState(); renderProducts();
+  showToast('Produto criado.');
 }
 function selectProduct(id){
   state.currentProductId = id || null;
@@ -2140,28 +2193,32 @@ function removeVideo(id){
   state.videos = state.videos.filter(v=>v.id!==id);
   saveState(); renderVideos();
 }
+const PLATFORM_ICONS = {
+  youtube: '▶',
+  instagram: '◎',
+  tiktok: '♪',
+  link: '🔗'
+};
+const PLATFORM_LABELS = { youtube:'YouTube', instagram:'Instagram', tiktok:'TikTok', link:'Link' };
 function renderVideos(){
   const el = document.getElementById('videosList');
   if(!el) return;
   if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
   el.innerHTML = state.videos.map(v=>{
     const platform = detectVideoPlatform(v.url);
-    const ytId = platform==='youtube' ? extractYoutubeId(v.url) : null;
-    const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '';
-    const badge = platform==='instagram' ? `<span class="video-platform-badge ig">Instagram</span>`
-                : platform==='tiktok' ? `<span class="video-platform-badge tt">TikTok</span>`
-                : '';
     return `
-    <div class="video-card" onclick="window.open('${escapeHtml(v.url)}','_blank')">
-      <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
-      <div class="video-thumb ${thumb?'':'video-thumb-empty'}" style="${thumb?`background-image:url('${thumb}');`:''}">
-        <div class="video-play">▶</div>
-        ${badge}
-      </div>
-      <div class="video-info">
+    <div class="video-row" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
+      <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
+      <span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>
+      <div class="video-row-body">
         <div class="video-title">${escapeHtml(v.titulo)}</div>
-        ${v.nota ? `<div class="video-nota">${escapeHtml(v.nota)}</div>` : ''}
+        <div class="video-meta">
+          <span class="video-platform-label">${PLATFORM_LABELS[platform]}</span>
+          ${v.nota ? `<span class="video-nota">· ${escapeHtml(v.nota)}</span>` : ''}
+        </div>
       </div>
+      <span class="video-open-ico">→</span>
+      <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
     </div>`;
   }).join('');
 }
@@ -2371,6 +2428,53 @@ function updateMiningField(id, field, value){
   }
   saveState(); renderMining();
 }
+function stepMiningAnuncios(id, delta){
+  const item = state.mining.find(m=>m.id===id);
+  if(!item) return;
+  const newVal = Math.max(0, (Number(item.anuncios)||0) + delta);
+  updateMiningField(id, 'anuncios', newVal);
+}
+function miningTrend(history){
+  if(!history || history.length<2) return 'estavel';
+  const last = history[history.length-1].anuncios;
+  const prev = history[history.length-2].anuncios;
+  if(last>prev) return 'alta';
+  if(last<prev) return 'queda';
+  return 'estavel';
+}
+function miningStats(history){
+  if(!history || history.length===0) return null;
+  const vals = history.map(h=>h.anuncios);
+  const max = Math.max(...vals);
+  const min = Math.min(...vals);
+  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const last = vals[vals.length-1];
+  const prev = vals.length>1 ? vals[vals.length-2] : null;
+  const diff = prev!==null ? last-prev : null;
+  const pct = (prev!==null && prev!==0) ? ((last-prev)/prev*100) : null;
+  return { max, min, avg, diff, pct, trend: miningTrend(history) };
+}
+function miningSparklineSVG(history, w, h){
+  w = w || 260; h = h || 44;
+  const vals = history.map(x=>x.anuncios);
+  const max = Math.max(...vals), min = Math.min(...vals);
+  const range = (max - min) || 1;
+  const stepX = vals.length>1 ? w/(vals.length-1) : 0;
+  const pts = vals.map((v,i)=>{
+    const x = i*stepX;
+    const y = h - 4 - ((v-min)/range)*(h-8);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const line = pts.join(' ');
+  const area = `0,${h} ${line} ${w},${h}`;
+  const trend = miningTrend(history);
+  const lastPt = pts[pts.length-1].split(',');
+  return `<svg viewBox="0 0 ${w} ${h}" class="mining-sparkline spark-${trend}" preserveAspectRatio="none">
+    <polyline points="${area}" class="spark-area"></polyline>
+    <polyline points="${line}" class="spark-line"></polyline>
+    <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="3" class="spark-dot"></circle>
+  </svg>`;
+}
 function toggleMiningHistory(id){
   const el = document.getElementById('mining-hist-'+id);
   if(el) el.classList.toggle('open');
@@ -2383,15 +2487,38 @@ function renderMining(){
     const history = m.history || [];
     const historyHtml = history.length===0 ? '<div class="empty" style="padding:4px 0;">sem histórico ainda.</div>' :
       [...history].reverse().map(h=>`<div class="mining-history-entry"><span class="hd">${h.date}</span><span class="hv">${h.anuncios} anúncios ativos</span></div>`).join('');
+    const stats = miningStats(history);
+    const trendLabels = {alta:'📈 Em alta', queda:'📉 Em queda', estavel:'➡️ Estável'};
+    const statsBlock = (stats && history.length>=2) ? `
+      <div class="mining-stats-panel">
+        ${miningSparklineSVG(history)}
+        <div class="mining-stats-grid">
+          <div class="mining-stat"><span class="ms-label">tendência</span><span class="ms-value trend-${stats.trend}">${trendLabels[stats.trend]}</span></div>
+          <div class="mining-stat"><span class="ms-label">máximo</span><span class="ms-value">${stats.max}</span></div>
+          <div class="mining-stat"><span class="ms-label">mínimo</span><span class="ms-value">${stats.min}</span></div>
+          <div class="mining-stat"><span class="ms-label">média</span><span class="ms-value">${stats.avg.toFixed(1)}</span></div>
+          ${stats.diff!==null ? `<div class="mining-stat"><span class="ms-label">últ. variação</span><span class="ms-value ${stats.diff>=0?'pos':'neg'}">${stats.diff>=0?'+':''}${stats.diff}</span></div>` : ''}
+          ${stats.pct!==null ? `<div class="mining-stat"><span class="ms-label">variação %</span><span class="ms-value ${stats.pct>=0?'pos':'neg'}">${stats.pct>=0?'+':''}${stats.pct.toFixed(1)}%</span></div>` : ''}
+        </div>
+      </div>` : '';
     const historyBlock = `
       <div class="mining-history">
-        <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📈 histórico de anúncios (${history.length}) ▾</button>
+        ${statsBlock}
+        <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📋 ver todos os registros (${history.length}) ▾</button>
         <div class="mining-history-list" id="mining-hist-${m.id}">${historyHtml}</div>
       </div>`;
 
     if(miningEditingId === m.id){
       return `
       <div class="mining-card" data-id="${m.id}">
+        <div class="mining-anuncios-highlight">
+          <label>📊 anúncios ativos <span class="mining-highlight-tag">atualiza com frequência</span></label>
+          <div class="mining-highlight-row">
+            <button class="mining-stepper" onclick="stepMiningAnuncios('${m.id}',-1)">−</button>
+            <input type="number" class="mining-highlight-input" value="${m.anuncios||0}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
+            <button class="mining-stepper" onclick="stepMiningAnuncios('${m.id}',1)">+</button>
+          </div>
+        </div>
         <div class="mining-top">
           <div class="mining-fields">
             <div class="mining-field">
@@ -2405,10 +2532,6 @@ function renderMining(){
             <div class="mining-field">
               <label>nicho</label>
               <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
-            </div>
-            <div class="mining-field">
-              <label>anúncios ativos</label>
-              <input type="number" value="${m.anuncios||''}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
             </div>
             <div class="mining-field">
               <label>ticket do produto</label>
@@ -2868,9 +2991,20 @@ function renderLogs(){
     <div class="log-entry ${l.type}">
       <div class="log-meta">${l.date} · ${l.type==='win'?'funcionou':'travou'}${l.edited ? ' · <span class="log-edited-tag">editado</span>' : ''}</div>
       <div class="log-text">${escapeHtml(l.text)}</div>
-      <button class="mining-edit-btn log-edit-btn" onclick="toggleLogEdit('${l.id}')">✎ editar</button>
+      <div class="log-actions">
+        <button class="mining-edit-btn log-edit-btn" onclick="toggleLogEdit('${l.id}')">✎ editar</button>
+        <button class="mining-edit-btn log-del-btn" onclick="removeLog('${l.id}')">🗑</button>
+      </div>
     </div>
   `;}).join('');
+}
+function removeLog(id){
+  const l = state.logs.find(l=>l.id===id);
+  const preview = l ? (l.text.length>40 ? l.text.slice(0,40)+'…' : l.text) : 'este registro';
+  if(!confirm(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`)) return;
+  state.logs = state.logs.filter(l=>l.id!==id);
+  saveState(); renderLogs();
+  showToast('Registro excluído.');
 }
 function addLog(){
   const input = document.getElementById('logInput');
@@ -3093,6 +3227,7 @@ function setupDragHandlers(){
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
   attachSortable('miningList', ids=>reorderArray('mining', ids));
+  attachSortable('videosList', ids=>reorderArray('videos', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
