@@ -254,6 +254,35 @@
   }
   .add-cost-cancel-btn:hover{border-color:var(--urgent);color:var(--urgent);}
 
+  /* ---------- FORMULÁRIO PADRÃO (toggle add/edit) ---------- */
+  .add-form{
+    display:grid;grid-template-rows:0fr;opacity:0;margin-top:0;
+    transition:grid-template-rows .32s cubic-bezier(.4,0,.2,1), opacity .22s ease, margin-top .32s cubic-bezier(.4,0,.2,1);
+  }
+  .add-form.open{grid-template-rows:1fr;opacity:1;margin-top:14px;}
+  .add-form > *{min-height:0;overflow:hidden;}
+  .add-form.open > *{overflow:visible;}
+  .panel.panel-editing{
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px var(--blue-soft), 0 4px 18px rgba(0,0,0,0.22);
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+
+  /* ---------- TOAST ---------- */
+  #toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none;}
+  .toast{
+    background:var(--surface2);border:1px solid var(--border-strong);color:var(--text);
+    font-family:var(--sans);font-size:13px;font-weight:600;padding:12px 18px;border-radius:12px;
+    box-shadow:0 10px 30px -6px rgba(0,0,0,0.5);display:flex;align-items:center;gap:9px;
+    transform:translateY(12px);opacity:0;transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .28s ease;
+    max-width:320px;
+  }
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast .toast-ico{
+    width:18px;height:18px;border-radius:50%;background:var(--green);color:#04140a;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;
+  }
+
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
   .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
@@ -709,6 +738,7 @@
 </style>
 </head>
 <body>
+<div id="toastContainer"></div>
 <div class="wrap">
 
   <div class="hero">
@@ -843,39 +873,53 @@
       <div class="planner-days" id="plannerDays"></div>
     </div>
 
-    <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2></div>
+    <div class="panel full" id="videosPanel">
+      <div class="panel-head">
+        <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2>
+        <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
+      </div>
       <div id="videosList" class="videos-grid"></div>
-      <button class="add" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)" style="margin-top:10px;">+ adicionar vídeo</button>
-      <div class="add-row" id="newVideoRow" style="display:none;">
+      <div class="add-form" id="newVideoRow">
+      <div class="add-row">
         <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
         <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
         <input type="text" id="videoNota" placeholder="nota (opcional)">
         <button class="add" onclick="addVideo()">+ add</button>
         <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
       </div>
+      </div>
     </div>
 
     <div class="row-two">
-      <div class="panel">
-        <div class="panel-head"><h2>Meus ativos</h2></div>
+      <div class="panel" id="assetsPanel">
+        <div class="panel-head">
+          <h2>Meus ativos</h2>
+          <button class="add-tool-btn" id="newAssetToggleBtn" onclick="toggleNewAssetForm(true)">+ Adicionar Ativo</button>
+        </div>
         <div id="assetsList"></div>
-        <div class="add-row">
-          <select id="assetTipo">
-            <option value="Perfil Facebook">Perfil Facebook</option>
-            <option value="BM">BM</option>
-            <option value="Página">Página</option>
-            <option value="Conta de anúncio">Conta de anúncio</option>
-            <option value="Domínio">Domínio</option>
-            <option value="Outro">Outro</option>
-          </select>
-          <input type="text" id="assetNome" placeholder="nome/identificador">
+        <div class="add-form" id="newAssetRow">
+        <div class="add-row" style="flex-direction:column;">
+          <div class="add-row" style="margin-top:0;">
+            <select id="assetTipo">
+              <option value="Perfil Facebook">Perfil Facebook</option>
+              <option value="BM">BM</option>
+              <option value="Página">Página</option>
+              <option value="Conta de anúncio">Conta de anúncio</option>
+              <option value="Domínio">Domínio</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <input type="text" id="assetNome" placeholder="nome/identificador">
+          </div>
           <input type="text" id="assetNota" placeholder="nota (opcional)">
-          <button class="add" onclick="addAsset()">+ add</button>
+          <div class="add-row" style="margin-top:0;">
+            <button class="add" style="flex:1;" onclick="addAsset()">+ adicionar ativo</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewAssetForm(false)">cancelar</button>
+          </div>
+        </div>
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="managersPanel">
         <div class="panel-head">
           <h2 style="display:flex;align-items:center;">
             <span class="panel-head-icon" aria-hidden="true">
@@ -886,13 +930,21 @@
             </span>
             Gerentes de conta
           </h2>
+          <button class="add-tool-btn" id="newManagerToggleBtn" onclick="toggleNewManagerForm(true)">+ Adicionar Gerente</button>
         </div>
         <div id="managersList"></div>
-        <div class="add-row">
+        <div class="add-form" id="newManagerRow">
+        <div class="add-row" style="flex-direction:column;">
           <input type="text" id="managerNome" placeholder="nome do gerente">
-          <input type="text" id="managerNumero" placeholder="número/contato">
-          <input type="text" id="managerGateway" placeholder="gateway/dashboard (ex: Kirvano)">
-          <button class="add" onclick="addManager()">+ add</button>
+          <div class="add-row" style="margin-top:0;">
+            <input type="text" id="managerNumero" placeholder="número/contato">
+            <input type="text" id="managerGateway" placeholder="gateway/dashboard (ex: Kirvano)">
+          </div>
+          <div class="add-row" style="margin-top:0;">
+            <button class="add" style="flex:1;" onclick="addManager()">+ adicionar gerente</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewManagerForm(false)">cancelar</button>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -955,14 +1007,15 @@
           <div class="month-summary" id="monthSummary"></div>
         </div>
 
-        <div class="panel full costs-panel">
+        <div class="panel full costs-panel" id="costsPanel">
           <div class="panel-head">
             <h2><span class="sub">o que sai todo mês, independente de faturar ou não</span>Custos fixos</h2>
             <div class="panel-total" id="costTotal">—</div>
           </div>
           <div id="costsList"></div>
-          <button class="add-cost-toggle-btn" id="costAddToggleBtn" onclick="toggleCostAddForm()">+ Adicionar custo</button>
-          <div class="add-row add-cost-form" id="costAddForm" style="flex-direction:column;display:none;">
+          <button class="add-tool-btn" id="costAddToggleBtn" onclick="toggleCostAddForm()" style="margin-top:10px;">+ Adicionar custo</button>
+          <div class="add-form" id="costAddForm">
+          <div class="add-row" style="flex-direction:column;">
             <input type="text" id="costName" placeholder="nome do custo (ex: Hostinger, Meta Ads, Imposto)">
             <div class="add-row" style="margin-top:0;">
               <select id="costValueType" onchange="toggleCostAmountUI()" style="flex:1;min-width:140px;">
@@ -993,6 +1046,7 @@
               <button class="add" style="flex:1;" onclick="addCost()">+ adicionar custo</button>
               <button class="add-cost-cancel-btn" onclick="closeCostAddForm()">cancelar</button>
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -1062,13 +1116,15 @@
     </div>
 
     <div class="tab-view" id="miningView">
-      <div class="panel full">
-        <div class="panel-head"><h2><span class="sub">ofertas de concorrentes pra analisar e modelar</span>Mineração de ofertas</h2></div>
+      <div class="panel full" id="miningPanel">
+        <div class="panel-head">
+          <h2><span class="sub">ofertas de concorrentes pra analisar e modelar</span>Mineração de ofertas</h2>
+          <button class="add-tool-btn" id="newMiningToggleBtn" onclick="toggleNewMiningForm(true)">+ Cadastrar oferta</button>
+        </div>
         <div id="miningList"></div>
 
-        <button class="add" id="newMiningToggleBtn" onclick="toggleNewMiningForm(true)">+ cadastrar nova oferta</button>
-
-        <div id="newMiningRow" style="display:none;">
+        <div class="add-form" id="newMiningRow">
+        <div>
           <div class="add-row" style="flex-wrap:wrap;">
             <input type="text" id="miningNome" placeholder="nome do produto/oferta">
             <input type="text" id="miningPagina" placeholder="nome da página">
@@ -1090,20 +1146,22 @@
           </div>
           <div class="add-row">
             <button class="add" onclick="addMiningEntry()">+ adicionar à mineração</button>
-            <button class="mining-edit-btn" onclick="toggleNewMiningForm(false)">cancelar</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewMiningForm(false)">cancelar</button>
           </div>
+        </div>
         </div>
       </div>
     </div>
 
     <div class="tab-view" id="toolsView">
-      <div class="panel full">
+      <div class="panel full" id="toolsPanel">
         <div class="panel-head">
           <h2><span class="sub">recursos utilizados na operação</span>Ferramentas</h2>
           <button class="add-tool-btn" id="newToolToggleBtn" onclick="toggleNewToolForm(true)">+ Adicionar ferramenta</button>
         </div>
         <div id="toolsList" class="tools-grid"></div>
-        <div class="add-row" id="newToolRow" style="flex-direction:column;margin-top:14px;display:none;">
+        <div class="add-form" id="newToolRow">
+        <div class="add-row" style="flex-direction:column;">
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="toolNome" placeholder="nome (ex: Canva)">
             <input type="text" id="toolCategoria" placeholder="categoria (ex: Criação de criativos)">
@@ -1116,32 +1174,27 @@
             <button class="add-cost-cancel-btn" onclick="toggleNewToolForm(false)">cancelar</button>
           </div>
         </div>
+        </div>
       </div>
     </div>
 
     <div class="tab-view" id="warmupView">
-      <div class="panel full">
-        <div class="panel-head"><h2><span class="sub">grupos usados no processo de aquecimento de novos números</span>📱 Aquecimento de Chip</h2></div>
-        <div class="panel-head" style="margin-bottom:10px;padding-bottom:0;border:none;"><h2 style="font-size:13px;color:var(--muted);font-weight:700;">Grupos</h2></div>
+      <div class="panel full" id="warmupPanel">
+        <div class="panel-head">
+          <h2><span class="sub">grupos usados no processo de aquecimento de novos números</span>📱 Aquecimento de Chip</h2>
+          <button class="add-tool-btn" id="newWarmupToggleBtn" onclick="toggleNewWarmupForm(true)">+ Adicionar Grupo</button>
+        </div>
         <div id="warmupGroupsList" class="tools-grid"></div>
-        <button class="add" id="newWarmupToggleBtn" style="background:var(--blue-soft);color:var(--blue);border:1px dashed var(--blue);" onclick="toggleNewWarmupForm(true)">+ Adicionar Grupo</button>
-        <div class="add-row" id="newWarmupRow" style="flex-direction:column;margin-top:14px;display:none;">
-          <div class="add-row" style="margin-top:0;">
-            <input type="text" id="warmupNome" placeholder="nome do grupo">
-            <input type="text" id="warmupCategoria" placeholder="categoria">
-            <select id="warmupPlataforma">
-              <option value="WhatsApp">WhatsApp</option>
-              <option value="Telegram">Telegram</option>
-              <option value="Discord">Discord</option>
-              <option value="Outro">Outro</option>
-            </select>
-          </div>
+        <div class="add-form" id="newWarmupRow">
+        <div class="add-row" style="flex-direction:column;">
+          <input type="text" id="warmupNome" placeholder="nome do grupo">
           <input type="text" id="warmupLink" placeholder="link do grupo">
           <textarea id="warmupObservacoes" placeholder="observações (opcional)..."></textarea>
           <div class="add-row" style="margin-top:0;">
             <button class="add" style="flex:1;" onclick="addWarmupGroup()">+ adicionar grupo</button>
             <button class="add-cost-cancel-btn" onclick="toggleNewWarmupForm(false)">cancelar</button>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -1237,6 +1290,19 @@ let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{current
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
 function brl(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function showToast(message){
+  const container = document.getElementById('toastContainer');
+  if(!container) return;
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="toast-ico">✓</span><span>${escapeHtml(message)}</span>`;
+  container.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>el.remove(), 300);
+  }, 2800);
+}
 function brDate(iso){
   if(!iso) return '';
   const [y,m,d] = iso.split('-');
@@ -1648,18 +1714,6 @@ function renderManagers(){
     </div>`;
   }).join('');
 }
-function addManager(){
-  const nome = document.getElementById('managerNome');
-  const numero = document.getElementById('managerNumero').value;
-  const gateway = document.getElementById('managerGateway').value;
-  if(!nome.value.trim()) return;
-  state.managers.push({id:uid(), nome:nome.value.trim(), numero, gateway});
-  nome.value=''; document.getElementById('managerNumero').value=''; document.getElementById('managerGateway').value='';
-  saveState(); renderManagers();
-}
-function removeManager(id){ state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers(); }
-
-/* ---------- ATIVOS ---------- */
 function renderAssets(){
   const el = document.getElementById('assetsList');
   if(state.assets.length===0){ el.innerHTML='<div class="empty">nenhum ativo cadastrado.</div>'; return; }
@@ -1671,14 +1725,48 @@ function renderAssets(){
     </div>
   `).join('');
 }
+function toggleNewManagerForm(show){
+  document.getElementById('newManagerRow').classList.toggle('open', show);
+  document.getElementById('newManagerToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('managersPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('managerNome').focus(); }
+  else{
+    document.getElementById('managerNome').value='';
+    document.getElementById('managerNumero').value=''; document.getElementById('managerGateway').value='';
+  }
+}
+function addManager(){
+  const nome = document.getElementById('managerNome');
+  const numero = document.getElementById('managerNumero').value;
+  const gateway = document.getElementById('managerGateway').value;
+  if(!nome.value.trim()) return;
+  state.managers.push({id:uid(), nome:nome.value.trim(), numero, gateway});
+  saveState(); renderManagers();
+  toggleNewManagerForm(false);
+  showToast('Gerente adicionado.');
+}
+function removeManager(id){ state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers(); }
+
+/* ---------- ATIVOS ---------- */
+function toggleNewAssetForm(show){
+  document.getElementById('newAssetRow').classList.toggle('open', show);
+  document.getElementById('newAssetToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('assetsPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('assetNome').focus(); }
+  else{
+    document.getElementById('assetNome').value=''; document.getElementById('assetNota').value='';
+    document.getElementById('assetTipo').value='Perfil Facebook';
+  }
+}
 function addAsset(){
   const tipo = document.getElementById('assetTipo').value;
   const nome = document.getElementById('assetNome');
   const nota = document.getElementById('assetNota').value;
   if(!nome.value.trim()) return;
   state.assets.push({id:uid(), tipo, nome:nome.value.trim(), nota});
-  nome.value=''; document.getElementById('assetNota').value='';
   saveState(); renderAssets();
+  toggleNewAssetForm(false);
+  showToast('Ativo cadastrado.');
 }
 function removeAsset(id){ state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets(); }
 
@@ -2030,9 +2118,13 @@ function detectVideoPlatform(url){
   return 'link';
 }
 function toggleNewVideoForm(show){
-  document.getElementById('newVideoRow').style.display = show ? 'flex' : 'none';
-  document.getElementById('newVideoToggleBtn').style.display = show ? 'none' : 'block';
+  document.getElementById('newVideoRow').classList.toggle('open', show);
+  document.getElementById('newVideoToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('videosPanel').classList.toggle('panel-editing', show);
   if(show) document.getElementById('videoTitulo').focus();
+  else{
+    document.getElementById('videoTitulo').value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
+  }
 }
 function addVideo(){
   const titulo = document.getElementById('videoTitulo');
@@ -2040,9 +2132,9 @@ function addVideo(){
   const nota = document.getElementById('videoNota').value;
   if(!titulo.value.trim() || !url.trim()) return;
   state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota});
-  titulo.value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
   saveState(); renderVideos();
   toggleNewVideoForm(false);
+  showToast('Vídeo adicionado.');
 }
 function removeVideo(id){
   state.videos = state.videos.filter(v=>v.id!==id);
@@ -2076,8 +2168,9 @@ function renderVideos(){
 
 /* ---------- CENTRAL DE FERRAMENTAS ---------- */
 function toggleNewToolForm(show){
-  document.getElementById('newToolRow').style.display = show ? 'flex' : 'none';
+  document.getElementById('newToolRow').classList.toggle('open', show);
   document.getElementById('newToolToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('toolsPanel').classList.toggle('panel-editing', show);
   if(show){ document.getElementById('toolNome').focus(); }
   else{
     document.getElementById('toolNome').value=''; document.getElementById('toolCategoria').value='';
@@ -2095,6 +2188,7 @@ function addTool(){
   state.tools.push({id:uid(), nome:nome.value.trim(), categoria, descricao, link, observacoes});
   saveState(); renderTools();
   toggleNewToolForm(false);
+  showToast('Ferramenta salva.');
 }
 function removeTool(id){
   state.tools = state.tools.filter(t=>t.id!==id);
@@ -2148,25 +2242,24 @@ function renderTools(){
 
 /* ---------- AQUECIMENTO DE CHIP (GRUPOS) ---------- */
 function toggleNewWarmupForm(show){
-  document.getElementById('newWarmupRow').style.display = show ? 'flex' : 'none';
-  document.getElementById('newWarmupToggleBtn').style.display = show ? 'none' : 'block';
+  document.getElementById('newWarmupRow').classList.toggle('open', show);
+  document.getElementById('newWarmupToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('warmupPanel').classList.toggle('panel-editing', show);
   if(show){ document.getElementById('warmupNome').focus(); }
   else{
-    document.getElementById('warmupNome').value=''; document.getElementById('warmupCategoria').value='';
-    document.getElementById('warmupPlataforma').value='WhatsApp';
+    document.getElementById('warmupNome').value='';
     document.getElementById('warmupLink').value=''; document.getElementById('warmupObservacoes').value='';
   }
 }
 function addWarmupGroup(){
   const nome = document.getElementById('warmupNome');
-  const categoria = document.getElementById('warmupCategoria').value.trim();
-  const plataforma = document.getElementById('warmupPlataforma').value;
   const link = document.getElementById('warmupLink').value.trim();
   const observacoes = document.getElementById('warmupObservacoes').value.trim();
   if(!nome.value.trim()) return;
-  state.warmupGroups.push({id:uid(), nome:nome.value.trim(), categoria, plataforma, link, observacoes});
+  state.warmupGroups.push({id:uid(), nome:nome.value.trim(), link, observacoes});
   saveState(); renderWarmupGroups();
   toggleNewWarmupForm(false);
+  showToast('Grupo adicionado com sucesso.');
 }
 function removeWarmupGroup(id){
   state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
@@ -2196,11 +2289,7 @@ function renderWarmupGroups(){
       return `
       <div class="tool-card">
         <div class="tool-edit-row">
-          <input type="text" value="${escapeHtml(g.nome)}" placeholder="nome" onchange="updateWarmupField('${g.id}','nome',this.value)">
-          <input type="text" value="${escapeHtml(g.categoria||'')}" placeholder="categoria" onchange="updateWarmupField('${g.id}','categoria',this.value)">
-          <select onchange="updateWarmupField('${g.id}','plataforma',this.value)">
-            ${['WhatsApp','Telegram','Discord','Outro'].map(p=>`<option value="${p}" ${g.plataforma===p?'selected':''}>${p}</option>`).join('')}
-          </select>
+          <input type="text" value="${escapeHtml(g.nome)}" placeholder="nome do grupo" onchange="updateWarmupField('${g.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(g.link||'')}" placeholder="link do grupo" onchange="updateWarmupField('${g.id}','link',this.value)">
           <textarea placeholder="observações" onchange="updateWarmupField('${g.id}','observacoes',this.value)">${escapeHtml(g.observacoes||'')}</textarea>
           <div class="mining-actions">
@@ -2216,8 +2305,6 @@ function renderWarmupGroups(){
         <div class="tool-name">${escapeHtml(g.nome)}</div>
         <button class="mining-edit-btn" onclick="toggleWarmupEdit('${g.id}', event)">✎ editar</button>
       </div>
-      ${g.categoria ? `<span class="tool-cat">${escapeHtml(g.categoria)}</span>` : ''}
-      <span class="tool-cat" style="background:var(--blue-soft);color:var(--blue-bright);margin-left:6px;">${escapeHtml(g.plataforma||'WhatsApp')}</span>
       ${g.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(g.observacoes)}</div>` : ''}
       ${g.link ? `<a class="tool-open-btn" href="${escapeHtml(g.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir Grupo →</a>` : ''}
     </div>`;
@@ -2227,8 +2314,9 @@ function renderWarmupGroups(){
 /* ---------- MINERAÇÃO DE OFERTAS ---------- */
 let miningEditingId = null;
 function toggleNewMiningForm(show){
-  document.getElementById('newMiningRow').style.display = show ? 'block' : 'none';
-  document.getElementById('newMiningToggleBtn').style.display = show ? 'none' : 'block';
+  document.getElementById('newMiningRow').classList.toggle('open', show);
+  document.getElementById('newMiningToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('miningPanel').classList.toggle('panel-editing', show);
   if(show) document.getElementById('miningNome').focus();
 }
 function toggleMiningEdit(id){
@@ -2259,6 +2347,7 @@ function addMiningEntry(){
   document.getElementById('miningDescricao').value=''; document.getElementById('miningObservacao').value='';
   toggleNewMiningForm(false);
   saveState(); renderMining();
+  showToast('Oferta adicionada à mineração.');
 }
 function removeMiningEntry(id){
   const item = state.mining.find(m=>m.id===id);
@@ -2493,9 +2582,10 @@ function toggleCostAmountUI(){
 function toggleCostAddForm(){
   const form = document.getElementById('costAddForm');
   const btn = document.getElementById('costAddToggleBtn');
-  const open = form.style.display === 'none';
-  form.style.display = open ? 'flex' : 'none';
-  btn.style.display = open ? 'none' : '';
+  const open = !form.classList.contains('open');
+  form.classList.toggle('open', open);
+  btn.style.display = open ? 'none' : 'inline-flex';
+  document.getElementById('costsPanel').classList.toggle('panel-editing', open);
   if(open) document.getElementById('costName').focus();
 }
 function closeCostAddForm(){
@@ -2505,8 +2595,9 @@ function closeCostAddForm(){
   document.getElementById('costValueType').value='fixo';
   document.getElementById('costBase').value='faturamento';
   toggleCostAmountUI();
-  document.getElementById('costAddForm').style.display = 'none';
-  document.getElementById('costAddToggleBtn').style.display = '';
+  document.getElementById('costAddForm').classList.remove('open');
+  document.getElementById('costAddToggleBtn').style.display = 'inline-flex';
+  document.getElementById('costsPanel').classList.remove('panel-editing');
 }
 function costBaseLabel(base){
   return base==='gasto' ? 'do investimento em anúncios' : 'do faturamento';
@@ -2573,6 +2664,7 @@ function addCost(){
   state.costs.push({id:uid(), name:name.value.trim(), valueType, amount:Number(amount)||0, percent:Number(percent)||0, revenueBase, freq, cat});
   saveState(); render();
   closeCostAddForm();
+  showToast('Custo adicionado.');
 }
 function removeCost(id){ state.costs = state.costs.filter(c=>c.id!==id); saveState(); render(); }
 
