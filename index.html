@@ -220,6 +220,14 @@
   .finance-grid .costs-panel{position:sticky;top:16px;}
   @media(max-width:1000px){.finance-grid{grid-template-columns:1fr;} .finance-grid .costs-panel{position:static;}}
   .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm);transition:border-color .2s, box-shadow .2s;}
+  .urgent-panel{
+    position:relative;border-color:rgba(240,69,92,0.38);
+    background:linear-gradient(180deg, rgba(240,69,92,0.07), var(--surface) 70%);
+    box-shadow:0 0 0 1px rgba(240,69,92,0.12), 0 10px 26px -10px rgba(240,69,92,0.35);
+  }
+  .urgent-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius-lg) var(--radius-lg) 0 0;background:linear-gradient(90deg,var(--urgent),#ff8fa1);}
+  .urgent-panel .panel-head h2{color:var(--urgent);display:flex;align-items:center;gap:7px;}
+  .urgent-panel-icon{font-size:14px;filter:drop-shadow(0 0 6px rgba(240,69,92,0.5));}
   .panel:hover{border-color:var(--border-strong);box-shadow:var(--shadow-md);}
   .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
   .panel h2{font-family:var(--display);font-size:14px;letter-spacing:0.1px;color:var(--text);margin:0;font-weight:700;}
@@ -511,6 +519,13 @@
   }
   .video-card:hover{border-color:var(--blue);transform:translateY(-2px);}
   .video-thumb{width:100%;aspect-ratio:16/9;background:var(--bg) center/cover no-repeat;position:relative;}
+  .video-thumb-empty{background:linear-gradient(135deg,var(--surface3),var(--bg));}
+  .video-platform-badge{
+    position:absolute;bottom:6px;left:6px;font-family:var(--mono);font-size:9px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.4px;padding:3px 7px;border-radius:5px;color:#fff;
+  }
+  .video-platform-badge.ig{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);}
+  .video-platform-badge.tt{background:#010101;border:1px solid #25F4EE;}
   .video-play{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     width:40px;height:40px;background:rgba(13,11,20,0.75);border-radius:50%;
@@ -551,8 +566,21 @@
     0%,100%{box-shadow:0 0 0 1px rgba(34,197,94,0.25), 0 10px 28px -6px rgba(34,197,94,0.5);}
     50%{box-shadow:0 0 0 1px rgba(34,197,94,0.4), 0 10px 34px -4px rgba(34,197,94,0.75);}
   }
-  .asset-tipo{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;white-space:nowrap;}
+  .asset-tipo{
+    font-family:var(--mono);font-size:10px;font-weight:700;color:var(--blue-bright);
+    text-transform:uppercase;letter-spacing:0.4px;background:var(--blue-soft);
+    border:1px solid rgba(59,130,246,0.35);border-radius:6px;padding:3px 8px;white-space:nowrap;
+  }
   .asset-name{flex:1;font-size:13.5px;}
+  .add-tool-btn{
+    background:linear-gradient(135deg,var(--blue),var(--green));border:none;color:#04140a;
+    font-family:var(--display);font-weight:700;font-size:12.5px;border-radius:20px;
+    padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    box-shadow:0 6px 16px -4px rgba(59,130,246,0.45);transition:transform .15s,box-shadow .15s;
+    white-space:nowrap;
+  }
+  .add-tool-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px -4px rgba(59,130,246,0.6);}
+  .add-tool-btn:active{transform:translateY(0);}
 
   /* ---------- PLANEJAMENTO ---------- */
   .planner-focus{
@@ -711,7 +739,7 @@
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
       <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
       <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
-      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Central de ferramentas</button>
+      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
       <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
     </div>
 
@@ -759,19 +787,9 @@
       <button class="goto-btn" onclick="switchTab('finance')">ver financeiro →</button>
     </div>
 
-    <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">faturamento, gasto e lucro dia a dia — mês selecionado no financeiro</span>Evolução do mês</h2></div>
-      <div class="chart-legend">
-        <span><span class="dot" style="background:#F0455C;"></span>valor investido</span>
-        <span><span class="dot" style="background:#3B82F6;"></span>faturamento</span>
-        <span><span class="dot" style="background:#22C55E;"></span>lucro</span>
-      </div>
-      <div id="resumoMesChart" class="fin-chart-wrap"></div>
-    </div>
-
     <div class="row-three" id="urgentPanel">
-      <div class="panel">
-        <div class="panel-head"><h2>Urgências</h2></div>
+      <div class="panel urgent-panel">
+        <div class="panel-head"><h2><span class="urgent-panel-icon" aria-hidden="true">⚠</span>Urgências</h2></div>
         <div id="urgentList"></div>
         <div class="add-row">
           <input type="text" id="urgentInput" placeholder="nova tarefa urgente...">
@@ -828,11 +846,13 @@
     <div class="panel full">
       <div class="panel-head"><h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2></div>
       <div id="videosList" class="videos-grid"></div>
-      <div class="add-row">
+      <button class="add" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)" style="margin-top:10px;">+ adicionar vídeo</button>
+      <div class="add-row" id="newVideoRow" style="display:none;">
         <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
-        <input type="text" id="videoUrl" placeholder="link do YouTube">
+        <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
         <input type="text" id="videoNota" placeholder="nota (opcional)">
         <button class="add" onclick="addVideo()">+ add</button>
+        <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
       </div>
     </div>
 
@@ -1078,9 +1098,11 @@
 
     <div class="tab-view" id="toolsView">
       <div class="panel full">
-        <div class="panel-head"><h2><span class="sub">recursos utilizados na operação</span>Central de ferramentas</h2></div>
+        <div class="panel-head">
+          <h2><span class="sub">recursos utilizados na operação</span>Ferramentas</h2>
+          <button class="add-tool-btn" id="newToolToggleBtn" onclick="toggleNewToolForm(true)">+ Adicionar ferramenta</button>
+        </div>
         <div id="toolsList" class="tools-grid"></div>
-        <button class="add" id="newToolToggleBtn" style="background:var(--blue-soft);color:var(--blue);border:1px dashed var(--blue);" onclick="toggleNewToolForm(true)">+ Adicionar Recurso</button>
         <div class="add-row" id="newToolRow" style="flex-direction:column;margin-top:14px;display:none;">
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="toolNome" placeholder="nome (ex: Canva)">
@@ -1090,7 +1112,7 @@
           <input type="text" id="toolLink" placeholder="link para acessar ou instalar">
           <textarea id="toolObservacoes" placeholder="observações (opcional)..."></textarea>
           <div class="add-row" style="margin-top:0;">
-            <button class="add" style="flex:1;" onclick="addTool()">+ adicionar recurso</button>
+            <button class="add" style="flex:1;" onclick="addTool()">+ adicionar ferramenta</button>
             <button class="add-cost-cancel-btn" onclick="toggleNewToolForm(false)">cancelar</button>
           </div>
         </div>
@@ -2000,6 +2022,18 @@ function extractYoutubeId(url){
   }
   return null;
 }
+function detectVideoPlatform(url){
+  if(!url) return 'link';
+  if(/youtube\.com|youtu\.be/.test(url)) return 'youtube';
+  if(/instagram\.com/.test(url)) return 'instagram';
+  if(/tiktok\.com/.test(url)) return 'tiktok';
+  return 'link';
+}
+function toggleNewVideoForm(show){
+  document.getElementById('newVideoRow').style.display = show ? 'flex' : 'none';
+  document.getElementById('newVideoToggleBtn').style.display = show ? 'none' : 'block';
+  if(show) document.getElementById('videoTitulo').focus();
+}
 function addVideo(){
   const titulo = document.getElementById('videoTitulo');
   const url = document.getElementById('videoUrl').value;
@@ -2008,6 +2042,7 @@ function addVideo(){
   state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota});
   titulo.value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
   saveState(); renderVideos();
+  toggleNewVideoForm(false);
 }
 function removeVideo(id){
   state.videos = state.videos.filter(v=>v.id!==id);
@@ -2018,13 +2053,18 @@ function renderVideos(){
   if(!el) return;
   if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
   el.innerHTML = state.videos.map(v=>{
-    const ytId = extractYoutubeId(v.url);
+    const platform = detectVideoPlatform(v.url);
+    const ytId = platform==='youtube' ? extractYoutubeId(v.url) : null;
     const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '';
+    const badge = platform==='instagram' ? `<span class="video-platform-badge ig">Instagram</span>`
+                : platform==='tiktok' ? `<span class="video-platform-badge tt">TikTok</span>`
+                : '';
     return `
     <div class="video-card" onclick="window.open('${escapeHtml(v.url)}','_blank')">
       <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
-      <div class="video-thumb" style="background-image:url('${thumb}');">
+      <div class="video-thumb ${thumb?'':'video-thumb-empty'}" style="${thumb?`background-image:url('${thumb}');`:''}">
         <div class="video-play">▶</div>
+        ${badge}
       </div>
       <div class="video-info">
         <div class="video-title">${escapeHtml(v.titulo)}</div>
@@ -2037,7 +2077,7 @@ function renderVideos(){
 /* ---------- CENTRAL DE FERRAMENTAS ---------- */
 function toggleNewToolForm(show){
   document.getElementById('newToolRow').style.display = show ? 'flex' : 'none';
-  document.getElementById('newToolToggleBtn').style.display = show ? 'none' : 'block';
+  document.getElementById('newToolToggleBtn').style.display = show ? 'none' : 'inline-flex';
   if(show){ document.getElementById('toolNome').focus(); }
   else{
     document.getElementById('toolNome').value=''; document.getElementById('toolCategoria').value='';
