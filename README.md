@@ -33,5 +33,3 @@ icons/              -> ícones do app (192px, 512px, apple-touch-icon)
 
 Os dados ficam guardados no Supabase, vinculados a uma chave própria já
 embutida no código. Não compartilhe o link desse app publicamente.
-
-

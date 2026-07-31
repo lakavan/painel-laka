@@ -818,11 +818,69 @@
   .timeline-date{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
   .timeline-meta{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;font-size:11px;color:var(--muted);}
   .timeline-resumo{font-size:12.5px;color:var(--muted);line-height:1.5;}
+
+  /* ---------- LOGIN SCREEN ---------- */
+  .login-screen{
+    position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;
+    z-index:100;padding:20px;
+  }
+  .login-box{
+    width:100%;max-width:340px;background:var(--surface);border:1px solid var(--border);
+    border-radius:18px;padding:32px 28px;box-shadow:0 20px 60px rgba(0,0,0,0.4);text-align:center;
+  }
+  .login-mark{
+    width:56px;height:56px;margin:0 auto 18px auto;border-radius:16px;
+    background:linear-gradient(135deg,var(--blue),var(--green));display:flex;align-items:center;justify-content:center;
+  }
+  .login-mark svg{width:28px;height:28px;}
+  .login-title{font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:4px;}
+  .login-sub{font-size:12px;color:var(--muted);margin-bottom:24px;}
+  #loginForm{text-align:left;}
+  #loginForm input{width:100%;margin-top:4px;}
+  .login-error{
+    background:var(--urgent-soft);color:var(--urgent);font-size:12px;padding:8px 10px;
+    border-radius:8px;margin-top:12px;text-align:left;
+  }
+  .login-submit{
+    width:100%;margin-top:20px;background:linear-gradient(135deg,var(--blue),var(--green));
+    color:#06080c;font-weight:800;font-size:13.5px;padding:11px;border:none;border-radius:10px;cursor:pointer;
+    transition:opacity .15s;
+  }
+  .login-submit:hover{opacity:0.88;}
+  .login-submit:disabled{opacity:0.5;cursor:not-allowed;}
+  .logout-btn{
+    background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+    border-radius:9px;padding:6px 12px;font-size:11.5px;cursor:pointer;display:flex;align-items:center;gap:5px;
+  }
+  .logout-btn:hover{color:var(--urgent);border-color:var(--urgent);}
 </style>
 </head>
 <body>
 <div id="toastContainer"></div>
-<div class="wrap">
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-mark" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="26" y="54" width="10" height="20" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+        <rect x="42" y="42" width="10" height="32" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+        <rect x="58" y="28" width="10" height="46" rx="3.2" fill="#ffffff"/>
+      </svg>
+    </div>
+    <div class="login-title">Painel LAKA</div>
+    <div class="login-sub">acesso restrito — entre com suas credenciais</div>
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+      <label class="field-label">e-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username" required>
+      <label class="field-label" style="margin-top:10px;">senha</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required>
+      <div id="loginError" class="login-error" style="display:none;"></div>
+      <button type="submit" class="login-submit" id="loginSubmitBtn">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<div class="wrap" id="appWrap" style="display:none;">
 
   <div class="hero">
     <div class="hero-brand">
@@ -841,6 +899,10 @@
         <h1>Tráfego direto · Infoproduto</h1>
       </div>
     </div>
+    <button class="logout-btn" onclick="handleLogout()" title="sair da conta">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      sair
+    </button>
   </div>
 
   <div id="loading" class="loading">carregando dados...</div>
@@ -1465,8 +1527,6 @@ const defaultState = {
     currentMonth: currentMonthKey(),
     months: {}
   },
-  caixaMovs: [],
-  saldoInicial: 0,
   managers: [],
   assets: [],
   phones: [],
@@ -1496,7 +1556,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -1642,13 +1702,60 @@ const SUPABASE_KEY = 'sb_publishable_V2tAnUXp7EW16gGKvwpMJw_-wFZHAWL';
 const ROW_ID = 'PnPe7VjL1rlj7zIyJL7o86NvLtyneDAt';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* ---------- AUTENTICAÇÃO ---------- */
+async function handleLogin(event){
+  event.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginSubmitBtn');
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerText = 'Entrando...';
+  try{
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+  }catch(e){
+    errorEl.innerText = 'E-mail ou senha incorretos.';
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerText = 'Entrar';
+  }
+  return false;
+}
+async function handleLogout(){
+  await sb.auth.signOut();
+}
+function showLogin(){
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appWrap').style.display = 'none';
+  const btn = document.getElementById('loginSubmitBtn');
+  if(btn){ btn.disabled = false; btn.innerText = 'Entrar'; }
+}
+function showApp(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'block';
+}
+let appBooted = false;
+sb.auth.onAuthStateChange((event, session)=>{
+  if(session){
+    showApp();
+    if(!appBooted){
+      appBooted = true;
+      loadState().then(setupDragHandlers);
+    }
+  } else {
+    showLogin();
+  }
+});
+
 async function loadState(){
   try{
     const { data, error } = await sb.from('app_state').select('data').eq('id', ROW_ID).single();
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -3583,7 +3690,7 @@ function setupDragHandlers(){
   attachSortable('funnelLinksList', ids=>{ reorderFunnelLinks(ids); renderProducts(); });
 }
 
-loadState().then(setupDragHandlers);
+// inicialização controlada por sb.auth.onAuthStateChange (ver acima)
 applyHideValuesPreference();
 </script>
 </body>
