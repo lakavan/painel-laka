@@ -49,6 +49,27 @@ Isso não afeta a publicação abaixo — só recomendo trocar o token por segur
 - Responsividade revisada (mobile, tablet, desktop) — sem scroll horizontal,
   sem cards quebrando.
 
+## Atualização — Biblioteca de Conteúdo, aba Projetos e limpeza geral
+
+- **Biblioteca de Conteúdo (Vídeos)**: ícones de YouTube/Instagram/TikTok/Link
+  agora são SVGs monocromáticos na paleta do painel (sem cores de marca); o
+  texto "YouTube"/"Instagram"/"TikTok" embaixo do título foi removido; e agora
+  dá pra **editar** título e link de um conteúdo já salvo, sem excluir e
+  recriar.
+- **Nova aba 📦 Projetos**: central de projetos construídos com IA. Lista com
+  nome/ferramenta/status/versão, e dentro de cada projeto: Resumo, Informações
+  do Projeto, Conta principal (editável), Última atualização, Versão Atual
+  (anexar/baixar ZIP), Linha do Tempo com todas as versões registradas (cada
+  uma com seu ZIP baixável), e Recursos do Projeto (GitHub, Supabase, Netlify
+  etc. com conta/nome/link). O ZIP fica salvo em base64 dentro do mesmo
+  registro do Supabase (mesma persistência do resto do app) — evite anexar
+  arquivos muito grandes (acima de ~8MB).
+- **Limpeza geral**: removida a feature de "checklist diário" que não tinha
+  mais tela associada, removido o gráfico "resumo do mês" órfão do Início (sem
+  uso), e removidas ~9 funções mortas (gráficos SVG antigos, cálculos
+  duplicados) que não afetavam nada visível. Nenhuma funcionalidade,
+  integração ou dado foi alterado.
+
 ## Como publicar (atualizar o repositório já existente)
 
 Você já tem o repositório `painel-laka` no GitHub. Pra atualizar:
