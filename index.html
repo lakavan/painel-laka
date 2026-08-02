@@ -291,9 +291,19 @@
     box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright), var(--shadow-glow-blue);
     will-change:transform;
   }
+  /* durante o arrasto, esconde o conteúdo pesado do card de mineração (gráfico/histórico/campos)
+     mas mantém o cabeçalho (nome + alça) visível — deixa o reordenamento fluido mesmo com muitos itens */
+  .mining-card.dragging .mining-fields,
+  .mining-card.dragging .mining-anuncios-highlight,
+  .mining-card.dragging .mining-history{
+    display:none;
+  }
   .drag-handle{cursor:grab;color:var(--muted2);font-size:13px;line-height:1;padding:2px 4px;touch-action:none;user-select:none;flex-shrink:0;margin-top:2px;transition:color .15s;}
   .drag-handle:hover{color:var(--blue-bright);}
   .drag-handle:active{cursor:grabbing;}
+  @media(max-width:600px){
+    .drag-handle{padding:8px 10px;margin:-8px -6px;font-size:16px;}
+  }
   .item.done{opacity:0.4;}
   .item.done .item-text{text-decoration:line-through;}
   .item-status{width:11px;height:11px;border-radius:50%;margin-top:3px;flex-shrink:0;cursor:pointer;border:1px solid rgba(255,255,255,0.15);}
@@ -593,6 +603,19 @@
   .video-row:hover{border-color:var(--blue);background:var(--surface3);}
   .video-row.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
   .video-row .drag-handle{flex-shrink:0;color:var(--muted2);cursor:grab;padding:2px;}
+  .video-desc-toggle{
+    background:none;border:none;color:var(--blue-bright);font-size:10.5px;cursor:pointer;padding:2px 0;
+    margin-top:2px;font-family:var(--mono);
+  }
+  .video-desc-full{
+    display:none;font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
+    padding:8px 10px;background:var(--bg);border-radius:8px;white-space:pre-wrap;
+  }
+  .video-desc-full.open{display:block;}
+  .empty-block{text-align:center;padding:44px 20px;}
+  .empty-block-icon{font-size:30px;margin-bottom:10px;opacity:.65;}
+  .empty-block-title{font-family:var(--display);font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px;}
+  .empty-block-sub{font-size:12px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.5;}
   .video-platform-ico{
     flex-shrink:0;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
     background:var(--surface3);border:1px solid var(--border-strong);color:var(--blue-bright);
@@ -772,7 +795,14 @@
   .tool-card:hover{border-color:var(--blue);transform:translateY(-2px);}
   .tool-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
-  .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;margin-bottom:8px;}
+  .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;}
+  .tool-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .tool-type-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:0.3px;border-radius:5px;padding:2px 8px;display:inline-block;}
+  .tool-type-extensao{color:var(--blue-bright);background:var(--blue-soft);}
+  .tool-type-aplicativo{color:#c084fc;background:rgba(192,132,252,0.13);}
+  .tool-type-site{color:var(--muted);background:var(--surface3);}
+  .tool-email-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;margin-bottom:8px;}
+  .tool-email-tag{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:2px 8px;}
   .tool-field-label{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 2px 0;}
   .tool-field-value{font-size:12.5px;color:var(--muted);line-height:1.5;white-space:pre-wrap;}
   .tool-edit-row{display:flex;flex-direction:column;gap:8px;}
@@ -803,6 +833,13 @@
   .proj-info-row input{background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;text-align:right;width:60%;}
   .proj-version-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;}
   .proj-version-name{font-family:var(--display);font-weight:800;font-size:16px;color:var(--blue-bright);}
+  .proj-stage-badge{
+    font-family:var(--mono);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:5px;
+    margin-left:6px;vertical-align:middle;text-transform:uppercase;
+  }
+  .proj-stage-badge.stage-desenvolvimento{background:var(--blue-soft);color:var(--blue-bright);}
+  .proj-stage-badge.stage-pausado{background:var(--warn-soft,rgba(242,169,60,0.15));color:var(--warn);}
+  .proj-stage-badge.stage-finalizado{background:var(--green-soft);color:var(--green);}
   .proj-version-file{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:2px;}
   .proj-version-resumo{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5;}
   .proj-version-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
@@ -817,37 +854,77 @@
   .timeline-version{font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--blue-bright);}
   .timeline-date{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
   .timeline-meta{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;font-size:11px;color:var(--muted);}
-  .timeline-resumo{font-size:12.5px;color:var(--muted);line-height:1.5;}
-
   /* ---------- LOGIN SCREEN ---------- */
   .login-screen{
     position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;
-    z-index:100;padding:20px;
+    z-index:100;padding:20px;overflow-y:auto;
+  }
+  .login-screen::before{
+    content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 700px 500px at 15% 10%, rgba(59,130,246,0.10), transparent),
+      radial-gradient(ellipse 600px 500px at 85% 90%, rgba(34,197,94,0.08), transparent);
+    pointer-events:none;
   }
   .login-box{
-    width:100%;max-width:340px;background:var(--surface);border:1px solid var(--border);
-    border-radius:18px;padding:32px 28px;box-shadow:0 20px 60px rgba(0,0,0,0.4);text-align:center;
+    position:relative;width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);
+    border-radius:22px;padding:40px 34px;box-shadow:0 24px 70px rgba(0,0,0,0.5);text-align:center;
+    animation:loginFadeIn .4s ease;
   }
+  @keyframes loginFadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   .login-mark{
-    width:56px;height:56px;margin:0 auto 18px auto;border-radius:16px;
+    width:64px;height:64px;margin:0 auto 20px auto;border-radius:18px;
     background:linear-gradient(135deg,var(--blue),var(--green));display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px rgba(59,130,246,0.35);
   }
-  .login-mark svg{width:28px;height:28px;}
-  .login-title{font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:4px;}
-  .login-sub{font-size:12px;color:var(--muted);margin-bottom:24px;}
-  #loginForm{text-align:left;}
-  #loginForm input{width:100%;margin-top:4px;}
+  .login-mark svg{width:32px;height:32px;}
+  .login-title{font-family:var(--display);font-weight:800;font-size:21px;margin-bottom:5px;letter-spacing:-0.2px;}
+  .login-sub{font-size:12.5px;color:var(--muted);margin-bottom:26px;line-height:1.5;}
+
+  .login-tabs{
+    display:flex;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:4px;
+    margin-bottom:24px;gap:4px;
+  }
+  .login-tab{
+    flex:1;background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:700;
+    font-size:12.5px;padding:9px;border-radius:9px;cursor:pointer;transition:all .15s;
+  }
+  .login-tab.active{background:var(--surface2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+
+  #loginForm, #signupForm{text-align:left;}
+  #loginForm input, #signupForm input{
+    width:100%;margin-top:5px;background:var(--bg);border:1px solid var(--border);
+    border-radius:10px;padding:11px 13px;font-size:13.5px;transition:border-color .15s;
+  }
+  #loginForm input:focus, #signupForm input:focus{border-color:var(--blue);outline:none;}
+  #loginForm .field-label, #signupForm .field-label{margin-top:14px;}
+  #loginForm .field-label:first-child, #signupForm .field-label:first-child{margin-top:0;}
+
   .login-error{
-    background:var(--urgent-soft);color:var(--urgent);font-size:12px;padding:8px 10px;
-    border-radius:8px;margin-top:12px;text-align:left;
+    background:var(--urgent-soft);color:var(--urgent);font-size:12px;padding:9px 11px;
+    border-radius:9px;margin-top:14px;text-align:left;line-height:1.4;
   }
   .login-submit{
-    width:100%;margin-top:20px;background:linear-gradient(135deg,var(--blue),var(--green));
-    color:#06080c;font-weight:800;font-size:13.5px;padding:11px;border:none;border-radius:10px;cursor:pointer;
-    transition:opacity .15s;
+    width:100%;margin-top:22px;background:linear-gradient(135deg,var(--blue),var(--green));
+    color:#06080c;font-weight:800;font-size:13.5px;padding:13px;border:none;border-radius:11px;cursor:pointer;
+    transition:opacity .15s,transform .1s;
   }
-  .login-submit:hover{opacity:0.88;}
+  .login-submit:hover{opacity:0.9;}
+  .login-submit:active{transform:scale(0.98);}
   .login-submit:disabled{opacity:0.5;cursor:not-allowed;}
+  .login-link-btn{
+    width:100%;margin-top:14px;background:none;border:none;color:var(--muted);font-size:11.5px;
+    cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+  }
+  .login-link-btn:hover{color:var(--blue-bright);}
+  .login-success{
+    background:var(--green-soft);border:1px solid rgba(34,197,94,0.3);border-radius:12px;
+    padding:18px;text-align:left;
+  }
+  .login-success-icon{font-size:24px;margin-bottom:8px;}
+  .login-success-text{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:14px;}
+  .login-success .login-link-btn{margin-top:0;color:var(--blue-bright);}
+
   .logout-btn{
     background:var(--surface2);border:1px solid var(--border);color:var(--muted);
     border-radius:9px;padding:6px 12px;font-size:11.5px;cursor:pointer;display:flex;align-items:center;gap:5px;
@@ -868,15 +945,39 @@
       </svg>
     </div>
     <div class="login-title">Painel LAKA</div>
-    <div class="login-sub">acesso restrito — entre com suas credenciais</div>
+    <div class="login-sub" id="loginSubText">acesso restrito — entre com suas credenciais</div>
+
+    <div class="login-tabs" id="loginTabs">
+      <button class="login-tab active" id="tabLoginBtn" onclick="switchAuthMode('login')">Entrar</button>
+      <button class="login-tab" id="tabSignupBtn" onclick="switchAuthMode('signup')">Criar conta</button>
+    </div>
+
     <form id="loginForm" onsubmit="return handleLogin(event)">
       <label class="field-label">e-mail</label>
       <input type="email" id="loginEmail" autocomplete="username" required>
-      <label class="field-label" style="margin-top:10px;">senha</label>
+      <label class="field-label">senha</label>
       <input type="password" id="loginPassword" autocomplete="current-password" required>
       <div id="loginError" class="login-error" style="display:none;"></div>
       <button type="submit" class="login-submit" id="loginSubmitBtn">Entrar</button>
+      <button type="button" class="login-link-btn" onclick="handleForgotPassword()">Esqueci minha senha</button>
     </form>
+
+    <form id="signupForm" onsubmit="return handleSignup(event)" style="display:none;">
+      <label class="field-label">e-mail</label>
+      <input type="email" id="signupEmail" autocomplete="email" required>
+      <label class="field-label">senha</label>
+      <input type="password" id="signupPassword" autocomplete="new-password" required minlength="6">
+      <label class="field-label">confirmar senha</label>
+      <input type="password" id="signupPasswordConfirm" autocomplete="new-password" required minlength="6">
+      <div id="signupError" class="login-error" style="display:none;"></div>
+      <button type="submit" class="login-submit" id="signupSubmitBtn">Criar conta</button>
+    </form>
+
+    <div id="signupSuccess" class="login-success" style="display:none;">
+      <div class="login-success-icon">✉️</div>
+      <div class="login-success-text">Enviamos um link de confirmação pro seu e-mail. Confirma por lá antes de entrar aqui.</div>
+      <button type="button" class="login-link-btn" onclick="switchAuthMode('login')">← voltar pro login</button>
+    </div>
   </div>
 </div>
 
@@ -914,9 +1015,10 @@
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
       <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
       <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
-      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
-      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
       <button class="tab-btn" id="tabBtnProjects" onclick="switchTab('projects')">📦 Projetos</button>
+      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
+      <button class="tab-btn" id="tabBtnContent" onclick="switchTab('content')">🎬 Biblioteca de Conteúdo</button>
+      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
     </div>
 
     <div class="tab-view active" id="homeView">
@@ -1017,23 +1119,6 @@
         <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
       </div>
       <div class="planner-days" id="plannerDays"></div>
-    </div>
-
-    <div class="panel full" id="videosPanel">
-      <div class="panel-head">
-        <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2>
-        <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
-      </div>
-      <div id="videosList" class="videos-list"></div>
-      <div class="add-form" id="newVideoRow">
-      <div class="add-row">
-        <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
-        <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
-        <input type="text" id="videoNota" placeholder="nota (opcional)">
-        <button class="add" onclick="addVideo()">+ add</button>
-        <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
-      </div>
-      </div>
     </div>
 
     <div class="row-two">
@@ -1262,7 +1347,11 @@
           <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
         </div>
       </div>
-      <div id="productEmpty" class="empty" style="padding:20px 0;">Cria um produto acima pra começar a montar o funil de mensagens.</div>
+      <div id="productEmpty" class="empty-block">
+        <div class="empty-block-icon">📦</div>
+        <div class="empty-block-title">Nenhum produto selecionado ainda</div>
+        <div class="empty-block-sub">Cria um produto acima ou seleciona um existente pra começar a montar o funil de mensagens.</div>
+      </div>
     </div>
 
     <div class="tab-view" id="miningView">
@@ -1303,6 +1392,28 @@
       </div>
     </div>
 
+    <div class="tab-view" id="contentView">
+      <div class="panel full" id="videosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Biblioteca de Conteúdo</h2>
+          <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
+        </div>
+        <div id="videosList" class="videos-list"></div>
+        <div class="add-form" id="newVideoRow">
+        <div class="add-row">
+          <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
+          <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
+          <input type="text" id="videoNota" placeholder="nota curta (opcional)">
+        </div>
+        <textarea id="videoDescricao" placeholder="descrição completa (opcional) — fica escondida até você clicar pra expandir" style="margin-top:8px;"></textarea>
+        <div class="add-row" style="margin-top:8px;">
+          <button class="add" onclick="addVideo()">+ add</button>
+          <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
+        </div>
+        </div>
+      </div>
+    </div>
+
     <div class="tab-view" id="toolsView">
       <div class="panel full" id="toolsPanel">
         <div class="panel-head">
@@ -1315,9 +1426,16 @@
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="toolNome" placeholder="nome (ex: Canva)">
             <input type="text" id="toolCategoria" placeholder="categoria (ex: Criação de criativos)">
+            <select id="toolTipo">
+              <option value="">tipo (opcional)</option>
+              <option value="extensao">Extensão</option>
+              <option value="aplicativo">Aplicativo</option>
+              <option value="site">Site</option>
+            </select>
           </div>
           <textarea id="toolDescricao" placeholder="descrição..."></textarea>
           <input type="text" id="toolLink" placeholder="link para acessar ou instalar">
+          <input type="text" id="toolEmails" placeholder="e-mail(s) usados nessa ferramenta — separa por vírgula se for mais de um">
           <textarea id="toolObservacoes" placeholder="observações (opcional)..."></textarea>
           <div class="add-row" style="margin-top:0;">
             <button class="add" style="flex:1;" onclick="addTool()">+ adicionar ferramenta</button>
@@ -1394,20 +1512,14 @@
             <div class="panel-stats-row" id="projSummary"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h2>🚀 Informações do Projeto</h2></div>
-            <div id="projInfo"></div>
+            <div class="panel-head"><h2><span class="sub">de onde esse projeto nasceu</span>Conta Principal</h2></div>
+            <div id="projMainAccount"></div>
           </div>
         </div>
 
-        <div class="row-two">
-          <div class="panel">
-            <div class="panel-head"><h2>Conta principal</h2></div>
-            <div id="projMainAccount"></div>
-          </div>
-          <div class="panel">
-            <div class="panel-head"><h2>Última atualização</h2></div>
-            <div id="projLastUpdate"></div>
-          </div>
+        <div class="panel full">
+          <div class="panel-head"><h2>Última atualização</h2></div>
+          <div id="projLastUpdate"></div>
         </div>
 
         <div class="panel full">
@@ -1428,6 +1540,12 @@
                 <input type="text" id="pvConta" placeholder="conta utilizada (e-mail)">
               </div>
               <input type="text" id="pvConversa" placeholder="conversa utilizada (link ou referência)">
+              <select id="pvEstagio">
+                <option value="">estágio do projeto (opcional)</option>
+                <option value="desenvolvimento">Em desenvolvimento</option>
+                <option value="pausado">Pausado</option>
+                <option value="finalizado">Finalizado</option>
+              </select>
               <textarea id="pvResumo" placeholder="resumo da atualização..."></textarea>
               <textarea id="pvObservacoes" placeholder="observações (opcional)..."></textarea>
               <div class="add-row" style="margin-top:0;">
@@ -1703,6 +1821,19 @@ const ROW_ID = 'PnPe7VjL1rlj7zIyJL7o86NvLtyneDAt';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ---------- AUTENTICAÇÃO ---------- */
+function switchAuthMode(mode){
+  document.getElementById('loginForm').style.display = mode==='login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = mode==='signup' ? 'block' : 'none';
+  document.getElementById('signupSuccess').style.display = 'none';
+  document.getElementById('loginTabs').style.display = 'flex';
+  document.getElementById('tabLoginBtn').classList.toggle('active', mode==='login');
+  document.getElementById('tabSignupBtn').classList.toggle('active', mode==='signup');
+  document.getElementById('loginSubText').innerText = mode==='login'
+    ? 'acesso restrito — entre com suas credenciais'
+    : 'cria sua conta pra acessar o painel';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('signupError').style.display = 'none';
+}
 async function handleLogin(event){
   event.preventDefault();
   const email = document.getElementById('loginEmail').value.trim();
@@ -1716,12 +1847,80 @@ async function handleLogin(event){
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if(error) throw error;
   }catch(e){
-    errorEl.innerText = 'E-mail ou senha incorretos.';
+    errorEl.innerText = e.message && e.message.includes('Email not confirmed')
+      ? 'Confirma seu e-mail antes de entrar — verifica a caixa de entrada.'
+      : 'E-mail ou senha incorretos.';
     errorEl.style.display = 'block';
     btn.disabled = false;
     btn.innerText = 'Entrar';
   }
   return false;
+}
+async function handleSignup(event){
+  event.preventDefault();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupPasswordConfirm').value;
+  const errorEl = document.getElementById('signupError');
+  const btn = document.getElementById('signupSubmitBtn');
+  errorEl.style.display = 'none';
+
+  if(password !== confirm){
+    errorEl.innerText = 'As senhas não coincidem.';
+    errorEl.style.display = 'block';
+    return false;
+  }
+  if(password.length < 6){
+    errorEl.innerText = 'A senha precisa ter pelo menos 6 caracteres.';
+    errorEl.style.display = 'block';
+    return false;
+  }
+
+  btn.disabled = true;
+  btn.innerText = 'Criando conta...';
+  try{
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname }
+    });
+    if(error) throw error;
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginTabs').style.display = 'none';
+    document.getElementById('signupSuccess').style.display = 'block';
+    document.getElementById('loginSubText').innerText = 'quase lá — falta confirmar seu e-mail';
+  }catch(e){
+    errorEl.innerText = e.message && e.message.includes('already registered')
+      ? 'Esse e-mail já tem uma conta. Tenta entrar em vez de cadastrar.'
+      : 'Não deu pra criar a conta: ' + (e.message || 'tenta de novo em instantes.');
+    errorEl.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerText = 'Criar conta';
+  return false;
+}
+async function handleForgotPassword(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const errorEl = document.getElementById('loginError');
+  if(!email){
+    errorEl.innerText = 'Digita seu e-mail no campo acima primeiro, aí clica em "esqueci minha senha" de novo.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  try{
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if(error) throw error;
+    errorEl.style.display = 'block';
+    errorEl.style.background = 'var(--green-soft)';
+    errorEl.style.color = 'var(--green)';
+    errorEl.innerText = 'Se esse e-mail tiver uma conta, enviamos um link pra redefinir a senha.';
+  }catch(e){
+    errorEl.style.background = '';
+    errorEl.style.color = '';
+    errorEl.innerText = 'Não deu pra enviar agora. Tenta de novo em instantes.';
+    errorEl.style.display = 'block';
+  }
 }
 async function handleLogout(){
   await sb.auth.signOut();
@@ -2314,8 +2513,9 @@ function addVideo(){
   const titulo = document.getElementById('videoTitulo');
   const url = document.getElementById('videoUrl').value;
   const nota = document.getElementById('videoNota').value;
+  const descricao = document.getElementById('videoDescricao') ? document.getElementById('videoDescricao').value.trim() : '';
   if(!titulo.value.trim() || !url.trim()) return;
-  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota});
+  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, descricao});
   saveState(); renderVideos();
   toggleNewVideoForm(false);
   showToast('Vídeo adicionado.');
@@ -2361,6 +2561,8 @@ function renderVideos(){
         <div class="video-row-body tool-edit-row">
           <input type="text" value="${escapeHtml(v.titulo)}" placeholder="título" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','titulo',this.value)">
           <input type="text" value="${escapeHtml(v.url)}" placeholder="link" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','url',this.value)">
+          <input type="text" value="${escapeHtml(v.nota||'')}" placeholder="nota curta" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','nota',this.value)">
+          <textarea placeholder="descrição completa" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="event.stopPropagation();removeVideo('${v.id}')">✕ excluir</button>
             <button class="mining-save-btn" onclick="saveVideoEdit('${v.id}', event)"><span class="ico">✓</span> Concluir edição</button>
@@ -2368,6 +2570,7 @@ function renderVideos(){
         </div>
       </div>`;
     }
+    const hasDesc = v.descricao && v.descricao.trim();
     return `
     <div class="video-row" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
       <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
@@ -2375,12 +2578,24 @@ function renderVideos(){
       <div class="video-row-body">
         <div class="video-title">${escapeHtml(v.titulo)}</div>
         ${v.nota ? `<div class="video-meta"><span class="video-nota">${escapeHtml(v.nota)}</span></div>` : ''}
+        ${hasDesc ? `
+          <button class="video-desc-toggle" onclick="event.stopPropagation();toggleVideoDesc('${v.id}', event)">▾ descrição</button>
+          <div class="video-desc-full" id="video-desc-${v.id}">${escapeHtml(v.descricao)}</div>
+        ` : ''}
       </div>
       <button class="video-edit-ico" onclick="toggleVideoEdit('${v.id}', event)" title="editar">✎</button>
       <span class="video-open-ico">→</span>
       <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
     </div>`;
   }).join('');
+}
+function toggleVideoDesc(id, event){
+  if(event) event.stopPropagation();
+  const el = document.getElementById('video-desc-'+id);
+  if(!el) return;
+  const btn = event.target;
+  const open = el.classList.toggle('open');
+  btn.innerText = open ? '▴ descrição' : '▾ descrição';
 }
 
 /* ---------- CENTRAL DE FERRAMENTAS ---------- */
@@ -2398,11 +2613,14 @@ function toggleNewToolForm(show){
 function addTool(){
   const nome = document.getElementById('toolNome');
   const categoria = document.getElementById('toolCategoria').value.trim();
+  const tipo = document.getElementById('toolTipo').value;
   const descricao = document.getElementById('toolDescricao').value.trim();
   const link = document.getElementById('toolLink').value.trim();
+  const emails = document.getElementById('toolEmails').value.trim()
+    .split(',').map(e=>e.trim()).filter(Boolean);
   const observacoes = document.getElementById('toolObservacoes').value.trim();
   if(!nome.value.trim()) return;
-  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, descricao, link, observacoes});
+  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, tipo, descricao, link, emails, observacoes});
   saveState(); renderTools();
   toggleNewToolForm(false);
   showToast('Ferramenta salva.');
@@ -2425,7 +2643,7 @@ function updateToolField(id, field, value){
 function renderTools(){
   const el = document.getElementById('toolsList');
   if(!el) return;
-  if(state.tools.length===0){ el.innerHTML = '<div class="empty">nenhuma ferramenta cadastrada ainda.</div>'; return; }
+  if(state.tools.length===0){ el.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🧰</div><div class="empty-block-title">Nenhuma ferramenta cadastrada ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar Recurso" abaixo pra começar sua central de ferramentas.</div></div>'; return; }
   el.innerHTML = state.tools.map(t=>{
     if(toolEditingId===t.id){
       return `
@@ -2433,8 +2651,15 @@ function renderTools(){
         <div class="tool-edit-row">
           <input type="text" value="${escapeHtml(t.nome)}" placeholder="nome" onchange="updateToolField('${t.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(t.categoria||'')}" placeholder="categoria" onchange="updateToolField('${t.id}','categoria',this.value)">
+          <select onchange="updateToolField('${t.id}','tipo',this.value)">
+            <option value="">tipo (opcional)</option>
+            <option value="extensao" ${t.tipo==='extensao'?'selected':''}>Extensão</option>
+            <option value="aplicativo" ${t.tipo==='aplicativo'?'selected':''}>Aplicativo</option>
+            <option value="site" ${t.tipo==='site'?'selected':''}>Site</option>
+          </select>
           <textarea placeholder="descrição" onchange="updateToolField('${t.id}','descricao',this.value)">${escapeHtml(t.descricao||'')}</textarea>
           <input type="text" value="${escapeHtml(t.link||'')}" placeholder="link para acessar ou instalar" onchange="updateToolField('${t.id}','link',this.value)">
+          <input type="text" value="${escapeHtml((t.emails||[]).join(', '))}" placeholder="e-mail(s), separados por vírgula" onchange="updateToolField('${t.id}','emails', this.value.split(',').map(s=>s.trim()).filter(Boolean))">
           <textarea placeholder="observações" onchange="updateToolField('${t.id}','observacoes',this.value)">${escapeHtml(t.observacoes||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="removeTool('${t.id}')">✕ excluir</button>
@@ -2443,14 +2668,19 @@ function renderTools(){
         </div>
       </div>`;
     }
+    const TOOL_TYPE_LABELS = { extensao:'🧩 Extensão', aplicativo:'📱 Aplicativo', site:'🌐 Site' };
     return `
     <div class="tool-card">
       <div class="tool-card-head">
         <div class="tool-name">${escapeHtml(t.nome)}</div>
         <button class="mining-edit-btn" onclick="toggleToolEdit('${t.id}')">✎ editar</button>
       </div>
-      ${t.categoria ? `<span class="tool-cat">${escapeHtml(t.categoria)}</span>` : ''}
+      <div class="tool-tags-row">
+        ${t.categoria ? `<span class="tool-cat">${escapeHtml(t.categoria)}</span>` : ''}
+        ${t.tipo ? `<span class="tool-type-tag tool-type-${t.tipo}">${TOOL_TYPE_LABELS[t.tipo]}</span>` : ''}
+      </div>
       ${t.descricao ? `<div class="tool-field-label">descrição</div><div class="tool-field-value">${escapeHtml(t.descricao)}</div>` : ''}
+      ${(t.emails && t.emails.length) ? `<div class="tool-field-label">e-mail${t.emails.length>1?'s':''}</div><div class="tool-email-tags">${t.emails.map(e=>`<span class="tool-email-tag">${escapeHtml(e)}</span>`).join('')}</div>` : ''}
       ${t.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(t.observacoes)}</div>` : ''}
       ${t.link ? `<a class="tool-open-btn" href="${escapeHtml(t.link)}" target="_blank" rel="noopener">Abrir / instalar →</a>` : ''}
     </div>`;
@@ -2813,7 +3043,7 @@ function applyHideValuesPreference(){
   if(icon) icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
   if(btn) btn.classList.toggle('active', hidden);
 }
-const TAB_NAMES = ['home','finance','products','mining','tools','warmup','projects'];
+const TAB_NAMES = ['home','finance','products','mining','projects','tools','content','warmup'];
 function switchTab(tab){
   TAB_NAMES.forEach(t=>{
     const view = document.getElementById(t+'View');
@@ -3373,6 +3603,7 @@ function registerProjectVersion(){
   const ia = document.getElementById('pvIa').value;
   const conta = document.getElementById('pvConta').value.trim();
   const conversa = document.getElementById('pvConversa').value.trim();
+  const estagio = document.getElementById('pvEstagio').value;
   const resumo = document.getElementById('pvResumo').value.trim();
   const observacoes = document.getElementById('pvObservacoes').value.trim();
   const fileInput = document.getElementById('pvZip');
@@ -3382,12 +3613,13 @@ function registerProjectVersion(){
   const finalize = (zipData, zipName, zipSize)=>{
     const now = new Date().toISOString();
     const entry = {
-      id: uid(), versao, data: now, ia, conta, conversa, resumo, observacoes,
+      id: uid(), versao, data: now, ia, conta, conversa, estagio, resumo, observacoes,
       zipName: zipName || null, zipData: zipData || null, zipSize: zipSize || null
     };
     p.versions.unshift(entry);
-    p.currentVersion = { versao, resumo, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
+    p.currentVersion = { versao, resumo, observacoes, estagio, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
     p.ultimaAtualizacao = { conta, data: now, versao };
+    if(estagio) p.status = estagio;
     p.status = p.status || 'desenvolvimento';
     saveState(); renderProjects();
     toggleNewProjectVersionForm(false);
@@ -3500,13 +3732,6 @@ function renderProjectDetail(p){
     </div>
   `;
 
-  document.getElementById('projInfo').innerHTML = `
-    <div class="proj-info-row"><span class="k">Projeto criado em</span><span class="val">${fmtDate(p.criadoEm)}</span></div>
-    <div class="proj-info-row"><span class="k">IA utilizada</span><span class="val">${escapeHtml(p.ferramenta)}</span></div>
-    <div class="proj-info-row"><span class="k">Conta</span><input type="text" value="${escapeHtml(p.infoConta||'')}" placeholder="e-mail" onchange="updateProjectField('infoConta', this.value)"></div>
-    <div class="proj-info-row"><span class="k">Conversa</span><input type="text" value="${escapeHtml(p.infoConversa||'')}" placeholder="link/referência" onchange="updateProjectField('infoConversa', this.value)"></div>
-  `;
-
   const cp = p.contaPrincipal || {ia:'',conta:'',conversa:''};
   document.getElementById('projMainAccount').innerHTML = `
     <div class="proj-info-row"><span class="k">IA utilizada</span><input type="text" value="${escapeHtml(cp.ia||'')}" onchange="updateProjectMainAccountField('ia', this.value)"></div>
@@ -3523,9 +3748,10 @@ function renderProjectDetail(p){
   const cv = p.currentVersion;
   document.getElementById('projCurrentVersion').innerHTML = cv ? `
     <div class="proj-version-box">
-      <div class="proj-version-name">${escapeHtml(cv.versao)}</div>
+      <div class="proj-version-name">${escapeHtml(cv.versao)} ${cv.estagio?`<span class="proj-stage-badge stage-${cv.estagio}">${PROJECT_STATUS_LABELS[cv.estagio]||cv.estagio}</span>`:''}</div>
       ${cv.zipName ? `<div class="proj-version-file">📎 ${escapeHtml(cv.zipName)} ${cv.zipSize?`· ${fmtBytes(cv.zipSize)}`:''}</div>` : `<div class="proj-version-file">nenhum arquivo anexado</div>`}
       ${cv.resumo ? `<div class="proj-version-resumo">${escapeHtml(cv.resumo)}</div>` : ''}
+      ${cv.observacoes ? `<div class="proj-version-resumo" style="opacity:.75;margin-top:6px;">📝 ${escapeHtml(cv.observacoes)}</div>` : ''}
       <div class="proj-version-actions">
         ${cv.zipData ? `<button class="proj-dl-btn" onclick="downloadCurrentVersionZip()">⬇ baixar ZIP atual</button>` : ''}
       </div>
@@ -3537,7 +3763,7 @@ function renderProjectDetail(p){
     <div class="timeline-item">
       <div class="timeline-dot"></div>
       <div class="timeline-card">
-        <div class="timeline-version">${escapeHtml(v.versao)}</div>
+        <div class="timeline-version">${escapeHtml(v.versao)} ${v.estagio?`<span class="proj-stage-badge stage-${v.estagio}">${PROJECT_STATUS_LABELS[v.estagio]||v.estagio}</span>`:''}</div>
         <div class="timeline-date">${fmtDateTime(v.data)}</div>
         <div class="timeline-meta">
           ${v.conta?`<span>👤 ${escapeHtml(v.conta)}</span>`:''}
@@ -3545,7 +3771,7 @@ function renderProjectDetail(p){
           ${v.ia?`<span>🤖 ${escapeHtml(v.ia)}</span>`:''}
         </div>
         ${v.resumo?`<div class="timeline-resumo">${escapeHtml(v.resumo)}</div>`:''}
-        ${v.observacoes?`<div class="timeline-resumo" style="opacity:.7;margin-top:4px;">${escapeHtml(v.observacoes)}</div>`:''}
+        ${v.observacoes?`<div class="timeline-resumo" style="opacity:.7;margin-top:4px;">📝 ${escapeHtml(v.observacoes)}</div>`:''}
         ${v.zipData?`<div class="proj-version-actions"><button class="proj-dl-btn" onclick="downloadVersionZip('${v.id}')">⬇ ${escapeHtml(v.zipName||'baixar ZIP')}</button></div>`:''}
       </div>
     </div>
@@ -3578,7 +3804,7 @@ function renderProjects(){
     detailWrap.style.display = 'none';
     const grid = document.getElementById('projectsGrid');
     grid.innerHTML = state.projects.length===0
-      ? '<div class="empty">nenhum projeto cadastrado ainda — use o + Novo Projeto acima pra começar.</div>'
+      ? '<div class="empty-block"><div class="empty-block-icon">📦</div><div class="empty-block-title">Nenhum projeto cadastrado ainda</div><div class="empty-block-sub">Use o + Novo Projeto acima pra começar a acompanhar a evolução do seu projeto.</div></div>'
       : state.projects.map(renderProjectCard).join('');
   }
 }
