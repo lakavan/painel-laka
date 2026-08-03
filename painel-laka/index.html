@@ -139,6 +139,15 @@
     filter:blur(7px);user-select:none;transition:filter .15s;
   }
   body.hide-financials .today-stat .trend{filter:blur(4px);user-select:none;}
+  body.hide-financials .fin-num,
+  body.hide-financials .msum .v,
+  body.hide-financials .pstat .v,
+  body.hide-financials #desempenhoMesChart,
+  body.hide-financials .chart-legend,
+  body.hide-financials .panel-total{
+    filter:blur(7px);user-select:none;transition:filter .15s;
+  }
+  body.hide-financials .day-cell-input{pointer-events:none;}
   .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
   @media(max-width:800px){.today-stats{grid-template-columns:1fr 1fr;}}
   .today-stat{background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:12px 14px;}
@@ -286,14 +295,24 @@
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
   .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
-  .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging{
+  .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging, .tool-card.dragging{
     opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;
     box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright), var(--shadow-glow-blue);
     will-change:transform;
   }
+  /* durante o arrasto, esconde o conteúdo pesado do card de mineração (gráfico/histórico/campos)
+     mas mantém o cabeçalho (nome + alça) visível — deixa o reordenamento fluido mesmo com muitos itens */
+  .mining-card.dragging .mining-fields,
+  .mining-card.dragging .mining-anuncios-highlight,
+  .mining-card.dragging .mining-history{
+    display:none;
+  }
   .drag-handle{cursor:grab;color:var(--muted2);font-size:13px;line-height:1;padding:2px 4px;touch-action:none;user-select:none;flex-shrink:0;margin-top:2px;transition:color .15s;}
   .drag-handle:hover{color:var(--blue-bright);}
   .drag-handle:active{cursor:grabbing;}
+  @media(max-width:600px){
+    .drag-handle{padding:8px 10px;margin:-8px -6px;font-size:16px;}
+  }
   .item.done{opacity:0.4;}
   .item.done .item-text{text-decoration:line-through;}
   .item-status{width:11px;height:11px;border-radius:50%;margin-top:3px;flex-shrink:0;cursor:pointer;border:1px solid rgba(255,255,255,0.15);}
@@ -316,6 +335,11 @@
   .task-tag.bloqueada{color:var(--urgent);background:rgba(255,77,109,.15);}
   .item-body{flex:1;min-width:0;}
   .item-text{font-size:13.5px;line-height:1.4;word-break:break-word;}
+  .processo-step-num{color:var(--blue-bright);font-weight:700;}
+  .processo-desc{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap;}
+  .item.done .processo-desc{opacity:0.7;}
+  .processo-edit-btn{background:none;border:none;color:var(--muted2);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;transition:color .15s;}
+  .processo-edit-btn:hover{color:var(--blue-bright);}
   .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
   .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
   .del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:2px 6px;flex-shrink:0;}
@@ -419,15 +443,16 @@
   .empty{color:var(--muted2);font-size:12.5px;font-style:italic;padding:6px 0;}
 
   /* ---------- LOG ---------- */
-  .log-entry{position:relative;border-left:2px solid var(--border);padding:8px 34px 8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;transition:background .15s;}
+  .log-entry{position:relative;border-left:2px solid var(--border);padding:8px 62px 8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;transition:background .15s;}
   .log-entry:hover{background:var(--surface2);}
   .log-entry.win{border-left-color:var(--ok);}
   .log-entry.problem{border-left-color:var(--urgent);}
   .log-meta{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:3px;}
   .log-edited-tag{color:var(--blue);}
   .log-text{font-size:13px;line-height:1.5;}
-  .log-edit-btn{position:absolute;top:8px;right:8px;opacity:0;transition:opacity .15s;}
-  .log-entry:hover .log-edit-btn{opacity:1;}
+  .log-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:opacity .15s;}
+  .log-entry:hover .log-actions{opacity:1;}
+  .log-del-btn:hover{color:var(--urgent);border-color:var(--urgent);}
   .log-editing{padding:10px 12px;background:var(--surface2);}
   .log-edit-textarea{width:100%;min-height:70px;margin-bottom:8px;}
 
@@ -530,6 +555,31 @@
   }
   .mining-field input:focus, .mining-field textarea:focus{border-color:var(--blue);}
   .mining-field textarea{resize:none;min-height:38px;}
+  .mining-anuncios-highlight{
+    background:linear-gradient(135deg,var(--blue-soft),rgba(16,185,129,0.08));border:1.5px solid var(--blue);
+    border-radius:12px;padding:12px 14px;margin-bottom:12px;
+  }
+  .mining-anuncios-highlight label{
+    font-family:var(--mono);font-size:10px;color:var(--blue-bright);text-transform:uppercase;letter-spacing:0.5px;
+    display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;
+  }
+  .mining-highlight-tag{
+    font-family:var(--sans);font-size:9.5px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);
+    background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;
+  }
+  .mining-highlight-row{display:flex;align-items:center;gap:10px;}
+  .mining-highlight-input{
+    flex:1;font-family:var(--display);font-size:26px;font-weight:800;color:var(--text);
+    background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;
+    padding:8px 12px;text-align:center;
+  }
+  .mining-highlight-input:focus{border-color:var(--blue-bright);}
+  .mining-stepper{
+    width:40px;height:40px;flex-shrink:0;border-radius:10px;border:1px solid var(--border-strong);
+    background:var(--surface);color:var(--text);font-size:19px;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;
+  }
+  .mining-stepper:hover{background:var(--blue-soft);border-color:var(--blue);color:var(--blue-bright);}
   .mining-history{
     margin-top:10px;border-top:1px solid var(--border);padding-top:8px;
   }
@@ -539,31 +589,63 @@
   .mining-history-entry{display:flex;gap:8px;font-size:11.5px;color:var(--muted);padding:3px 0;font-family:var(--mono);}
   .mining-history-entry .hd{color:var(--muted2);min-width:80px;}
   .mining-history-entry .hv{color:var(--green);}
+  .mining-stats-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .mining-sparkline{width:100%;height:44px;display:block;margin-bottom:8px;}
+  .mining-sparkline .spark-area{fill:currentColor;opacity:0.14;stroke:none;}
+  .mining-sparkline .spark-line{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .mining-sparkline .spark-dot{fill:currentColor;}
+  .mining-sparkline.spark-alta{color:var(--ok);}
+  .mining-sparkline.spark-queda{color:var(--urgent);}
+  .mining-sparkline.spark-estavel{color:var(--muted);}
+  .mining-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;}
+  .mining-stat{display:flex;flex-direction:column;gap:2px;}
+  .ms-label{font-family:var(--mono);font-size:8.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.4px;}
+  .ms-value{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);}
+  .ms-value.trend-alta{color:var(--ok);}
+  .ms-value.trend-queda{color:var(--urgent);}
+  .ms-value.trend-estavel{color:var(--muted);}
+  .ms-value.pos{color:var(--ok);}
+  .ms-value.neg{color:var(--urgent);}
 
   /* ---------- VÍDEOS ---------- */
-  .videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:6px;}
-  .video-card{
-    background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;
-    cursor:pointer;transition:border-color .15s,transform .15s;position:relative;
+  .videos-list{display:flex;flex-direction:column;gap:7px;margin-bottom:6px;}
+  .video-row{
+    background:var(--surface2);border:1px solid var(--border);border-radius:11px;overflow:hidden;
+    cursor:pointer;transition:border-color .15s,background .15s;position:relative;
+    display:flex;align-items:center;gap:11px;padding:10px 12px;
   }
-  .video-card:hover{border-color:var(--blue);transform:translateY(-2px);}
-  .video-thumb{width:100%;aspect-ratio:16/9;background:var(--bg) center/cover no-repeat;position:relative;}
-  .video-thumb-empty{background:linear-gradient(135deg,var(--surface3),var(--bg));}
-  .video-platform-badge{
-    position:absolute;bottom:6px;left:6px;font-family:var(--mono);font-size:9px;font-weight:700;
-    text-transform:uppercase;letter-spacing:0.4px;padding:3px 7px;border-radius:5px;color:#fff;
+  .video-row:hover{border-color:var(--blue);background:var(--surface3);}
+  .video-row.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
+  .video-row .drag-handle{flex-shrink:0;color:var(--muted2);cursor:grab;padding:2px;}
+  .video-desc-full{
+    font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
+    padding:8px 10px;background:var(--bg);border-radius:8px;white-space:pre-wrap;
   }
-  .video-platform-badge.ig{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);}
-  .video-platform-badge.tt{background:#010101;border:1px solid #25F4EE;}
-  .video-play{
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:40px;height:40px;background:rgba(13,11,20,0.75);border-radius:50%;
-    display:flex;align-items:center;justify-content:center;color:var(--green);font-size:15px;
+  .video-thumb-img{
+    flex-shrink:0;width:32px;height:32px;border-radius:9px;object-fit:cover;background:var(--bg);
   }
-  .video-info{padding:10px 12px;}
-  .video-title{font-family:var(--display);font-weight:700;font-size:12.5px;margin-bottom:3px;}
-  .video-nota{font-size:11px;color:var(--muted);}
-  .video-del{position:absolute;top:6px;right:6px;background:rgba(13,11,20,0.7);border:none;color:var(--text);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;z-index:2;}
+  .empty-block{text-align:center;padding:44px 20px;}
+  .empty-block-icon{font-size:30px;margin-bottom:10px;opacity:.65;}
+  .empty-block-title{font-family:var(--display);font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px;}
+  .empty-block-sub{font-size:12px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.5;}
+  .video-platform-ico{
+    flex-shrink:0;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    background:var(--surface3);border:1px solid var(--border-strong);color:var(--blue-bright);
+  }
+  .video-platform-ico svg{width:16px;height:16px;}
+  .video-row-body{flex:1;min-width:0;}
+  .video-title{font-family:var(--display);font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .video-meta{display:flex;align-items:center;gap:6px;margin-top:2px;}
+  .video-nota{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .video-open-ico{flex-shrink:0;color:var(--muted2);font-size:15px;transition:color .15s,transform .15s;}
+  .video-row:hover .video-open-ico{color:var(--blue-bright);transform:translateX(2px);}
+  .video-edit-ico{flex-shrink:0;background:none;border:none;color:var(--muted2);cursor:pointer;font-size:13px;padding:4px 6px;border-radius:6px;opacity:0;transition:opacity .15s,color .15s,background .15s;}
+  .video-row:hover .video-edit-ico{opacity:1;}
+  .video-edit-ico:hover{color:var(--blue-bright);background:var(--surface3);}
+  .video-row-editing{cursor:default;align-items:flex-start;border-color:var(--blue);}
+  .video-row-editing:hover{background:var(--surface2);}
+  .video-del{flex-shrink:0;background:none;border:none;color:var(--muted2);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;z-index:2;transition:color .15s,background .15s;}
+  .video-del:hover{color:var(--urgent);background:var(--urgent-soft);}
   .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
   .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
   .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:rgba(59,130,246,0.10);border:1px solid rgba(59,130,246,0.3);border-radius:4px;padding:2px 7px;color:var(--blue);}
@@ -644,10 +726,6 @@
   .onvio-arrow{margin-left:auto;color:var(--blue);font-size:18px;}
 
   /* ---------- CHECKLIST DIÁRIO ---------- */
-  .checklist-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;}
-  .checklist-item.done{opacity:0.5;}
-  .checklist-item.done .checklist-text{text-decoration:line-through;}
-  .checklist-text{flex:1;font-size:13.5px;}
 
   /* ---------- PRODUCT STEPS ---------- */
   .step-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
@@ -704,11 +782,32 @@
   .modal-overlay{
     display:none;position:fixed;inset:0;background:rgba(2,4,8,0.72);backdrop-filter:blur(3px);
     z-index:100;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .18s ease;
   }
+  .modal-overlay.open{display:flex;}
   .modal-box{
     background:var(--surface2);border:1px solid var(--border-strong);border-radius:var(--radius-lg);
     padding:22px;max-width:420px;width:100%;box-shadow:var(--shadow-md);
+    animation:modalPopIn .22s cubic-bezier(.22,.85,.32,1);
   }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes modalPopIn{
+    from{opacity:0;transform:translateY(14px) scale(.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .confirm-modal-msg{font-size:13.5px;color:var(--muted);line-height:1.6;margin:2px 0 18px 0;}
+  .confirm-modal-actions{display:flex;gap:10px;}
+  .confirm-modal-actions .btn-cancel{
+    flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;
+    padding:11px 16px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;
+  }
+  .confirm-modal-actions .btn-cancel:hover{border-color:var(--border-strong);color:var(--text);}
+  .confirm-modal-actions .btn-danger{
+    flex:1;background:linear-gradient(135deg,var(--urgent),#c62f45);border:none;color:#fff;
+    border-radius:10px;padding:11px 16px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;
+    box-shadow:0 6px 16px -4px rgba(240,69,92,0.5);transition:transform .15s,box-shadow .15s;
+  }
+  .confirm-modal-actions .btn-danger:hover{transform:translateY(-1px);box-shadow:0 8px 20px -4px rgba(240,69,92,0.65);}
   .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
   .modal-head h3{margin:0;font-family:var(--display);font-size:16px;font-weight:700;}
   .modal-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
@@ -729,17 +828,193 @@
   .tool-card:hover{border-color:var(--blue);transform:translateY(-2px);}
   .tool-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
-  .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;margin-bottom:8px;}
+  .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;}
+  .tool-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .tool-type-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:0.3px;border-radius:5px;padding:2px 8px;display:inline-block;}
+  .tool-type-extensao{color:var(--blue-bright);background:var(--blue-soft);}
+  .tool-type-aplicativo{color:#c084fc;background:rgba(192,132,252,0.13);}
+  .tool-type-site{color:var(--muted);background:var(--surface3);}
+  .tool-email-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;margin-bottom:8px;}
+  .tool-email-tag{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:2px 8px;}
   .tool-field-label{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 2px 0;}
   .tool-field-value{font-size:12.5px;color:var(--muted);line-height:1.5;white-space:pre-wrap;}
   .tool-edit-row{display:flex;flex-direction:column;gap:8px;}
   .tool-open-btn{display:block;text-align:center;margin-top:12px;padding:8px 12px;border-radius:9px;background:var(--blue-soft);color:var(--blue-bright);font-size:12.5px;font-weight:700;text-decoration:none;border:1px solid rgba(59,130,246,0.25);transition:background .15s,border-color .15s;}
   .tool-open-btn:hover{background:rgba(59,130,246,0.2);border-color:var(--blue);}
+
+  /* ---------- PROJETOS ---------- */
+  .back-btn{
+    background:none;border:1px solid var(--border);color:var(--muted);border-radius:9px;
+    padding:8px 14px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;
+    margin-bottom:16px;transition:border-color .15s,color .15s;
+  }
+  .back-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .project-card{cursor:pointer;}
+  .project-card-name{font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .status-badge{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.5px;border-radius:6px;padding:3px 8px;display:inline-block;font-weight:700;}
+  .status-badge.desenvolvimento{color:var(--blue-bright);background:var(--blue-soft);border:1px solid rgba(59,130,246,.3);}
+  .status-badge.pausado{color:var(--warn);background:rgba(242,169,60,.12);border:1px solid rgba(242,169,60,.3);}
+  .status-badge.finalizado{color:var(--green);background:var(--green-soft);border:1px solid rgba(34,197,94,.3);}
+  .project-card-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+  .project-detail-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+  .project-detail-title{font-family:var(--display);font-size:22px;font-weight:800;}
+  .project-detail-tool{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:6px 12px;}
+  .proj-info-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+  .proj-info-row:last-child{border-bottom:none;}
+  .proj-info-row .k{color:var(--muted2);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.4px;}
+  .proj-info-row .val{color:var(--text);text-align:right;font-weight:600;}
+  .proj-info-row input{background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;text-align:right;width:60%;}
+  .proj-version-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .proj-version-name{font-family:var(--display);font-weight:800;font-size:16px;color:var(--blue-bright);}
+  .proj-stage-badge{
+    font-family:var(--mono);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:5px;
+    margin-left:6px;vertical-align:middle;text-transform:uppercase;
+  }
+  .proj-stage-badge.stage-desenvolvimento{background:var(--blue-soft);color:var(--blue-bright);}
+  .proj-stage-badge.stage-pausado{background:var(--warn-soft,rgba(242,169,60,0.15));color:var(--warn);}
+  .proj-stage-badge.stage-finalizado{background:var(--green-soft);color:var(--green);}
+  .proj-version-file{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .proj-version-resumo{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5;}
+  .proj-version-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  .proj-dl-btn{background:var(--green-soft);color:var(--green);border:1px solid rgba(34,197,94,.35);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .proj-dl-btn:hover{background:rgba(34,197,94,.22);}
+  .project-timeline{position:relative;padding-left:20px;}
+  .project-timeline::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--border-strong);}
+  .timeline-item{position:relative;padding-bottom:20px;}
+  .timeline-item:last-child{padding-bottom:0;}
+  .timeline-dot{position:absolute;left:-20px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--blue);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--blue);}
+  .timeline-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .timeline-version{font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--blue-bright);}
+  .timeline-date{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
+  .timeline-meta{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;font-size:11px;color:var(--muted);}
+  /* ---------- LOGIN SCREEN ---------- */
+  .login-screen{
+    position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;
+    z-index:100;padding:20px;overflow-y:auto;
+  }
+  .login-screen::before{
+    content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 700px 500px at 15% 10%, rgba(59,130,246,0.10), transparent),
+      radial-gradient(ellipse 600px 500px at 85% 90%, rgba(34,197,94,0.08), transparent);
+    pointer-events:none;
+  }
+  .login-box{
+    position:relative;width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);
+    border-radius:22px;padding:40px 34px;box-shadow:0 24px 70px rgba(0,0,0,0.5);text-align:center;
+    animation:loginFadeIn .4s ease;
+  }
+  @keyframes loginFadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .login-mark{
+    width:64px;height:64px;margin:0 auto 20px auto;border-radius:18px;
+    background:linear-gradient(135deg,var(--blue),var(--green));display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px rgba(59,130,246,0.35);
+  }
+  .login-mark svg{width:32px;height:32px;}
+  .login-title{font-family:var(--display);font-weight:800;font-size:21px;margin-bottom:5px;letter-spacing:-0.2px;}
+  .login-sub{font-size:12.5px;color:var(--muted);margin-bottom:26px;line-height:1.5;}
+
+  .login-tabs{
+    display:flex;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:4px;
+    margin-bottom:24px;gap:4px;
+  }
+  .login-tab{
+    flex:1;background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:700;
+    font-size:12.5px;padding:9px;border-radius:9px;cursor:pointer;transition:all .15s;
+  }
+  .login-tab.active{background:var(--surface2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+
+  #loginForm, #signupForm{text-align:left;}
+  #loginForm input, #signupForm input{
+    width:100%;margin-top:5px;background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:10px;padding:11px 13px;font-size:13.5px;transition:border-color .15s;
+  }
+  #loginForm input:focus, #signupForm input:focus{border-color:var(--blue);outline:none;}
+  #loginForm .field-label, #signupForm .field-label{margin-top:14px;}
+  #loginForm .field-label:first-child, #signupForm .field-label:first-child{margin-top:0;}
+
+  .login-error{
+    background:var(--urgent-soft);color:var(--urgent);font-size:12px;padding:9px 11px;
+    border-radius:9px;margin-top:14px;text-align:left;line-height:1.4;
+  }
+  .login-submit{
+    width:100%;margin-top:22px;background:linear-gradient(135deg,var(--blue),var(--green));
+    color:#06080c;font-weight:800;font-size:13.5px;padding:13px;border:none;border-radius:11px;cursor:pointer;
+    transition:opacity .15s,transform .1s;
+  }
+  .login-submit:hover{opacity:0.9;}
+  .login-submit:active{transform:scale(0.98);}
+  .login-submit:disabled{opacity:0.5;cursor:not-allowed;}
+  .login-link-btn{
+    width:100%;margin-top:14px;background:none;border:none;color:var(--muted);font-size:11.5px;
+    cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+  }
+  .login-link-btn:hover{color:var(--blue-bright);}
+  .login-success{
+    background:var(--green-soft);border:1px solid rgba(34,197,94,0.3);border-radius:12px;
+    padding:18px;text-align:left;
+  }
+  .login-success-icon{font-size:24px;margin-bottom:8px;}
+  .login-success-text{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:14px;}
+  .login-success .login-link-btn{margin-top:0;color:var(--blue-bright);}
+
+  .logout-btn{
+    background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+    border-radius:9px;padding:6px 12px;font-size:11.5px;cursor:pointer;display:flex;align-items:center;gap:5px;
+  }
+  .logout-btn:hover{color:var(--urgent);border-color:var(--urgent);}
 </style>
 </head>
 <body>
 <div id="toastContainer"></div>
-<div class="wrap">
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-mark" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="26" y="54" width="10" height="20" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+        <rect x="42" y="42" width="10" height="32" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+        <rect x="58" y="28" width="10" height="46" rx="3.2" fill="#ffffff"/>
+      </svg>
+    </div>
+    <div class="login-title">Painel LAKA</div>
+    <div class="login-sub" id="loginSubText">acesso restrito — entre com suas credenciais</div>
+
+    <div class="login-tabs" id="loginTabs">
+      <button class="login-tab active" id="tabLoginBtn" onclick="switchAuthMode('login')">Entrar</button>
+      <button class="login-tab" id="tabSignupBtn" onclick="switchAuthMode('signup')">Criar conta</button>
+    </div>
+
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+      <label class="field-label">e-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username" required>
+      <label class="field-label">senha</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required>
+      <div id="loginError" class="login-error" style="display:none;"></div>
+      <button type="submit" class="login-submit" id="loginSubmitBtn">Entrar</button>
+      <button type="button" class="login-link-btn" onclick="handleForgotPassword()">Esqueci minha senha</button>
+    </form>
+
+    <form id="signupForm" onsubmit="return handleSignup(event)" style="display:none;">
+      <label class="field-label">e-mail</label>
+      <input type="email" id="signupEmail" autocomplete="email" required>
+      <label class="field-label">senha</label>
+      <input type="password" id="signupPassword" autocomplete="new-password" required minlength="6">
+      <label class="field-label">confirmar senha</label>
+      <input type="password" id="signupPasswordConfirm" autocomplete="new-password" required minlength="6">
+      <div id="signupError" class="login-error" style="display:none;"></div>
+      <button type="submit" class="login-submit" id="signupSubmitBtn">Criar conta</button>
+    </form>
+
+    <div id="signupSuccess" class="login-success" style="display:none;">
+      <div class="login-success-icon">✉️</div>
+      <div class="login-success-text">Enviamos um link de confirmação pro seu e-mail. Confirma por lá antes de entrar aqui.</div>
+      <button type="button" class="login-link-btn" onclick="switchAuthMode('login')">← voltar pro login</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="appWrap" style="display:none;">
 
   <div class="hero">
     <div class="hero-brand">
@@ -758,6 +1033,10 @@
         <h1>Tráfego direto · Infoproduto</h1>
       </div>
     </div>
+    <button class="logout-btn" onclick="handleLogout()" title="sair da conta">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      sair
+    </button>
   </div>
 
   <div id="loading" class="loading">carregando dados...</div>
@@ -769,7 +1048,9 @@
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
       <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
       <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
+      <button class="tab-btn" id="tabBtnProjects" onclick="switchTab('projects')">📦 Projetos</button>
       <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
+      <button class="tab-btn" id="tabBtnContent" onclick="switchTab('content')">🎬 Biblioteca de Conteúdo</button>
       <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
     </div>
 
@@ -839,14 +1120,32 @@
           <button class="add" onclick="addOffer()">+ add</button>
         </div>
       </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Estrutura pra escalar</h2></div>
-        <div id="structuralList"></div>
-        <div class="add-row">
-          <input type="text" id="structuralInput" placeholder="nova tarefa estrutural...">
-          <button class="add" onclick="addTask('estrutural')">+ add</button>
+      <div class="panel" id="processosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">documente os passos pra validar e escalar uma oferta</span>Processos da Empresa</h2>
+          <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
+        </div>
+        <div id="processosList"></div>
+        <div class="add-form collapsible-form" id="newProcessoRow">
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="processoTitulo" placeholder="nome da etapa (ex: Validar oferta com 3 dias de anúncio)">
+            <textarea id="processoDescricao" placeholder="descreva o passo a passo dessa etapa..."></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar etapa</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewProcessoForm(false)">cancelar</button>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
+      <div class="planner-focus">
+        <label class="field-label">foco da semana</label>
+        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
+      </div>
+      <div class="planner-days" id="plannerDays"></div>
     </div>
 
     <div class="panel full">
@@ -861,32 +1160,6 @@
           </select>
           <button class="add" onclick="addLog()">+ registrar</button>
         </div>
-      </div>
-    </div>
-
-    <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
-      <div class="planner-focus">
-        <label class="field-label">foco da semana</label>
-        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
-      </div>
-      <div class="planner-days" id="plannerDays"></div>
-    </div>
-
-    <div class="panel full" id="videosPanel">
-      <div class="panel-head">
-        <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2>
-        <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
-      </div>
-      <div id="videosList" class="videos-grid"></div>
-      <div class="add-form" id="newVideoRow">
-      <div class="add-row">
-        <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
-        <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
-        <input type="text" id="videoNota" placeholder="nota (opcional)">
-        <button class="add" onclick="addVideo()">+ add</button>
-        <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
-      </div>
       </div>
     </div>
 
@@ -970,6 +1243,13 @@
         <div class="panel full">
           <div class="panel-head">
             <h2>Financeiro</h2>
+            <button class="hide-values-btn" id="hideValuesBtnFinance" onclick="toggleHideValues()" title="ocultar valores financeiros">
+              <span id="hideValuesIconFinance" class="eye-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </span>
+            </button>
           </div>
 
           <div class="month-nav">
@@ -1053,20 +1333,24 @@
     </div>
 
     <div class="tab-view" id="productsView">
-      <div class="panel full">
-        <div class="panel-head"><h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2></div>
+      <div class="panel full" id="productsPanel">
+        <div class="panel-head">
+          <h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2>
+          <button class="add-tool-btn" id="newProductToggleBtn" onclick="toggleNewProductRow(true)">+ Criar novo produto</button>
+        </div>
         <label class="field-label">produto selecionado</label>
         <select id="productSelect" onchange="selectProduct(this.value)" style="width:100%;margin-bottom:14px;"></select>
 
-        <div id="newProductRow" style="display:none;">
+        <div class="add-form" id="newProductRow">
+        <div>
           <label class="field-label">nome do novo produto</label>
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="newProductName" placeholder="ex: Curso X, Mentoria Y...">
             <button class="add" onclick="addProduct()">criar produto</button>
-            <button class="add" style="background:var(--surface2);color:var(--muted);" onclick="toggleNewProductRow(false)">cancelar</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewProductRow(false)">cancelar</button>
           </div>
         </div>
-        <button class="add" id="newProductToggleBtn" style="background:var(--blue-soft);color:var(--blue);border:1px dashed var(--blue);" onclick="toggleNewProductRow(true)">+ criar novo produto</button>
+        </div>
       </div>
 
       <div id="productDetail" style="display:none;">
@@ -1112,7 +1396,11 @@
           <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
         </div>
       </div>
-      <div id="productEmpty" class="empty" style="padding:20px 0;">Cria um produto acima pra começar a montar o funil de mensagens.</div>
+      <div id="productEmpty" class="empty-block">
+        <div class="empty-block-icon">📦</div>
+        <div class="empty-block-title">Nenhum produto selecionado ainda</div>
+        <div class="empty-block-sub">Cria um produto acima ou seleciona um existente pra começar a montar o funil de mensagens.</div>
+      </div>
     </div>
 
     <div class="tab-view" id="miningView">
@@ -1153,6 +1441,31 @@
       </div>
     </div>
 
+    <div class="tab-view" id="contentView">
+      <div class="panel full" id="videosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Biblioteca de Conteúdo</h2>
+          <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
+        </div>
+        <div id="videosList" class="videos-list"></div>
+        <div class="add-form" id="newVideoRow">
+        <div class="add-row">
+          <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
+          <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
+          <input type="text" id="videoNota" placeholder="nota curta (opcional)">
+        </div>
+        <div class="add-row" style="margin-top:8px;">
+          <input type="text" id="videoThumbnail" placeholder="link da thumbnail/imagem de capa (opcional)">
+        </div>
+        <textarea id="videoDescricao" placeholder="descrição (opcional) — fica visível no card" style="margin-top:8px;"></textarea>
+        <div class="add-row" style="margin-top:8px;">
+          <button class="add" onclick="addVideo()">+ add</button>
+          <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
+        </div>
+        </div>
+      </div>
+    </div>
+
     <div class="tab-view" id="toolsView">
       <div class="panel full" id="toolsPanel">
         <div class="panel-head">
@@ -1165,9 +1478,16 @@
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="toolNome" placeholder="nome (ex: Canva)">
             <input type="text" id="toolCategoria" placeholder="categoria (ex: Criação de criativos)">
+            <select id="toolTipo">
+              <option value="">tipo (opcional)</option>
+              <option value="extensao">Extensão</option>
+              <option value="aplicativo">Aplicativo</option>
+              <option value="site">Site</option>
+            </select>
           </div>
           <textarea id="toolDescricao" placeholder="descrição..."></textarea>
           <input type="text" id="toolLink" placeholder="link para acessar ou instalar">
+          <input type="text" id="toolEmails" placeholder="e-mail(s) usados nessa ferramenta — separa por vírgula se for mais de um">
           <textarea id="toolObservacoes" placeholder="observações (opcional)..."></textarea>
           <div class="add-row" style="margin-top:0;">
             <button class="add" style="flex:1;" onclick="addTool()">+ adicionar ferramenta</button>
@@ -1199,6 +1519,127 @@
       </div>
     </div>
 
+    <div class="tab-view" id="projectsView">
+      <div id="projectsListWrap">
+        <div class="panel full">
+          <div class="panel-head">
+            <h2><span class="sub">histórico da evolução de cada projeto construído com IA</span>📦 Projetos</h2>
+            <button class="add-tool-btn" id="newProjectToggleBtn" onclick="toggleNewProjectForm(true)">+ Novo Projeto</button>
+          </div>
+          <div class="add-form" id="newProjectRow">
+            <div class="add-row" style="flex-direction:column;">
+              <input type="text" id="projectNome" placeholder="nome do projeto (ex: Painel LAKA)">
+              <div class="add-row" style="margin-top:0;">
+                <select id="projectFerramenta">
+                  <option>Claude Code</option><option>ChatGPT</option><option>Claude</option>
+                  <option>Cursor</option><option>Lovable</option><option>v0</option><option>Outro</option>
+                </select>
+                <select id="projectStatus">
+                  <option value="desenvolvimento">Em desenvolvimento</option>
+                  <option value="pausado">Pausado</option>
+                  <option value="finalizado">Finalizado</option>
+                </select>
+              </div>
+              <div class="add-row" style="margin-top:0;">
+                <button class="add" style="flex:1;" onclick="addProject()">criar projeto</button>
+                <button class="add-cost-cancel-btn" onclick="toggleNewProjectForm(false)">cancelar</button>
+              </div>
+            </div>
+          </div>
+          <div id="projectsGrid" class="tools-grid"></div>
+        </div>
+      </div>
+
+      <div id="projectDetailWrap" style="display:none;">
+        <button class="back-btn" onclick="closeProjectDetail()">← voltar aos projetos</button>
+
+        <div class="project-detail-head">
+          <div class="project-detail-title" id="projDetailTitle">📦 —</div>
+          <div class="project-detail-tool" id="projDetailTool">💻 —</div>
+        </div>
+
+        <div class="row-two">
+          <div class="panel">
+            <div class="panel-head"><h2>📊 Resumo</h2></div>
+            <div class="panel-stats-row" id="projSummary"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2><span class="sub">de onde esse projeto nasceu</span>Conta Principal</h2></div>
+            <div id="projMainAccount"></div>
+          </div>
+        </div>
+
+        <div class="panel full">
+          <div class="panel-head"><h2>Última atualização</h2></div>
+          <div id="projLastUpdate"></div>
+        </div>
+
+        <div class="panel full">
+          <div class="panel-head"><h2><span class="sub">arquivo, versão e resumo do estado atual do projeto</span>📎 Versão Atual</h2></div>
+          <div id="projCurrentVersion"></div>
+          <div class="add-row" style="margin-top:12px;">
+            <button class="add-tool-btn" id="newProjVersionToggleBtn" onclick="toggleNewProjectVersionForm(true)">+ Anexar novo ZIP / registrar atualização</button>
+          </div>
+          <div class="add-form" id="newProjVersionRow">
+            <div class="add-row" style="flex-direction:column;">
+              <input type="text" id="pvVersao" placeholder="versão (ex: Painel LAKA V30)">
+              <input type="file" id="pvZip" accept=".zip">
+              <div class="add-row" style="margin-top:0;">
+                <select id="pvIa">
+                  <option>Claude Code</option><option>ChatGPT</option><option>Claude</option>
+                  <option>Cursor</option><option>Lovable</option><option>v0</option><option>Outro</option>
+                </select>
+                <input type="text" id="pvConta" placeholder="conta utilizada (e-mail)">
+              </div>
+              <input type="text" id="pvConversa" placeholder="conversa utilizada (link ou referência)">
+              <select id="pvEstagio">
+                <option value="">estágio do projeto (opcional)</option>
+                <option value="desenvolvimento">Em desenvolvimento</option>
+                <option value="pausado">Pausado</option>
+                <option value="finalizado">Finalizado</option>
+              </select>
+              <textarea id="pvResumo" placeholder="resumo da atualização..."></textarea>
+              <textarea id="pvObservacoes" placeholder="observações (opcional)..."></textarea>
+              <div class="add-row" style="margin-top:0;">
+                <button class="add" style="flex:1;" onclick="registerProjectVersion()">registrar atualização</button>
+                <button class="add-cost-cancel-btn" onclick="toggleNewProjectVersionForm(false)">cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel full">
+          <div class="panel-head"><h2><span class="sub">todas as versões registradas, da mais recente à mais antiga</span>📜 Linha do Tempo</h2></div>
+          <div id="projTimeline" class="project-timeline"></div>
+        </div>
+
+        <div class="panel full">
+          <div class="panel-head">
+            <h2><span class="sub">onde cada serviço desse projeto está hospedado, e em qual conta</span>🔗 Recursos do Projeto</h2>
+            <button class="add-tool-btn" id="newProjResourceToggleBtn" onclick="toggleNewProjectResourceForm(true)">+ Adicionar recurso</button>
+          </div>
+          <div class="add-form" id="newProjResourceRow">
+            <div class="add-row" style="flex-direction:column;">
+              <div class="add-row" style="margin-top:0;">
+                <select id="prTipo">
+                  <option>GitHub</option><option>Supabase</option><option>Netlify</option><option>Cloudflare</option>
+                  <option>Firebase</option><option>Figma</option><option>Vercel</option><option>Google Analytics</option><option>Outro</option>
+                </select>
+                <input type="text" id="prConta" placeholder="conta utilizada (e-mail)">
+              </div>
+              <input type="text" id="prNome" placeholder="nome do projeto/repositório/site">
+              <input type="text" id="prLink" placeholder="link para abrir diretamente">
+              <div class="add-row" style="margin-top:0;">
+                <button class="add" style="flex:1;" onclick="addProjectResource()">adicionar recurso</button>
+                <button class="add-cost-cancel-btn" onclick="toggleNewProjectResourceForm(false)">cancelar</button>
+              </div>
+            </div>
+          </div>
+          <div id="projResourcesGrid" class="tools-grid"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1213,6 +1654,20 @@
     <div class="add-row" style="margin-top:14px;">
       <input type="text" id="gatewayCustomInput" placeholder="cadastrar novo gateway...">
       <button class="add" onclick="addCustomGateway()">+ add</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmModal" onclick="if(event.target===this) closeConfirmModal()">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-head">
+      <h3 id="confirmModalTitle">Excluir item</h3>
+      <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+    </div>
+    <p class="confirm-modal-msg" id="confirmModalMsg">Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.</p>
+    <div class="confirm-modal-actions">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="btn-danger" onclick="confirmModalProceed()">Excluir</button>
     </div>
   </div>
 </div>
@@ -1256,8 +1711,6 @@ const defaultState = {
     currentMonth: currentMonthKey(),
     months: {}
   },
-  caixaMovs: [],
-  saldoInicial: 0,
   managers: [],
   assets: [],
   phones: [],
@@ -1268,6 +1721,8 @@ const defaultState = {
   tools: [],
   warmupGroups: [],
   customGateways: [],
+  projects: [],
+  currentProjectId: null,
   checklist: {
     template: [
       {id:'ck1', text:'Subir criativo novo'},
@@ -1285,7 +1740,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -1303,66 +1758,26 @@ function showToast(message){
     setTimeout(()=>el.remove(), 300);
   }, 2800);
 }
-function brDate(iso){
-  if(!iso) return '';
-  const [y,m,d] = iso.split('-');
-  return `${d}/${m}/${y}`;
+
+/* ---------- CONFIRMAÇÃO DE EXCLUSÃO (padrão em todo o app) ---------- */
+let _confirmModalAction = null;
+function openConfirmModal(message, action, opts){
+  opts = opts || {};
+  document.getElementById('confirmModalTitle').innerText = opts.title || 'Excluir item';
+  document.getElementById('confirmModalMsg').innerText = message || 'Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.';
+  _confirmModalAction = action;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirmModal(){
+  document.getElementById('confirmModal').classList.remove('open');
+  _confirmModalAction = null;
+}
+function confirmModalProceed(){
+  const action = _confirmModalAction;
+  closeConfirmModal();
+  if(action) action();
 }
 
-/* ---------- CHART HELPERS (SVG, sem libs) ---------- */
-function svgLineChart(seriesDefs, totalDays, opts){
-  opts = opts||{};
-  const w = opts.width||600, h = opts.height||220;
-  const padL=42, padR=10, padT=10, padB=22;
-  const innerW = Math.max(1,w-padL-padR), innerH = Math.max(1,h-padT-padB);
-  const allVals = seriesDefs.reduce((a,s)=>a.concat(s.data),[0]);
-  const maxV = Math.max(1, ...allVals);
-  const minV = Math.min(0, ...allVals);
-  const range = (maxV-minV)||1;
-  const n = Math.max(1,totalDays);
-  const xFor = i => padL + (n<=1?0:(i/(n-1))*innerW);
-  const yFor = v => padT + innerH - ((v-minV)/range)*innerH;
-  const gridLines = 4;
-  let gridHtml='';
-  for(let i=0;i<=gridLines;i++){
-    const yy = padT + (innerH/gridLines)*i;
-    const val = maxV - (range/gridLines)*i;
-    gridHtml += `<line x1="${padL}" y1="${yy}" x2="${w-padR}" y2="${yy}" stroke="var(--border)" stroke-width="1"/>`;
-    gridHtml += `<text x="${padL-6}" y="${yy+3}" text-anchor="end" font-size="9" fill="var(--muted2)">${Math.round(val)}</text>`;
-  }
-  const dayTicks = [1,5,10,15,20,25,n].filter((v,i,arr)=>arr.indexOf(v)===i && v<=n);
-  const xTicksHtml = dayTicks.map(d=>{
-    const x = xFor(d-1);
-    return `<text x="${x}" y="${h-4}" text-anchor="middle" font-size="9" fill="var(--muted2)">${d}</text>`;
-  }).join('');
-  const pathsHtml = seriesDefs.map(s=>{
-    const pts = s.data.map((v,i)=>`${xFor(i).toFixed(1)},${yFor(v).toFixed(1)}`).join(' ');
-    return `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
-  }).join('');
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;font-family:var(--mono);">${gridHtml}${pathsHtml}${xTicksHtml}</svg>`;
-}
-function svgSparkline(data, color){
-  const w=110,h=32;
-  const vals = data.length? data : [0];
-  const maxV=Math.max(1,...vals), minV=Math.min(0,...vals);
-  const range=(maxV-minV)||1;
-  const pts = vals.map((v,i)=> `${((i/(Math.max(1,vals.length-1)))*w).toFixed(1)},${(h-((v-minV)/range)*h).toFixed(1)}`).join(' ');
-  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:32px;display:block;"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2"/></svg>`;
-}
-function svgDonut(segments){
-  const total = segments.reduce((s,seg)=>s+Math.max(0,seg.value),0)||1;
-  const r=48, cx=64, cy=64, circumference=2*Math.PI*r;
-  let offset=0;
-  const circles = segments.map(seg=>{
-    const frac = Math.max(0,seg.value)/total;
-    const dash = frac*circumference;
-    const gap = circumference-dash;
-    const circle = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="17" stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}" stroke-dashoffset="${(-offset).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;
-    offset += dash;
-    return circle;
-  }).join('');
-  return `<svg viewBox="0 0 128 128" style="width:132px;height:132px;">${circles}</svg>`;
-}
 function renderFinanceChart(containerId, series, totalDays, opts){
   const el = document.getElementById(containerId);
   if(!el) return;
@@ -1480,33 +1895,9 @@ function computeMonthSeries(monthKey){
   }
   return {totalDays, gasto, faturamento, lucro};
 }
-function dayFinance(dateObj){
-  const mk = dateObj.getFullYear()+'-'+String(dateObj.getMonth()+1).padStart(2,'0');
-  const day = dateObj.getDate();
-  const monthObj = state.finance.months[mk];
-  const d = monthObj? getDay(monthObj, day) : {gasto:0, faturamento:0};
-  return {gasto:Number(d.gasto||0), faturamento:Number(d.faturamento||0)};
-}
-function last7DaysSeries(){
-  const now = new Date();
-  const vals = {gasto:[], faturamento:[], lucro:[]};
-  for(let i=6;i>=0;i--){
-    const dt = new Date(now); dt.setDate(now.getDate()-i);
-    const f = dayFinance(dt);
-    vals.gasto.push(f.gasto); vals.faturamento.push(f.faturamento); vals.lucro.push(f.faturamento-f.gasto);
-  }
-  return vals;
-}
 function pctChange(curr, prev){
   if(prev===0) return curr===0 ? 0 : null;
   return ((curr-prev)/Math.abs(prev))*100;
-}
-function trendBadgeHtml(val){
-  if(val===null || !isFinite(val)) return '<span class="trend neutral">— vs ontem</span>';
-  const positive = val>=0;
-  const cls = positive ? 'pos':'neg';
-  const arrow = positive ? '▲':'▼';
-  return `<span class="trend ${cls}">${arrow} ${Math.abs(val).toFixed(0)}% vs ontem</span>`;
 }
 
 const SUPABASE_URL = 'https://otbisnouqcevacfokwhz.supabase.co';
@@ -1514,13 +1905,141 @@ const SUPABASE_KEY = 'sb_publishable_V2tAnUXp7EW16gGKvwpMJw_-wFZHAWL';
 const ROW_ID = 'PnPe7VjL1rlj7zIyJL7o86NvLtyneDAt';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* ---------- AUTENTICAÇÃO ---------- */
+function switchAuthMode(mode){
+  document.getElementById('loginForm').style.display = mode==='login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = mode==='signup' ? 'block' : 'none';
+  document.getElementById('signupSuccess').style.display = 'none';
+  document.getElementById('loginTabs').style.display = 'flex';
+  document.getElementById('tabLoginBtn').classList.toggle('active', mode==='login');
+  document.getElementById('tabSignupBtn').classList.toggle('active', mode==='signup');
+  document.getElementById('loginSubText').innerText = mode==='login'
+    ? 'acesso restrito — entre com suas credenciais'
+    : 'cria sua conta pra acessar o painel';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('signupError').style.display = 'none';
+}
+async function handleLogin(event){
+  event.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginSubmitBtn');
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerText = 'Entrando...';
+  try{
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+  }catch(e){
+    errorEl.innerText = e.message && e.message.includes('Email not confirmed')
+      ? 'Confirma seu e-mail antes de entrar — verifica a caixa de entrada.'
+      : 'E-mail ou senha incorretos.';
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerText = 'Entrar';
+  }
+  return false;
+}
+async function handleSignup(event){
+  event.preventDefault();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupPasswordConfirm').value;
+  const errorEl = document.getElementById('signupError');
+  const btn = document.getElementById('signupSubmitBtn');
+  errorEl.style.display = 'none';
+
+  if(password !== confirm){
+    errorEl.innerText = 'As senhas não coincidem.';
+    errorEl.style.display = 'block';
+    return false;
+  }
+  if(password.length < 6){
+    errorEl.innerText = 'A senha precisa ter pelo menos 6 caracteres.';
+    errorEl.style.display = 'block';
+    return false;
+  }
+
+  btn.disabled = true;
+  btn.innerText = 'Criando conta...';
+  try{
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname }
+    });
+    if(error) throw error;
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginTabs').style.display = 'none';
+    document.getElementById('signupSuccess').style.display = 'block';
+    document.getElementById('loginSubText').innerText = 'quase lá — falta confirmar seu e-mail';
+  }catch(e){
+    errorEl.innerText = e.message && e.message.includes('already registered')
+      ? 'Esse e-mail já tem uma conta. Tenta entrar em vez de cadastrar.'
+      : 'Não deu pra criar a conta: ' + (e.message || 'tenta de novo em instantes.');
+    errorEl.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerText = 'Criar conta';
+  return false;
+}
+async function handleForgotPassword(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const errorEl = document.getElementById('loginError');
+  if(!email){
+    errorEl.innerText = 'Digita seu e-mail no campo acima primeiro, aí clica em "esqueci minha senha" de novo.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  try{
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if(error) throw error;
+    errorEl.style.display = 'block';
+    errorEl.style.background = 'var(--green-soft)';
+    errorEl.style.color = 'var(--green)';
+    errorEl.innerText = 'Se esse e-mail tiver uma conta, enviamos um link pra redefinir a senha.';
+  }catch(e){
+    errorEl.style.background = '';
+    errorEl.style.color = '';
+    errorEl.innerText = 'Não deu pra enviar agora. Tenta de novo em instantes.';
+    errorEl.style.display = 'block';
+  }
+}
+async function handleLogout(){
+  await sb.auth.signOut();
+}
+function showLogin(){
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appWrap').style.display = 'none';
+  const btn = document.getElementById('loginSubmitBtn');
+  if(btn){ btn.disabled = false; btn.innerText = 'Entrar'; }
+}
+function showApp(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'block';
+}
+let appBooted = false;
+sb.auth.onAuthStateChange((event, session)=>{
+  if(session){
+    showApp();
+    if(!appBooted){
+      appBooted = true;
+      loadState().then(setupDragHandlers);
+    }
+  } else {
+    showLogin();
+  }
+});
+
 async function loadState(){
   try{
     const { data, error } = await sb.from('app_state').select('data').eq('id', ROW_ID).single();
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -1531,6 +2050,13 @@ async function loadState(){
       if(!state.tools) state.tools = [];
       if(!state.warmupGroups) state.warmupGroups = [];
       if(!state.customGateways) state.customGateways = [];
+      if(!state.projects) state.projects = [];
+      if(state.currentProjectId===undefined) state.currentProjectId = null;
+      if(!state.processos){
+        state.processos = (state.tasks||[]).filter(t=>t.priority==='estrutural').map(t=>({
+          id: uid(), titulo: t.text || '', descricao: '', concluido: t.status==='done'
+        }));
+      }
       state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
@@ -1610,7 +2136,7 @@ function nextStatus(s, cycle){ const i=cycle.indexOf(s); return cycle[(i+1)%cycl
 
 function renderTasks(){
   renderTaskGroup('urgentList', state.tasks.filter(t=>t.priority==='urgente'));
-  renderTaskGroup('structuralList', state.tasks.filter(t=>t.priority==='estrutural'));
+  renderProcessos();
 }
 function renderTaskGroup(containerId, arr){
   const el = document.getElementById(containerId);
@@ -1636,6 +2162,89 @@ function toggleTaskDone(id){
   item.status = item.status==='done' ? 'pending' : 'done';
   saveState(); render();
 }
+
+/* ---------- PROCESSOS DA EMPRESA ---------- */
+function toggleNewProcessoForm(show){
+  document.getElementById('newProcessoRow').classList.toggle('open', show);
+  document.getElementById('newProcessoToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('processosPanel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('processoTitulo').focus();
+  else{
+    document.getElementById('processoTitulo').value = '';
+    document.getElementById('processoDescricao').value = '';
+  }
+}
+function addProcesso(){
+  const titulo = document.getElementById('processoTitulo');
+  const descricao = document.getElementById('processoDescricao').value.trim();
+  if(!titulo.value.trim()) return;
+  state.processos.push({id:uid(), titulo:titulo.value.trim(), descricao, concluido:false});
+  saveState(); renderProcessos();
+  toggleNewProcessoForm(false);
+  showToast('Etapa adicionada.');
+}
+function toggleProcessoDone(id){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p.concluido = !p.concluido;
+  saveState(); renderProcessos();
+}
+let processoEditingId = null;
+function toggleProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = (processoEditingId===id) ? null : id;
+  renderProcessos();
+}
+function updateProcessoField(id, field, value){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p[field] = value;
+  saveState();
+}
+function saveProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = null;
+  saveState(); renderProcessos();
+  showToast('Etapa atualizada.');
+}
+function removeProcesso(id){
+  openConfirmModal('Tem certeza que deseja excluir esta etapa do processo? Esta ação não poderá ser desfeita.', ()=>{
+    state.processos = state.processos.filter(p=>p.id!==id);
+    saveState(); renderProcessos();
+    showToast('Etapa excluída.');
+  });
+}
+function renderProcessos(){
+  const el = document.getElementById('processosList');
+  if(!el) return;
+  if(state.processos.length===0){ el.innerHTML = '<div class="empty">nenhuma etapa cadastrada ainda — documente o passo a passo pra validar e escalar uma oferta.</div>'; return; }
+  el.innerHTML = state.processos.map((p,idx)=>{
+    if(processoEditingId===p.id){
+      return `
+      <div class="item" data-id="${p.id}">
+        <div class="item-body tool-edit-row" style="padding:8px 0;">
+          <input type="text" value="${escapeHtml(p.titulo)}" placeholder="nome da etapa" onchange="updateProcessoField('${p.id}','titulo',this.value)">
+          <textarea placeholder="descrição do passo a passo" onchange="updateProcessoField('${p.id}','descricao',this.value)">${escapeHtml(p.descricao||'')}</textarea>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeProcesso('${p.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="saveProcessoEdit('${p.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="item processo-item ${p.concluido?'done':''}" data-id="${p.id}">
+      <span class="drag-handle">⠿</span>
+      <div class="check-box ${p.concluido?'checked':''}" onclick="toggleProcessoDone('${p.id}')" title="marcar como concluída"></div>
+      <div class="item-body">
+        <div class="item-text"><span class="processo-step-num">${idx+1}.</span> ${escapeHtml(p.titulo)}</div>
+        ${p.descricao ? `<div class="processo-desc">${escapeHtml(p.descricao)}</div>` : ''}
+      </div>
+      <button class="mining-edit-btn processo-edit-btn" onclick="toggleProcessoEdit('${p.id}', event)">✎</button>
+      <button class="del-btn" onclick="removeProcesso('${p.id}')">✕</button>
+    </div>
+  `;}).join('');
+}
 function cycleTaskTag(id){
   const item = state.tasks.find(t=>t.id===id);
   if(!item) return;
@@ -1644,7 +2253,12 @@ function cycleTaskTag(id){
   item.tag = cycle[(i+1)%cycle.length];
   saveState(); render();
 }
-function removeTask(id){ state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render(); }
+function removeTask(id){
+  openConfirmModal('Tem certeza que deseja excluir esta tarefa? Esta ação não poderá ser desfeita.', ()=>{
+    state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render();
+    showToast('Tarefa excluída.');
+  });
+}
 function addTask(priority){
   const inputId = priority==='urgente' ? 'urgentInput' : 'structuralInput';
   const input = document.getElementById(inputId);
@@ -1677,9 +2291,12 @@ function cycleSimple(containerId,id){
   saveState(); render();
 }
 function removeSimple(containerId,id){
-  const {key} = simpleMap[containerId];
-  state[key] = state[key].filter(i=>i.id!==id);
-  saveState(); render();
+  openConfirmModal('Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.', ()=>{
+    const {key} = simpleMap[containerId];
+    state[key] = state[key].filter(i=>i.id!==id);
+    saveState(); render();
+    showToast('Item excluído.');
+  });
 }
 function addInfra(){
   const input = document.getElementById('infraInput');
@@ -1745,7 +2362,12 @@ function addManager(){
   toggleNewManagerForm(false);
   showToast('Gerente adicionado.');
 }
-function removeManager(id){ state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers(); }
+function removeManager(id){
+  openConfirmModal('Tem certeza que deseja excluir este gerente de conta? Esta ação não poderá ser desfeita.', ()=>{
+    state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers();
+    showToast('Gerente excluído.');
+  });
+}
 
 /* ---------- ATIVOS ---------- */
 function toggleNewAssetForm(show){
@@ -1768,7 +2390,12 @@ function addAsset(){
   toggleNewAssetForm(false);
   showToast('Ativo cadastrado.');
 }
-function removeAsset(id){ state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets(); }
+function removeAsset(id){
+  openConfirmModal('Tem certeza que deseja excluir este ativo? Esta ação não poderá ser desfeita.', ()=>{
+    state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets();
+    showToast('Ativo excluído.');
+  });
+}
 
 /* ---------- PLANEJAMENTO ---------- */
 const WEEK_DAYS = [
@@ -1821,53 +2448,11 @@ function togglePlannerItem(dayKey, id){
   saveState(); renderPlanner();
 }
 function removePlannerItem(dayKey, id){
-  state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
-  saveState(); renderPlanner();
-}
-
-/* ---------- CHECKLIST DIÁRIO ---------- */
-function ensureChecklistToday(){
-  const todayStr = new Date().toISOString().slice(0,10);
-  if(!state.checklist) state.checklist = {template:[], today:{date:todayStr, doneIds:[]}};
-  if(!state.checklist.today || state.checklist.today.date !== todayStr){
-    state.checklist.today = {date:todayStr, doneIds:[]};
-  }
-}
-function renderChecklist(){
-  ensureChecklistToday();
-  const el = document.getElementById('checklistList');
-  const tmpl = state.checklist.template || [];
-  if(tmpl.length===0){ el.innerHTML='<div class="empty">nenhum hábito cadastrado ainda.</div>'; document.getElementById('checklistProgress').innerText='—'; return; }
-  const doneIds = state.checklist.today.doneIds || [];
-  el.innerHTML = tmpl.map(item=>{
-    const done = doneIds.includes(item.id);
-    return `<div class="checklist-item ${done?'done':''}">
-      <div class="check-box ${done?'checked':''}" onclick="toggleChecklistItem('${item.id}')"></div>
-      <div class="checklist-text">${escapeHtml(item.text)}</div>
-      <button class="del-btn" onclick="removeChecklistTemplateItem('${item.id}')">✕</button>
-    </div>`;
-  }).join('');
-  document.getElementById('checklistProgress').innerText = `${doneIds.length}/${tmpl.length} hoje`;
-}
-function toggleChecklistItem(id){
-  ensureChecklistToday();
-  const doneIds = state.checklist.today.doneIds;
-  const i = doneIds.indexOf(id);
-  if(i>=0) doneIds.splice(i,1); else doneIds.push(id);
-  saveState(); renderChecklist();
-}
-function addChecklistTemplateItem(){
-  const input = document.getElementById('checklistInput');
-  if(!input.value.trim()) return;
-  state.checklist.template.push({id:uid(), text:input.value.trim()});
-  input.value = '';
-  saveState(); renderChecklist();
-}
-function removeChecklistTemplateItem(id){
-  state.checklist.template = state.checklist.template.filter(i=>i.id!==id);
-  ensureChecklistToday();
-  state.checklist.today.doneIds = state.checklist.today.doneIds.filter(i=>i!==id);
-  saveState(); renderChecklist();
+  openConfirmModal('Tem certeza que deseja excluir este item do planejamento? Esta ação não poderá ser desfeita.', ()=>{
+    state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
+    saveState(); renderPlanner();
+    showToast('Item excluído.');
+  });
 }
 
 /* ---------- NÚMEROS DE RECUPERAÇÃO ---------- */
@@ -1891,7 +2476,12 @@ function addPhone(){
   numero.value=''; document.getElementById('phoneProduto').value='';
   saveState(); renderPhones();
 }
-function removePhone(id){ state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones(); }
+function removePhone(id){
+  openConfirmModal('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{
+    state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones();
+    showToast('Número excluído.');
+  });
+}
 
 /* ---------- PRODUTOS (funil de mensagens) ---------- */
 function renderProductSelect(){
@@ -1900,9 +2490,11 @@ function renderProductSelect(){
     state.products.map(p=>`<option value="${p.id}" ${state.currentProductId===p.id?'selected':''}>${escapeHtml(p.nome)}</option>`).join('');
 }
 function toggleNewProductRow(show){
-  document.getElementById('newProductRow').style.display = show ? 'block' : 'none';
-  document.getElementById('newProductToggleBtn').style.display = show ? 'none' : 'block';
+  document.getElementById('newProductRow').classList.toggle('open', show);
+  document.getElementById('newProductToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('productsPanel').classList.toggle('panel-editing', show);
   if(show) document.getElementById('newProductName').focus();
+  else document.getElementById('newProductName').value = '';
 }
 function addProduct(){
   const input = document.getElementById('newProductName');
@@ -1913,6 +2505,7 @@ function addProduct(){
   state.currentProductId = id;
   toggleNewProductRow(false);
   saveState(); renderProducts();
+  showToast('Produto criado.');
 }
 function selectProduct(id){
   state.currentProductId = id || null;
@@ -1939,10 +2532,13 @@ function addFunnelLink(){
   saveState(); renderProducts();
 }
 function removeFunnelLink(id){
-  const product = currentProduct();
-  if(!product) return;
-  product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir este link? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
+    saveState(); renderProducts();
+    showToast('Link excluído.');
+  });
 }
 function reorderFunnelLinks(ids){
   const product = currentProduct();
@@ -1983,10 +2579,13 @@ function addStep(type){
   saveState(); renderProducts();
 }
 function removeStep(type, id){
-  const product = currentProduct();
-  if(!product) return;
-  product[type] = product[type].filter(s=>s.id!==id);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir esta mensagem/etapa? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    product[type] = product[type].filter(s=>s.id!==id);
+    saveState(); renderProducts();
+    showToast('Etapa excluída.');
+  });
 }
 function reorderProductSteps(type, ids){
   const product = currentProduct();
@@ -2019,12 +2618,15 @@ function addVariation(type, stepId){
   saveState(); renderProducts();
 }
 function removeVariation(type, stepId, varId){
-  const product = currentProduct();
-  if(!product) return;
-  const step = product[type].find(s=>s.id===stepId);
-  if(!step) return;
-  step.variations = step.variations.filter(v=>v.id!==varId);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir esta variação de mensagem? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    const step = product[type].find(s=>s.id===stepId);
+    if(!step) return;
+    step.variations = step.variations.filter(v=>v.id!==varId);
+    saveState(); renderProducts();
+    showToast('Variação excluída.');
+  });
 }
 function updateVariationText(type, stepId, varId, value){
   const product = currentProduct();
@@ -2099,17 +2701,6 @@ function renderProducts(){
 }
 
 /* ---------- VÍDEOS E CONTEÚDOS ---------- */
-function extractYoutubeId(url){
-  if(!url) return null;
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
-  ];
-  for(const p of patterns){
-    const m = url.match(p);
-    if(m) return m[1];
-  }
-  return null;
-}
 function detectVideoPlatform(url){
   if(!url) return 'link';
   if(/youtube\.com|youtu\.be/.test(url)) return 'youtube';
@@ -2124,21 +2715,51 @@ function toggleNewVideoForm(show){
   if(show) document.getElementById('videoTitulo').focus();
   else{
     document.getElementById('videoTitulo').value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
+    document.getElementById('videoThumbnail').value=''; document.getElementById('videoDescricao').value='';
   }
 }
 function addVideo(){
   const titulo = document.getElementById('videoTitulo');
   const url = document.getElementById('videoUrl').value;
   const nota = document.getElementById('videoNota').value;
+  const thumbnail = document.getElementById('videoThumbnail') ? document.getElementById('videoThumbnail').value.trim() : '';
+  const descricao = document.getElementById('videoDescricao') ? document.getElementById('videoDescricao').value.trim() : '';
   if(!titulo.value.trim() || !url.trim()) return;
-  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota});
+  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, thumbnail, descricao});
   saveState(); renderVideos();
   toggleNewVideoForm(false);
   showToast('Vídeo adicionado.');
 }
 function removeVideo(id){
-  state.videos = state.videos.filter(v=>v.id!==id);
+  openConfirmModal('Tem certeza que deseja excluir este conteúdo? Esta ação não poderá ser desfeita.', ()=>{
+    state.videos = state.videos.filter(v=>v.id!==id);
+    saveState(); renderVideos();
+    showToast('Conteúdo excluído.');
+  });
+}
+const PLATFORM_ICONS = {
+  youtube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M10.5 9.5v5l4.5-2.5-4.5-2.5z" fill="currentColor" stroke="none"/></svg>',
+  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="0.9" fill="currentColor" stroke="none"/></svg>',
+  tiktok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v10.8a3.3 3.3 0 1 1-3.3-3.3"/><path d="M14 6.8c1 1.4 2.6 2.3 4.3 2.4"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l6-6"/><path d="M13 4.5l.7-.7a3.5 3.5 0 0 1 5 5l-.7.7"/><path d="M11 19.5l-.7.7a3.5 3.5 0 0 1-5-5l.7-.7"/></svg>'
+};
+let videoEditingId = null;
+function toggleVideoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  videoEditingId = (videoEditingId===id) ? null : id;
+  renderVideos();
+}
+function updateVideoField(id, field, value){
+  const v = state.videos.find(v=>v.id===id);
+  if(!v) return;
+  v[field] = value;
+  saveState();
+}
+function saveVideoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  videoEditingId = null;
   saveState(); renderVideos();
+  showToast('Conteúdo atualizado.');
 }
 function renderVideos(){
   const el = document.getElementById('videosList');
@@ -2146,24 +2767,50 @@ function renderVideos(){
   if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
   el.innerHTML = state.videos.map(v=>{
     const platform = detectVideoPlatform(v.url);
-    const ytId = platform==='youtube' ? extractYoutubeId(v.url) : null;
-    const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '';
-    const badge = platform==='instagram' ? `<span class="video-platform-badge ig">Instagram</span>`
-                : platform==='tiktok' ? `<span class="video-platform-badge tt">TikTok</span>`
-                : '';
+    const iconHtml = v.thumbnail
+      ? `<img src="${escapeHtml(v.thumbnail)}" alt="" class="video-thumb-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+         <span class="video-platform-ico ${platform}" style="display:none;">${PLATFORM_ICONS[platform]}</span>`
+      : `<span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>`;
+    if(videoEditingId===v.id){
+      return `
+      <div class="video-row video-row-editing" data-id="${v.id}">
+        ${iconHtml}
+        <div class="video-row-body tool-edit-row">
+          <input type="text" value="${escapeHtml(v.titulo)}" placeholder="título" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','titulo',this.value)">
+          <input type="text" value="${escapeHtml(v.url)}" placeholder="link" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','url',this.value)">
+          <input type="text" value="${escapeHtml(v.nota||'')}" placeholder="nota curta" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','nota',this.value)">
+          <input type="text" value="${escapeHtml(v.thumbnail||'')}" placeholder="link da thumbnail (opcional)" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','thumbnail',this.value)">
+          <textarea placeholder="descrição" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="event.stopPropagation();removeVideo('${v.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="saveVideoEdit('${v.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    const hasDesc = v.descricao && v.descricao.trim();
     return `
-    <div class="video-card" onclick="window.open('${escapeHtml(v.url)}','_blank')">
-      <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
-      <div class="video-thumb ${thumb?'':'video-thumb-empty'}" style="${thumb?`background-image:url('${thumb}');`:''}">
-        <div class="video-play">▶</div>
-        ${badge}
-      </div>
-      <div class="video-info">
+    <div class="video-row" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
+      <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
+      ${iconHtml}
+      <div class="video-row-body">
         <div class="video-title">${escapeHtml(v.titulo)}</div>
-        ${v.nota ? `<div class="video-nota">${escapeHtml(v.nota)}</div>` : ''}
+        ${v.nota ? `<div class="video-meta"><span class="video-nota">${escapeHtml(v.nota)}</span></div>` : ''}
+        ${hasDesc ? `<div class="video-desc-full">${escapeHtml(v.descricao)}</div>` : ''}
       </div>
+      <button class="video-edit-ico" onclick="toggleVideoEdit('${v.id}', event)" title="editar">✎</button>
+      <span class="video-open-ico">→</span>
+      <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
     </div>`;
   }).join('');
+}
+function toggleVideoDesc(id, event){
+  if(event) event.stopPropagation();
+  const el = document.getElementById('video-desc-'+id);
+  if(!el) return;
+  const btn = event.target;
+  const open = el.classList.toggle('open');
+  btn.innerText = open ? '▴ descrição' : '▾ descrição';
 }
 
 /* ---------- CENTRAL DE FERRAMENTAS ---------- */
@@ -2181,18 +2828,24 @@ function toggleNewToolForm(show){
 function addTool(){
   const nome = document.getElementById('toolNome');
   const categoria = document.getElementById('toolCategoria').value.trim();
+  const tipo = document.getElementById('toolTipo').value;
   const descricao = document.getElementById('toolDescricao').value.trim();
   const link = document.getElementById('toolLink').value.trim();
+  const emails = document.getElementById('toolEmails').value.trim()
+    .split(',').map(e=>e.trim()).filter(Boolean);
   const observacoes = document.getElementById('toolObservacoes').value.trim();
   if(!nome.value.trim()) return;
-  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, descricao, link, observacoes});
+  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, tipo, descricao, link, emails, observacoes});
   saveState(); renderTools();
   toggleNewToolForm(false);
   showToast('Ferramenta salva.');
 }
 function removeTool(id){
-  state.tools = state.tools.filter(t=>t.id!==id);
-  saveState(); renderTools();
+  openConfirmModal('Tem certeza que deseja excluir esta ferramenta? Esta ação não poderá ser desfeita.', ()=>{
+    state.tools = state.tools.filter(t=>t.id!==id);
+    saveState(); renderTools();
+    showToast('Ferramenta excluída.');
+  });
 }
 let toolEditingId = null;
 function toggleToolEdit(id){
@@ -2208,16 +2861,23 @@ function updateToolField(id, field, value){
 function renderTools(){
   const el = document.getElementById('toolsList');
   if(!el) return;
-  if(state.tools.length===0){ el.innerHTML = '<div class="empty">nenhuma ferramenta cadastrada ainda.</div>'; return; }
+  if(state.tools.length===0){ el.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🧰</div><div class="empty-block-title">Nenhuma ferramenta cadastrada ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar Recurso" abaixo pra começar sua central de ferramentas.</div></div>'; return; }
   el.innerHTML = state.tools.map(t=>{
     if(toolEditingId===t.id){
       return `
-      <div class="tool-card">
+      <div class="tool-card" data-id="${t.id}">
         <div class="tool-edit-row">
           <input type="text" value="${escapeHtml(t.nome)}" placeholder="nome" onchange="updateToolField('${t.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(t.categoria||'')}" placeholder="categoria" onchange="updateToolField('${t.id}','categoria',this.value)">
+          <select onchange="updateToolField('${t.id}','tipo',this.value)">
+            <option value="">tipo (opcional)</option>
+            <option value="extensao" ${t.tipo==='extensao'?'selected':''}>Extensão</option>
+            <option value="aplicativo" ${t.tipo==='aplicativo'?'selected':''}>Aplicativo</option>
+            <option value="site" ${t.tipo==='site'?'selected':''}>Site</option>
+          </select>
           <textarea placeholder="descrição" onchange="updateToolField('${t.id}','descricao',this.value)">${escapeHtml(t.descricao||'')}</textarea>
           <input type="text" value="${escapeHtml(t.link||'')}" placeholder="link para acessar ou instalar" onchange="updateToolField('${t.id}','link',this.value)">
+          <input type="text" value="${escapeHtml((t.emails||[]).join(', '))}" placeholder="e-mail(s), separados por vírgula" onchange="updateToolField('${t.id}','emails', this.value.split(',').map(s=>s.trim()).filter(Boolean))">
           <textarea placeholder="observações" onchange="updateToolField('${t.id}','observacoes',this.value)">${escapeHtml(t.observacoes||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="removeTool('${t.id}')">✕ excluir</button>
@@ -2226,14 +2886,20 @@ function renderTools(){
         </div>
       </div>`;
     }
+    const TOOL_TYPE_LABELS = { extensao:'🧩 Extensão', aplicativo:'📱 Aplicativo', site:'🌐 Site' };
     return `
-    <div class="tool-card">
+    <div class="tool-card" data-id="${t.id}">
       <div class="tool-card-head">
-        <div class="tool-name">${escapeHtml(t.nome)}</div>
+        <span class="drag-handle">⠿</span>
+        <div class="tool-name" style="flex:1;">${escapeHtml(t.nome)}</div>
         <button class="mining-edit-btn" onclick="toggleToolEdit('${t.id}')">✎ editar</button>
       </div>
-      ${t.categoria ? `<span class="tool-cat">${escapeHtml(t.categoria)}</span>` : ''}
+      <div class="tool-tags-row">
+        ${t.categoria ? `<span class="tool-cat">${escapeHtml(t.categoria)}</span>` : ''}
+        ${t.tipo ? `<span class="tool-type-tag tool-type-${t.tipo}">${TOOL_TYPE_LABELS[t.tipo]}</span>` : ''}
+      </div>
       ${t.descricao ? `<div class="tool-field-label">descrição</div><div class="tool-field-value">${escapeHtml(t.descricao)}</div>` : ''}
+      ${(t.emails && t.emails.length) ? `<div class="tool-field-label">e-mail${t.emails.length>1?'s':''}</div><div class="tool-email-tags">${t.emails.map(e=>`<span class="tool-email-tag">${escapeHtml(e)}</span>`).join('')}</div>` : ''}
       ${t.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(t.observacoes)}</div>` : ''}
       ${t.link ? `<a class="tool-open-btn" href="${escapeHtml(t.link)}" target="_blank" rel="noopener">Abrir / instalar →</a>` : ''}
     </div>`;
@@ -2262,8 +2928,11 @@ function addWarmupGroup(){
   showToast('Grupo adicionado com sucesso.');
 }
 function removeWarmupGroup(id){
-  state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
-  saveState(); renderWarmupGroups();
+  openConfirmModal('Tem certeza que deseja excluir este grupo? Esta ação não poderá ser desfeita.', ()=>{
+    state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
+    saveState(); renderWarmupGroups();
+    showToast('Grupo excluído.');
+  });
 }
 let warmupEditingId = null;
 function toggleWarmupEdit(id, ev){
@@ -2352,9 +3021,11 @@ function addMiningEntry(){
 function removeMiningEntry(id){
   const item = state.mining.find(m=>m.id===id);
   const nome = item ? item.nome : 'esta oferta';
-  if(!confirm(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`)) return;
-  state.mining = state.mining.filter(m=>m.id!==id);
-  saveState(); renderMining();
+  openConfirmModal(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`, ()=>{
+    state.mining = state.mining.filter(m=>m.id!==id);
+    saveState(); renderMining();
+    showToast('Oferta excluída.');
+  });
 }
 function updateMiningField(id, field, value){
   const item = state.mining.find(m=>m.id===id);
@@ -2371,6 +3042,53 @@ function updateMiningField(id, field, value){
   }
   saveState(); renderMining();
 }
+function stepMiningAnuncios(id, delta){
+  const item = state.mining.find(m=>m.id===id);
+  if(!item) return;
+  const newVal = Math.max(0, (Number(item.anuncios)||0) + delta);
+  updateMiningField(id, 'anuncios', newVal);
+}
+function miningTrend(history){
+  if(!history || history.length<2) return 'estavel';
+  const last = history[history.length-1].anuncios;
+  const prev = history[history.length-2].anuncios;
+  if(last>prev) return 'alta';
+  if(last<prev) return 'queda';
+  return 'estavel';
+}
+function miningStats(history){
+  if(!history || history.length===0) return null;
+  const vals = history.map(h=>h.anuncios);
+  const max = Math.max(...vals);
+  const min = Math.min(...vals);
+  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const last = vals[vals.length-1];
+  const prev = vals.length>1 ? vals[vals.length-2] : null;
+  const diff = prev!==null ? last-prev : null;
+  const pct = (prev!==null && prev!==0) ? ((last-prev)/prev*100) : null;
+  return { max, min, avg, diff, pct, trend: miningTrend(history) };
+}
+function miningSparklineSVG(history, w, h){
+  w = w || 260; h = h || 44;
+  const vals = history.map(x=>x.anuncios);
+  const max = Math.max(...vals), min = Math.min(...vals);
+  const range = (max - min) || 1;
+  const stepX = vals.length>1 ? w/(vals.length-1) : 0;
+  const pts = vals.map((v,i)=>{
+    const x = i*stepX;
+    const y = h - 4 - ((v-min)/range)*(h-8);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const line = pts.join(' ');
+  const area = `0,${h} ${line} ${w},${h}`;
+  const trend = miningTrend(history);
+  const lastPt = pts[pts.length-1].split(',');
+  return `<svg viewBox="0 0 ${w} ${h}" class="mining-sparkline spark-${trend}" preserveAspectRatio="none">
+    <polyline points="${area}" class="spark-area"></polyline>
+    <polyline points="${line}" class="spark-line"></polyline>
+    <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="3" class="spark-dot"></circle>
+  </svg>`;
+}
 function toggleMiningHistory(id){
   const el = document.getElementById('mining-hist-'+id);
   if(el) el.classList.toggle('open');
@@ -2383,15 +3101,38 @@ function renderMining(){
     const history = m.history || [];
     const historyHtml = history.length===0 ? '<div class="empty" style="padding:4px 0;">sem histórico ainda.</div>' :
       [...history].reverse().map(h=>`<div class="mining-history-entry"><span class="hd">${h.date}</span><span class="hv">${h.anuncios} anúncios ativos</span></div>`).join('');
+    const stats = miningStats(history);
+    const trendLabels = {alta:'📈 Em alta', queda:'📉 Em queda', estavel:'➡️ Estável'};
+    const statsBlock = (stats && history.length>=2) ? `
+      <div class="mining-stats-panel">
+        ${miningSparklineSVG(history)}
+        <div class="mining-stats-grid">
+          <div class="mining-stat"><span class="ms-label">tendência</span><span class="ms-value trend-${stats.trend}">${trendLabels[stats.trend]}</span></div>
+          <div class="mining-stat"><span class="ms-label">máximo</span><span class="ms-value">${stats.max}</span></div>
+          <div class="mining-stat"><span class="ms-label">mínimo</span><span class="ms-value">${stats.min}</span></div>
+          <div class="mining-stat"><span class="ms-label">média</span><span class="ms-value">${stats.avg.toFixed(1)}</span></div>
+          ${stats.diff!==null ? `<div class="mining-stat"><span class="ms-label">últ. variação</span><span class="ms-value ${stats.diff>=0?'pos':'neg'}">${stats.diff>=0?'+':''}${stats.diff}</span></div>` : ''}
+          ${stats.pct!==null ? `<div class="mining-stat"><span class="ms-label">variação %</span><span class="ms-value ${stats.pct>=0?'pos':'neg'}">${stats.pct>=0?'+':''}${stats.pct.toFixed(1)}%</span></div>` : ''}
+        </div>
+      </div>` : '';
     const historyBlock = `
       <div class="mining-history">
-        <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📈 histórico de anúncios (${history.length}) ▾</button>
+        ${statsBlock}
+        <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📋 ver todos os registros (${history.length}) ▾</button>
         <div class="mining-history-list" id="mining-hist-${m.id}">${historyHtml}</div>
       </div>`;
 
     if(miningEditingId === m.id){
       return `
       <div class="mining-card" data-id="${m.id}">
+        <div class="mining-anuncios-highlight">
+          <label>📊 anúncios ativos <span class="mining-highlight-tag">atualiza com frequência</span></label>
+          <div class="mining-highlight-row">
+            <button class="mining-stepper" onclick="stepMiningAnuncios('${m.id}',-1)">−</button>
+            <input type="number" class="mining-highlight-input" value="${m.anuncios||0}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
+            <button class="mining-stepper" onclick="stepMiningAnuncios('${m.id}',1)">+</button>
+          </div>
+        </div>
         <div class="mining-top">
           <div class="mining-fields">
             <div class="mining-field">
@@ -2405,10 +3146,6 @@ function renderMining(){
             <div class="mining-field">
               <label>nicho</label>
               <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
-            </div>
-            <div class="mining-field">
-              <label>anúncios ativos</label>
-              <input type="number" value="${m.anuncios||''}" onchange="updateMiningField('${m.id}','anuncios',this.value)">
             </div>
             <div class="mining-field">
               <label>ticket do produto</label>
@@ -2500,12 +3237,8 @@ function renderResumoMes(){
   if(lucroEl){ lucroEl.innerText = brl(lucroReal); lucroEl.className = 'v ' + (lucroReal>=0?'pos':'neg'); }
   if(roiEl) roiEl.innerText = roi===null ? '—' : roi.toFixed(2)+'x';
 
-  const chartEl = document.getElementById('resumoMesChart');
-  if(chartEl){
-    const series = computeMonthSeries(key);
-    renderFinanceChart('resumoMesChart', series, series.totalDays, {height:220});
-    if(document.getElementById('desempenhoMesChart')) renderFinanceChart('desempenhoMesChart', series, series.totalDays, {height:240});
-  }
+  const series = computeMonthSeries(key);
+  if(document.getElementById('desempenhoMesChart')) renderFinanceChart('desempenhoMesChart', series, series.totalDays, {height:240});
   const desInvestido = document.getElementById('desInvestido');
   const desFaturamento = document.getElementById('desFaturamento');
   const desLucro = document.getElementById('desLucro');
@@ -2521,32 +3254,25 @@ const EYE_CLOSED_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 function toggleHideValues(){
   const hidden = !document.body.classList.contains('hide-financials');
   document.body.classList.toggle('hide-financials', hidden);
-  document.getElementById('hideValuesIcon').innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
-  document.getElementById('hideValuesBtn').classList.toggle('active', hidden);
+  document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
+  document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
   try{ localStorage.setItem('laka_hide_values', hidden ? '1' : '0'); }catch(e){}
 }
 function applyHideValuesPreference(){
   let hidden = false;
   try{ hidden = localStorage.getItem('laka_hide_values') === '1'; }catch(e){}
   document.body.classList.toggle('hide-financials', hidden);
-  const icon = document.getElementById('hideValuesIcon');
-  const btn = document.getElementById('hideValuesBtn');
-  if(icon) icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
-  if(btn) btn.classList.toggle('active', hidden);
+  document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
+  document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
+const TAB_NAMES = ['home','finance','products','mining','projects','tools','content','warmup'];
 function switchTab(tab){
-  document.getElementById('homeView').classList.toggle('active', tab==='home');
-  document.getElementById('financeView').classList.toggle('active', tab==='finance');
-  document.getElementById('productsView').classList.toggle('active', tab==='products');
-  document.getElementById('miningView').classList.toggle('active', tab==='mining');
-  document.getElementById('toolsView').classList.toggle('active', tab==='tools');
-  document.getElementById('warmupView').classList.toggle('active', tab==='warmup');
-  document.getElementById('tabBtnHome').classList.toggle('active', tab==='home');
-  document.getElementById('tabBtnFinance').classList.toggle('active', tab==='finance');
-  document.getElementById('tabBtnProducts').classList.toggle('active', tab==='products');
-  document.getElementById('tabBtnMining').classList.toggle('active', tab==='mining');
-  document.getElementById('tabBtnTools').classList.toggle('active', tab==='tools');
-  document.getElementById('tabBtnWarmup').classList.toggle('active', tab==='warmup');
+  TAB_NAMES.forEach(t=>{
+    const view = document.getElementById(t+'View');
+    const btn = document.getElementById('tabBtn'+t[0].toUpperCase()+t.slice(1));
+    if(view) view.classList.toggle('active', tab===t);
+    if(btn) btn.classList.toggle('active', tab===t);
+  });
   window.scrollTo(0,0);
   if(tab==='products'){
     setTimeout(()=>{
@@ -2666,7 +3392,12 @@ function addCost(){
   closeCostAddForm();
   showToast('Custo adicionado.');
 }
-function removeCost(id){ state.costs = state.costs.filter(c=>c.id!==id); saveState(); render(); }
+function removeCost(id){
+  openConfirmModal('Tem certeza que deseja excluir este custo? Esta ação não poderá ser desfeita.', ()=>{
+    state.costs = state.costs.filter(c=>c.id!==id); saveState(); render();
+    showToast('Custo excluído.');
+  });
+}
 
 /* ---------- FINANCEIRO POR MÊS (estilo planilha) ---------- */
 const MONTH_NAMES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -2827,14 +3558,6 @@ function updateImposto(value){
   renderResumoMes(); renderTodayPanel();
 }
 
-function monthLucroReal(key){
-  const monthObj = state.finance.months[key];
-  if(!monthObj) return 0;
-  let totalGasto=0, totalFat=0;
-  Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
-  return (totalFat - totalGasto) - Number(monthObj.imposto||0);
-}
-
 let logEditingId = null;
 function toggleLogEdit(id){
   logEditingId = (logEditingId===id) ? null : id;
@@ -2868,9 +3591,21 @@ function renderLogs(){
     <div class="log-entry ${l.type}">
       <div class="log-meta">${l.date} · ${l.type==='win'?'funcionou':'travou'}${l.edited ? ' · <span class="log-edited-tag">editado</span>' : ''}</div>
       <div class="log-text">${escapeHtml(l.text)}</div>
-      <button class="mining-edit-btn log-edit-btn" onclick="toggleLogEdit('${l.id}')">✎ editar</button>
+      <div class="log-actions">
+        <button class="mining-edit-btn log-edit-btn" onclick="toggleLogEdit('${l.id}')">✎ editar</button>
+        <button class="mining-edit-btn log-del-btn" onclick="removeLog('${l.id}')">🗑</button>
+      </div>
     </div>
   `;}).join('');
+}
+function removeLog(id){
+  const l = state.logs.find(l=>l.id===id);
+  const preview = l ? (l.text.length>40 ? l.text.slice(0,40)+'…' : l.text) : 'este registro';
+  openConfirmModal(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`, ()=>{
+    state.logs = state.logs.filter(l=>l.id!==id);
+    saveState(); renderLogs();
+    showToast('Registro excluído.');
+  });
 }
 function addLog(){
   const input = document.getElementById('logInput');
@@ -2987,12 +3722,326 @@ function render(){
   renderTools();
   renderWarmupGroups();
   renderVideos();
+  renderProjects();
   renderPlanner();
   renderResumoMes();
   renderTodayPanel();
   renderOpSummary();
   updateTopStats();
 }
+
+/* ---------- PROJETOS ---------- */
+function currentProject(){ return state.projects.find(p=>p.id===state.currentProjectId); }
+function toggleNewProjectForm(show){
+  document.getElementById('newProjectRow').classList.toggle('open', show);
+  document.getElementById('newProjectToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('newProjectToggleBtn').closest('.panel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('projectNome').focus();
+  else{
+    document.getElementById('projectNome').value='';
+    document.getElementById('projectFerramenta').value='Claude Code';
+    document.getElementById('projectStatus').value='desenvolvimento';
+  }
+}
+function addProject(){
+  const nome = document.getElementById('projectNome');
+  const ferramenta = document.getElementById('projectFerramenta').value;
+  const status = document.getElementById('projectStatus').value;
+  if(!nome.value.trim()) return;
+  const now = new Date().toISOString();
+  state.projects.unshift({
+    id: uid(), nome: nome.value.trim(), ferramenta, status,
+    criadoEm: now,
+    infoConta: '', infoConversa: '',
+    contaPrincipal: { ia: ferramenta, conta: '', conversa: '' },
+    currentVersion: null,
+    versions: [],
+    resources: []
+  });
+  saveState(); renderProjects();
+  toggleNewProjectForm(false);
+  showToast('Projeto criado.');
+}
+function removeProject(id, ev){
+  if(ev) ev.stopPropagation();
+  const p = state.projects.find(p=>p.id===id);
+  if(!p) return;
+  openConfirmModal(`Tem certeza que quer excluir o projeto "${p.nome}" e todo o histórico de versões dele? Essa ação não pode ser desfeita.`, ()=>{
+    state.projects = state.projects.filter(p=>p.id!==id);
+    if(state.currentProjectId===id) state.currentProjectId = null;
+    saveState(); renderProjects();
+    showToast('Projeto excluído.');
+  });
+}
+function openProjectDetail(id){
+  state.currentProjectId = id;
+  saveState(); renderProjects();
+  window.scrollTo(0,0);
+}
+function closeProjectDetail(){
+  state.currentProjectId = null;
+  saveState(); renderProjects();
+}
+function updateProjectField(field, value){
+  const p = currentProject();
+  if(!p) return;
+  p[field] = value;
+  saveState(); renderProjects();
+}
+function updateProjectMainAccountField(field, value){
+  const p = currentProject();
+  if(!p) return;
+  if(!p.contaPrincipal) p.contaPrincipal = {ia:'',conta:'',conversa:''};
+  p.contaPrincipal[field] = value;
+  saveState();
+}
+function fmtDateTime(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('pt-BR');
+}
+function toggleNewProjectVersionForm(show){
+  document.getElementById('newProjVersionRow').classList.toggle('open', show);
+  document.getElementById('newProjVersionToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('newProjVersionToggleBtn').closest('.panel').classList.toggle('panel-editing', show);
+  if(show){
+    const p = currentProject();
+    if(p) document.getElementById('pvIa').value = (p.contaPrincipal && p.contaPrincipal.ia) || p.ferramenta;
+    if(p) document.getElementById('pvConta').value = (p.contaPrincipal && p.contaPrincipal.conta) || '';
+    document.getElementById('pvVersao').focus();
+  } else {
+    document.getElementById('pvVersao').value='';
+    document.getElementById('pvZip').value='';
+    document.getElementById('pvConta').value='';
+    document.getElementById('pvConversa').value='';
+    document.getElementById('pvResumo').value='';
+    document.getElementById('pvObservacoes').value='';
+  }
+}
+function registerProjectVersion(){
+  const p = currentProject();
+  if(!p) return;
+  const versaoInput = document.getElementById('pvVersao');
+  const versao = versaoInput.value.trim();
+  const ia = document.getElementById('pvIa').value;
+  const conta = document.getElementById('pvConta').value.trim();
+  const conversa = document.getElementById('pvConversa').value.trim();
+  const estagio = document.getElementById('pvEstagio').value;
+  const resumo = document.getElementById('pvResumo').value.trim();
+  const observacoes = document.getElementById('pvObservacoes').value.trim();
+  const fileInput = document.getElementById('pvZip');
+  const file = fileInput.files && fileInput.files[0];
+  if(!versao){ return; }
+
+  const finalize = (zipData, zipName, zipSize)=>{
+    const now = new Date().toISOString();
+    const entry = {
+      id: uid(), versao, data: now, ia, conta, conversa, estagio, resumo, observacoes,
+      zipName: zipName || null, zipData: zipData || null, zipSize: zipSize || null
+    };
+    p.versions.unshift(entry);
+    p.currentVersion = { versao, resumo, observacoes, estagio, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
+    p.ultimaAtualizacao = { conta, data: now, versao };
+    if(estagio) p.status = estagio;
+    p.status = p.status || 'desenvolvimento';
+    saveState(); renderProjects();
+    toggleNewProjectVersionForm(false);
+    showToast('Atualização registrada.');
+  };
+
+  if(file){
+    if(file.size > 8 * 1024 * 1024){
+      showToast('ZIP muito grande (máx. ~8MB). Registre sem anexar o arquivo, ou compacte menos coisa.');
+    }
+    const reader = new FileReader();
+    reader.onload = ()=> finalize(reader.result, file.name, file.size);
+    reader.onerror = ()=> finalize(null, null, null);
+    reader.readAsDataURL(file);
+  } else {
+    finalize(p.currentVersion ? p.currentVersion.zipData : null, p.currentVersion ? p.currentVersion.zipName : null, p.currentVersion ? p.currentVersion.zipSize : null);
+  }
+}
+function downloadZip(zipData, zipName){
+  if(!zipData) return;
+  const a = document.createElement('a');
+  a.href = zipData;
+  a.download = zipName || 'projeto.zip';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+function downloadCurrentVersionZip(){
+  const p = currentProject();
+  if(!p || !p.currentVersion || !p.currentVersion.zipData) return;
+  downloadZip(p.currentVersion.zipData, p.currentVersion.zipName);
+}
+function downloadVersionZip(versionId){
+  const p = currentProject();
+  if(!p) return;
+  const v = p.versions.find(v=>v.id===versionId);
+  if(!v || !v.zipData) return;
+  downloadZip(v.zipData, v.zipName);
+}
+function fmtBytes(bytes){
+  if(!bytes) return '';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(0)+' KB';
+  return (bytes/(1024*1024)).toFixed(1)+' MB';
+}
+function toggleNewProjectResourceForm(show){
+  document.getElementById('newProjResourceRow').classList.toggle('open', show);
+  document.getElementById('newProjResourceToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('newProjResourceToggleBtn').closest('.panel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('prConta').focus();
+  else{
+    document.getElementById('prConta').value=''; document.getElementById('prNome').value=''; document.getElementById('prLink').value='';
+  }
+}
+function addProjectResource(){
+  const p = currentProject();
+  if(!p) return;
+  const tipo = document.getElementById('prTipo').value;
+  const conta = document.getElementById('prConta').value.trim();
+  const nome = document.getElementById('prNome').value.trim();
+  const link = document.getElementById('prLink').value.trim();
+  if(!nome && !conta) return;
+  p.resources.push({id:uid(), tipo, conta, nome, link});
+  saveState(); renderProjects();
+  toggleNewProjectResourceForm(false);
+  showToast('Recurso adicionado.');
+}
+function removeProjectResource(resId){
+  openConfirmModal('Tem certeza que deseja excluir este recurso? Esta ação não poderá ser desfeita.', ()=>{
+    const p = currentProject();
+    if(!p) return;
+    p.resources = p.resources.filter(r=>r.id!==resId);
+    saveState(); renderProjects();
+    showToast('Recurso excluído.');
+  });
+}
+const PROJECT_STATUS_LABELS = { desenvolvimento:'Em desenvolvimento', pausado:'Pausado', finalizado:'Finalizado' };
+const PROJECT_RESOURCE_ICONS = {
+  GitHub:'🐙', Supabase:'⚡', Netlify:'🌐', Cloudflare:'☁️', Firebase:'🔥',
+  Figma:'🎨', Vercel:'▲', 'Google Analytics':'📈', Outro:'🔗'
+};
+function renderProjectCard(p){
+  const statusKey = p.status || 'desenvolvimento';
+  return `
+  <div class="tool-card project-card" data-id="${p.id}" onclick="openProjectDetail('${p.id}')">
+    <div class="tool-card-head">
+      <div class="project-card-name">📦 ${escapeHtml(p.nome)}</div>
+      <button class="del-btn" onclick="removeProject('${p.id}', event)">✕</button>
+    </div>
+    <div class="project-card-meta">
+      <span class="tool-cat" style="background:var(--blue-soft);color:var(--blue-bright);">💻 ${escapeHtml(p.ferramenta)}</span>
+      <span class="status-badge ${statusKey}">${PROJECT_STATUS_LABELS[statusKey]||statusKey}</span>
+    </div>
+    <div class="tool-field-label">versão atual</div>
+    <div class="tool-field-value">${p.currentVersion ? escapeHtml(p.currentVersion.versao) : 'nenhuma versão registrada'}</div>
+    <div class="tool-field-label">última atualização</div>
+    <div class="tool-field-value">${p.ultimaAtualizacao ? fmtDate(p.ultimaAtualizacao.data) : fmtDate(p.criadoEm)}</div>
+  </div>`;
+}
+function renderProjectDetail(p){
+  document.getElementById('projDetailTitle').innerText = `📦 ${p.nome}`;
+  document.getElementById('projDetailTool').innerText = `💻 ${p.ferramenta}`;
+
+  const statusKey = p.status || 'desenvolvimento';
+  document.getElementById('projSummary').innerHTML = `
+    <div class="pstat"><div class="l">versão atual</div><div class="v" style="font-size:14px;">${p.currentVersion?escapeHtml(p.currentVersion.versao):'—'}</div></div>
+    <div class="pstat"><div class="l">versões registradas</div><div class="v">${p.versions.length}</div></div>
+    <div class="pstat"><div class="l">criado em</div><div class="v" style="font-size:13px;">${fmtDate(p.criadoEm)}</div></div>
+    <div class="pstat">
+      <div class="l">status</div>
+      <select onchange="updateProjectField('status', this.value)" style="width:100%;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px;font-size:12px;">
+        ${Object.keys(PROJECT_STATUS_LABELS).map(k=>`<option value="${k}" ${statusKey===k?'selected':''}>${PROJECT_STATUS_LABELS[k]}</option>`).join('')}
+      </select>
+    </div>
+  `;
+
+  const cp = p.contaPrincipal || {ia:'',conta:'',conversa:''};
+  document.getElementById('projMainAccount').innerHTML = `
+    <div class="proj-info-row"><span class="k">IA utilizada</span><input type="text" value="${escapeHtml(cp.ia||'')}" onchange="updateProjectMainAccountField('ia', this.value)"></div>
+    <div class="proj-info-row"><span class="k">Conta</span><input type="text" value="${escapeHtml(cp.conta||'')}" placeholder="e-mail" onchange="updateProjectMainAccountField('conta', this.value)"></div>
+    <div class="proj-info-row"><span class="k">Conversa</span><input type="text" value="${escapeHtml(cp.conversa||'')}" placeholder="link/referência" onchange="updateProjectMainAccountField('conversa', this.value)"></div>
+  `;
+
+  document.getElementById('projLastUpdate').innerHTML = p.ultimaAtualizacao ? `
+    <div class="proj-info-row"><span class="k">Conta</span><span class="val">${escapeHtml(p.ultimaAtualizacao.conta||'—')}</span></div>
+    <div class="proj-info-row"><span class="k">Data</span><span class="val">${fmtDateTime(p.ultimaAtualizacao.data)}</span></div>
+    <div class="proj-info-row"><span class="k">Versão</span><span class="val">${escapeHtml(p.ultimaAtualizacao.versao||'—')}</span></div>
+  ` : `<div class="empty">nenhuma atualização registrada ainda.</div>`;
+
+  const cv = p.currentVersion;
+  document.getElementById('projCurrentVersion').innerHTML = cv ? `
+    <div class="proj-version-box">
+      <div class="proj-version-name">${escapeHtml(cv.versao)} ${cv.estagio?`<span class="proj-stage-badge stage-${cv.estagio}">${PROJECT_STATUS_LABELS[cv.estagio]||cv.estagio}</span>`:''}</div>
+      ${cv.zipName ? `<div class="proj-version-file">📎 ${escapeHtml(cv.zipName)} ${cv.zipSize?`· ${fmtBytes(cv.zipSize)}`:''}</div>` : `<div class="proj-version-file">nenhum arquivo anexado</div>`}
+      ${cv.resumo ? `<div class="proj-version-resumo">${escapeHtml(cv.resumo)}</div>` : ''}
+      ${cv.observacoes ? `<div class="proj-version-resumo" style="opacity:.75;margin-top:6px;">📝 ${escapeHtml(cv.observacoes)}</div>` : ''}
+      <div class="proj-version-actions">
+        ${cv.zipData ? `<button class="proj-dl-btn" onclick="downloadCurrentVersionZip()">⬇ baixar ZIP atual</button>` : ''}
+      </div>
+    </div>
+  ` : `<div class="empty">nenhuma versão registrada ainda — use o botão abaixo pra anexar o primeiro ZIP.</div>`;
+
+  const tlEl = document.getElementById('projTimeline');
+  tlEl.innerHTML = p.versions.length===0 ? '<div class="empty">nenhuma atualização no histórico ainda.</div>' : p.versions.map(v=>`
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-version">${escapeHtml(v.versao)} ${v.estagio?`<span class="proj-stage-badge stage-${v.estagio}">${PROJECT_STATUS_LABELS[v.estagio]||v.estagio}</span>`:''}</div>
+        <div class="timeline-date">${fmtDateTime(v.data)}</div>
+        <div class="timeline-meta">
+          ${v.conta?`<span>👤 ${escapeHtml(v.conta)}</span>`:''}
+          ${v.conversa?`<span>💬 ${escapeHtml(v.conversa)}</span>`:''}
+          ${v.ia?`<span>🤖 ${escapeHtml(v.ia)}</span>`:''}
+        </div>
+        ${v.resumo?`<div class="timeline-resumo">${escapeHtml(v.resumo)}</div>`:''}
+        ${v.observacoes?`<div class="timeline-resumo" style="opacity:.7;margin-top:4px;">📝 ${escapeHtml(v.observacoes)}</div>`:''}
+        ${v.zipData?`<div class="proj-version-actions"><button class="proj-dl-btn" onclick="downloadVersionZip('${v.id}')">⬇ ${escapeHtml(v.zipName||'baixar ZIP')}</button></div>`:''}
+      </div>
+    </div>
+  `).join('');
+
+  const resEl = document.getElementById('projResourcesGrid');
+  resEl.innerHTML = p.resources.length===0 ? '<div class="empty">nenhum recurso cadastrado ainda.</div>' : p.resources.map(r=>`
+    <div class="tool-card">
+      <div class="tool-card-head">
+        <div class="tool-name">${PROJECT_RESOURCE_ICONS[r.tipo]||'🔗'} ${escapeHtml(r.tipo)}</div>
+        <button class="del-btn" onclick="removeProjectResource('${r.id}')">✕</button>
+      </div>
+      ${r.conta ? `<div class="tool-field-label">conta</div><div class="tool-field-value">${escapeHtml(r.conta)}</div>` : ''}
+      ${r.nome ? `<div class="tool-field-label">projeto/repositório/site</div><div class="tool-field-value">${escapeHtml(r.nome)}</div>` : ''}
+      ${r.link ? `<a class="tool-open-btn" href="${escapeHtml(r.link)}" target="_blank" rel="noopener">Abrir →</a>` : ''}
+    </div>
+  `).join('');
+}
+function renderProjects(){
+  const listWrap = document.getElementById('projectsListWrap');
+  const detailWrap = document.getElementById('projectDetailWrap');
+  if(!listWrap || !detailWrap) return;
+  const p = currentProject();
+  if(p){
+    listWrap.style.display = 'none';
+    detailWrap.style.display = 'block';
+    renderProjectDetail(p);
+  } else {
+    listWrap.style.display = 'block';
+    detailWrap.style.display = 'none';
+    const grid = document.getElementById('projectsGrid');
+    grid.innerHTML = state.projects.length===0
+      ? '<div class="empty-block"><div class="empty-block-icon">📦</div><div class="empty-block-title">Nenhum projeto cadastrado ainda</div><div class="empty-block-sub">Use o + Novo Projeto acima pra começar a acompanhar a evolução do seu projeto.</div></div>'
+      : state.projects.map(renderProjectCard).join('');
+  }
+}
+
 
 /* ---------- DRAG & DROP (fluid, Trello/Notion-style, FLIP animated) ---------- */
 function getAfterElement(container, y, dragging){
@@ -3088,18 +4137,20 @@ function reorderArray(key, ids){
 }
 function setupDragHandlers(){
   attachSortable('urgentList', reorderTasksGroup);
-  attachSortable('structuralList', reorderTasksGroup);
+  attachSortable('processosList', ids=>reorderArray('processos', ids));
   attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
   attachSortable('miningList', ids=>reorderArray('mining', ids));
+  attachSortable('videosList', ids=>reorderArray('videos', ids));
+  attachSortable('toolsList', ids=>reorderArray('tools', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
   attachSortable('funnelLinksList', ids=>{ reorderFunnelLinks(ids); renderProducts(); });
 }
 
-loadState().then(setupDragHandlers);
+// inicialização controlada por sb.auth.onAuthStateChange (ver acima)
 applyHideValuesPreference();
 </script>
 </body>
