@@ -608,44 +608,50 @@
   .ms-value.neg{color:var(--urgent);}
 
   /* ---------- VÍDEOS ---------- */
-  .videos-list{display:flex;flex-direction:column;gap:7px;margin-bottom:6px;}
-  .video-row{
-    background:var(--surface2);border:1px solid var(--border);border-radius:11px;overflow:hidden;
-    cursor:pointer;transition:border-color .15s,background .15s;position:relative;
-    display:flex;align-items:center;gap:11px;padding:10px 12px;
+  .videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:6px;}
+  .video-card{
+    background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+    cursor:pointer;transition:border-color .15s, transform .15s;position:relative;
   }
-  .video-row:hover{border-color:var(--blue);background:var(--surface3);}
-  .video-row.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
-  .video-row .drag-handle{flex-shrink:0;color:var(--muted2);cursor:grab;padding:2px;}
-  .video-desc-full{
-    font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
-    padding:8px 10px;background:var(--bg);border-radius:8px;white-space:pre-wrap;
+  .video-card:hover{border-color:var(--blue);transform:translateY(-2px);}
+  .video-card.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
+  .video-card-thumb{
+    position:relative;width:100%;aspect-ratio:16/9;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
   }
-  .video-thumb-img{
-    flex-shrink:0;width:32px;height:32px;border-radius:9px;object-fit:cover;background:var(--bg);
+  .video-thumb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .video-thumb-hint{font-size:11px;color:var(--muted);padding:8px 10px;line-height:1.5;}
+  .video-platform-ico{
+    width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    background:var(--surface3);border:1px solid var(--border-strong);color:var(--blue-bright);
   }
+  .video-platform-ico svg{width:18px;height:18px;}
+  .video-play-overlay{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(0deg, rgba(2,4,8,0.35), transparent 45%);
+    color:#fff;font-size:15px;opacity:0;transition:opacity .15s;pointer-events:none;
+  }
+  .video-play-overlay::before{
+    content:'';position:absolute;width:42px;height:42px;border-radius:50%;
+    background:rgba(2,4,8,0.55);backdrop-filter:blur(2px);
+  }
+  .video-play-overlay{padding-left:3px;}
+  .video-card:hover .video-play-overlay{opacity:1;}
+  .video-card-drag{
+    position:absolute;top:8px;left:8px;background:rgba(2,4,8,0.6);border-radius:7px;
+    padding:4px 6px;color:#fff;font-size:12px;cursor:grab;z-index:2;
+  }
+  .video-card-del{
+    position:absolute;top:8px;right:8px;background:rgba(2,4,8,0.6);border:none;border-radius:7px;
+    width:26px;height:26px;color:#fff;cursor:pointer;font-size:12px;z-index:2;transition:background .15s,color .15s;
+  }
+  .video-card-del:hover{background:var(--urgent);}
   .empty-block{text-align:center;padding:44px 20px;}
   .empty-block-icon{font-size:30px;margin-bottom:10px;opacity:.65;}
   .empty-block-title{font-family:var(--display);font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px;}
   .empty-block-sub{font-size:12px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.5;}
-  .video-platform-ico{
-    flex-shrink:0;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-    background:var(--surface3);border:1px solid var(--border-strong);color:var(--blue-bright);
-  }
-  .video-platform-ico svg{width:16px;height:16px;}
-  .video-row-body{flex:1;min-width:0;}
-  .video-title{font-family:var(--display);font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .video-meta{display:flex;align-items:center;gap:6px;margin-top:2px;}
-  .video-nota{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .video-open-ico{flex-shrink:0;color:var(--muted2);font-size:15px;transition:color .15s,transform .15s;}
-  .video-row:hover .video-open-ico{color:var(--blue-bright);transform:translateX(2px);}
-  .video-edit-ico{flex-shrink:0;background:none;border:none;color:var(--muted2);cursor:pointer;font-size:13px;padding:4px 6px;border-radius:6px;opacity:0;transition:opacity .15s,color .15s,background .15s;}
-  .video-row:hover .video-edit-ico{opacity:1;}
-  .video-edit-ico:hover{color:var(--blue-bright);background:var(--surface3);}
-  .video-row-editing{cursor:default;align-items:flex-start;border-color:var(--blue);}
-  .video-row-editing:hover{background:var(--surface2);}
-  .video-del{flex-shrink:0;background:none;border:none;color:var(--muted2);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;z-index:2;transition:color .15s,background .15s;}
-  .video-del:hover{color:var(--urgent);background:var(--urgent-soft);}
+  .video-thumb-preview{margin-top:8px;max-width:280px;border-radius:8px;overflow:hidden;background:var(--bg);}
+  .video-thumb-preview:empty{display:none;}
   .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
   .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
   .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:rgba(59,130,246,0.10);border:1px solid rgba(59,130,246,0.3);border-radius:4px;padding:2px 7px;color:var(--blue);}
@@ -958,6 +964,8 @@
   .login-success-text{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:14px;}
   .login-success .login-link-btn{margin-top:0;color:var(--blue-bright);}
 
+  .save-indicator{font-family:var(--mono);font-size:10.5px;color:var(--muted2);min-width:50px;text-align:right;transition:color .2s;}
+  .save-indicator.saving{color:var(--blue-bright);}
   .logout-btn{
     background:var(--surface2);border:1px solid var(--border);color:var(--muted);
     border-radius:9px;padding:6px 12px;font-size:11.5px;cursor:pointer;display:flex;align-items:center;gap:5px;
@@ -1033,10 +1041,13 @@
         <h1>Tráfego direto · Infoproduto</h1>
       </div>
     </div>
-    <button class="logout-btn" onclick="handleLogout()" title="sair da conta">
-      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      sair
-    </button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="saveIndicator" class="save-indicator"></span>
+      <button class="logout-btn" onclick="handleLogout()" title="sair da conta">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        sair
+      </button>
+    </div>
   </div>
 
   <div id="loading" class="loading">carregando dados...</div>
@@ -1046,12 +1057,13 @@
     <div class="tab-nav">
       <button class="tab-btn active" id="tabBtnHome" onclick="switchTab('home')">Início</button>
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
+      <button class="tab-btn" id="tabBtnProcessos" onclick="switchTab('processos')">Processos</button>
       <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
       <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
-      <button class="tab-btn" id="tabBtnProjects" onclick="switchTab('projects')">📦 Projetos</button>
+      <button class="tab-btn" id="tabBtnProjects" onclick="switchTab('projects')">Projetos</button>
       <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
-      <button class="tab-btn" id="tabBtnContent" onclick="switchTab('content')">🎬 Biblioteca de Conteúdo</button>
-      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
+      <button class="tab-btn" id="tabBtnContent" onclick="switchTab('content')">Biblioteca de Conteúdo</button>
+      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">Aquecimento de Chip</button>
     </div>
 
     <div class="tab-view active" id="homeView">
@@ -1098,7 +1110,7 @@
       <button class="goto-btn" onclick="switchTab('finance')">ver financeiro →</button>
     </div>
 
-    <div class="row-three" id="urgentPanel">
+    <div class="row-two" id="urgentPanel">
       <div class="panel urgent-panel">
         <div class="panel-head"><h2><span class="urgent-panel-icon" aria-hidden="true">⚠</span>Urgências</h2></div>
         <div id="urgentList"></div>
@@ -1118,23 +1130,6 @@
             <option value="blocked">pausada/matada</option>
           </select>
           <button class="add" onclick="addOffer()">+ add</button>
-        </div>
-      </div>
-      <div class="panel" id="processosPanel">
-        <div class="panel-head">
-          <h2><span class="sub">documente os passos pra validar e escalar uma oferta</span>Processos da Empresa</h2>
-          <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
-        </div>
-        <div id="processosList"></div>
-        <div class="add-form collapsible-form" id="newProcessoRow">
-          <div class="add-row" style="flex-direction:column;">
-            <input type="text" id="processoTitulo" placeholder="nome da etapa (ex: Validar oferta com 3 dias de anúncio)">
-            <textarea id="processoDescricao" placeholder="descreva o passo a passo dessa etapa..."></textarea>
-            <div class="add-row" style="margin-top:0;">
-              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar etapa</button>
-              <button class="add-cost-cancel-btn" onclick="toggleNewProcessoForm(false)">cancelar</button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -1332,6 +1327,26 @@
       </div>
     </div>
 
+    <div class="tab-view" id="processosView">
+      <div class="panel full" id="processosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">o passo a passo pra validar e escalar uma oferta, do zero até virar operação</span>Processos da Empresa</h2>
+          <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
+        </div>
+        <div id="processosList"></div>
+        <div class="add-form collapsible-form" id="newProcessoRow">
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="processoTitulo" placeholder="nome da etapa (ex: Validar oferta com 3 dias de anúncio)">
+            <textarea id="processoDescricao" placeholder="descreva o passo a passo dessa etapa..."></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar etapa</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewProcessoForm(false)">cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="tab-view" id="productsView">
       <div class="panel full" id="productsPanel">
         <div class="panel-head">
@@ -1447,16 +1462,14 @@
           <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Biblioteca de Conteúdo</h2>
           <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
         </div>
-        <div id="videosList" class="videos-list"></div>
+        <div id="videosList" class="videos-grid"></div>
         <div class="add-form" id="newVideoRow">
         <div class="add-row">
           <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
-          <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
+          <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok" onchange="previewVideoThumb(this.value)">
           <input type="text" id="videoNota" placeholder="nota curta (opcional)">
         </div>
-        <div class="add-row" style="margin-top:8px;">
-          <input type="text" id="videoThumbnail" placeholder="link da thumbnail/imagem de capa (opcional)">
-        </div>
+        <div class="video-thumb-preview" id="videoThumbPreview" style="display:none;"></div>
         <textarea id="videoDescricao" placeholder="descrição (opcional) — fica visível no card" style="margin-top:8px;"></textarea>
         <div class="add-row" style="margin-top:8px;">
           <button class="add" onclick="addVideo()">+ add</button>
@@ -2114,14 +2127,34 @@ async function loadState(){
 }
 
 let saveTimeout = null;
+let saveInFlight = null;
+function doSaveNow(){
+  const indicator = document.getElementById('saveIndicator');
+  if(indicator){ indicator.classList.add('saving'); indicator.innerText = 'salvando…'; }
+  saveInFlight = sb.from('app_state').update({ data: state, updated_at: new Date().toISOString() }).eq('id', ROW_ID)
+    .then(()=>{
+      if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'salvo'; setTimeout(()=>{ if(indicator) indicator.innerText=''; }, 1500); }
+    })
+    .catch(e=>{
+      console.error('erro ao salvar no Supabase', e);
+      if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'erro ao salvar'; }
+    });
+  return saveInFlight;
+}
 async function saveState(){
   clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(async ()=>{
-    try{
-      await sb.from('app_state').update({ data: state, updated_at: new Date().toISOString() }).eq('id', ROW_ID);
-    }catch(e){ console.error('erro ao salvar no Supabase', e); }
-  }, 400);
+  saveTimeout = setTimeout(()=>{ saveTimeout = null; doSaveNow(); }, 400);
 }
+function flushPendingSave(){
+  if(saveTimeout){
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+    doSaveNow();
+  }
+}
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushPendingSave(); });
+window.addEventListener('pagehide', flushPendingSave);
+window.addEventListener('blur', flushPendingSave);
 
 function statusClass(s){
   if(s==='done') return 'status-done';
@@ -2214,10 +2247,80 @@ function removeProcesso(id){
     showToast('Etapa excluída.');
   });
 }
+const PROCESSOS_TEMPLATE = [
+  { titulo:'Mineração', descricao:
+`• Minerar ofertas, criativos e funis (Biblioteca de Anúncios, AdHeart, Adspy etc.)
+• Registrar todas as informações no Painel LAKA
+• Acompanhar a performance das ofertas (meta: automatizar isso no futuro)
+• Validar oportunidades pra criar, modelar, clonar ou melhorar` },
+  { titulo:'Estrutura da Oferta', descricao:
+`• Escolher a oferta
+• Preparar domínio, hospedagem, rastreamento e infraestrutura
+• Clonar, criar ou otimizar o funil
+• Configurar toda a operação pra iniciar os testes` },
+  { titulo:'Validação', descricao:
+`• Testar criativos clonados, adaptados e novos
+• Desenvolver novos ângulos de venda
+• Produzir novos criativos com base nos vencedores
+• Validar campanhas
+• Otimizar campanhas
+• Escalar campanhas vencedoras
+• Replicar estratégias` },
+  { titulo:'Produto / Entregável', descricao:
+`• Criar os entregáveis
+• Melhorar continuamente o produto e a experiência do cliente (funil pós-venda)
+• Desenvolver produtos de recorrência
+• Criar novas ofertas dentro do ecossistema
+• Evoluir continuamente o funil de pós-venda` },
+  { titulo:'Monetização', descricao:
+`• Maximizar a conversão do funil
+• Desenvolver upsells, downsells e cross-sells
+• Aumentar ticket médio
+• Aumentar LTV e retenção` },
+  { titulo:'Recuperação de Vendas', descricao:
+`• Estruturar recuperação via WhatsApp, e-mail e automações
+• Recuperar carrinhos e vendas perdidas
+• Melhorar o relacionamento e a recompra no pós-venda` },
+  { titulo:'Automação', descricao:
+`• Automatizar processos operacionais
+• Automatizar criação de criativos e conteúdos
+• Automatizar recuperação de vendas e entrega dos produtos
+• Automatizar marketing, análises e acompanhamento das campanhas
+• Automatizar organização da operação e uso de IA` },
+  { titulo:'Gestão', descricao:
+`• Gerenciar custos, faturamento e lucratividade
+• Organizar ativos, ferramentas e infraestrutura
+• Garantir disponibilidade de contas, perfis, BMs e contingência
+• Planejar prioridades, metas e indicadores` },
+  { titulo:'Expansão', descricao:
+`• Lançar novas ofertas
+• Diversificar fontes de tráfego
+• Expandir pra novos nichos e produtos
+• Escalar a operação de forma sustentável` },
+  { titulo:'Desenvolvimento de Ativos', descricao:
+`• Evoluir o Painel LAKA
+• Desenvolver novos aplicativos e ferramentas com foco em venda recorrente` }
+];
+function seedProcessosPadrao(){
+  PROCESSOS_TEMPLATE.forEach(t=>{
+    state.processos.push({id:uid(), titulo:t.titulo, descricao:t.descricao, concluido:false});
+  });
+  saveState(); renderProcessos();
+  showToast('Modelo de processos carregado.');
+}
 function renderProcessos(){
   const el = document.getElementById('processosList');
   if(!el) return;
-  if(state.processos.length===0){ el.innerHTML = '<div class="empty">nenhuma etapa cadastrada ainda — documente o passo a passo pra validar e escalar uma oferta.</div>'; return; }
+  if(state.processos.length===0){
+    el.innerHTML = `
+    <div class="empty-block">
+      <div class="empty-block-icon">🗺️</div>
+      <div class="empty-block-title">Nenhuma etapa cadastrada ainda</div>
+      <div class="empty-block-sub">Documente o passo a passo pra validar e escalar uma oferta, ou comece com um modelo pronto de 10 etapas (Mineração → Desenvolvimento de Ativos).</div>
+      <button class="add-tool-btn" style="margin-top:14px;" onclick="seedProcessosPadrao()">+ Usar modelo pronto</button>
+    </div>`;
+    return;
+  }
   el.innerHTML = state.processos.map((p,idx)=>{
     if(processoEditingId===p.id){
       return `
@@ -2708,6 +2811,58 @@ function detectVideoPlatform(url){
   if(/tiktok\.com/.test(url)) return 'tiktok';
   return 'link';
 }
+function extractYoutubeId(url){
+  if(!url) return null;
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+const videoThumbCache = {};
+function syncAutoThumbnail(url){
+  const platform = detectVideoPlatform(url);
+  if(platform==='youtube'){
+    const id = extractYoutubeId(url);
+    return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : null;
+  }
+  if(platform==='tiktok' && videoThumbCache[url]) return videoThumbCache[url];
+  return null;
+}
+async function fetchTikTokThumb(url){
+  if(videoThumbCache[url] !== undefined) return videoThumbCache[url];
+  try{
+    const res = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`);
+    if(!res.ok) throw new Error('fail');
+    const data = await res.json();
+    videoThumbCache[url] = data.thumbnail_url || null;
+  }catch(e){ videoThumbCache[url] = null; }
+  return videoThumbCache[url];
+}
+function previewVideoThumb(url){
+  const box = document.getElementById('videoThumbPreview');
+  if(!box) return;
+  url = (url||'').trim();
+  if(!url){ box.style.display='none'; box.innerHTML=''; return; }
+  const platform = detectVideoPlatform(url);
+  const auto = syncAutoThumbnail(url);
+  if(auto){
+    box.style.display='block';
+    box.innerHTML = `<img src="${escapeHtml(auto)}" alt="" style="width:100%;border-radius:8px;display:block;">`;
+  } else if(platform==='tiktok'){
+    box.style.display='block';
+    box.innerHTML = `<div class="video-thumb-hint">buscando capa do TikTok automaticamente...</div>`;
+    fetchTikTokThumb(url).then(thumb=>{
+      const current = document.getElementById('videoUrl');
+      if(!current || current.value.trim() !== url) return;
+      box.innerHTML = thumb
+        ? `<img src="${escapeHtml(thumb)}" alt="" style="width:100%;border-radius:8px;display:block;">`
+        : `<div class="video-thumb-hint">não consegui carregar a capa agora — sem problema, o card mostra o ícone do TikTok.</div>`;
+    });
+  } else if(platform==='instagram'){
+    box.style.display='block';
+    box.innerHTML = `<div class="video-thumb-hint">o Instagram não permite puxar a capa automaticamente sem login — o card vai mostrar o ícone do Instagram.</div>`;
+  } else {
+    box.style.display='none'; box.innerHTML='';
+  }
+}
 function toggleNewVideoForm(show){
   document.getElementById('newVideoRow').classList.toggle('open', show);
   document.getElementById('newVideoToggleBtn').style.display = show ? 'none' : 'inline-flex';
@@ -2715,17 +2870,18 @@ function toggleNewVideoForm(show){
   if(show) document.getElementById('videoTitulo').focus();
   else{
     document.getElementById('videoTitulo').value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
-    document.getElementById('videoThumbnail').value=''; document.getElementById('videoDescricao').value='';
+    document.getElementById('videoDescricao').value='';
+    document.getElementById('videoThumbPreview').style.display='none';
+    document.getElementById('videoThumbPreview').innerHTML='';
   }
 }
 function addVideo(){
   const titulo = document.getElementById('videoTitulo');
   const url = document.getElementById('videoUrl').value;
   const nota = document.getElementById('videoNota').value;
-  const thumbnail = document.getElementById('videoThumbnail') ? document.getElementById('videoThumbnail').value.trim() : '';
   const descricao = document.getElementById('videoDescricao') ? document.getElementById('videoDescricao').value.trim() : '';
   if(!titulo.value.trim() || !url.trim()) return;
-  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, thumbnail, descricao});
+  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, descricao});
   saveState(); renderVideos();
   toggleNewVideoForm(false);
   showToast('Vídeo adicionado.');
@@ -2761,25 +2917,34 @@ function saveVideoEdit(id, ev){
   saveState(); renderVideos();
   showToast('Conteúdo atualizado.');
 }
+function loadTikTokThumbInto(id, url){
+  fetchTikTokThumb(url).then(thumb=>{
+    if(!thumb) return;
+    const img = document.getElementById('video-thumb-img-'+id);
+    const ico = document.getElementById('video-thumb-ico-'+id);
+    if(img){ img.src = thumb; img.style.display='block'; }
+    if(ico) ico.style.display='none';
+  });
+}
 function renderVideos(){
   const el = document.getElementById('videosList');
   if(!el) return;
-  if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
+  if(state.videos.length===0){ el.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🎬</div><div class="empty-block-title">Nenhum conteúdo salvo ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar vídeo" acima pra começar sua biblioteca.</div></div>'; return; }
   el.innerHTML = state.videos.map(v=>{
     const platform = detectVideoPlatform(v.url);
-    const iconHtml = v.thumbnail
-      ? `<img src="${escapeHtml(v.thumbnail)}" alt="" class="video-thumb-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-         <span class="video-platform-ico ${platform}" style="display:none;">${PLATFORM_ICONS[platform]}</span>`
-      : `<span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>`;
+    const manualOverride = v.thumbnail && v.thumbnail.trim();
+    const thumbNow = manualOverride || syncAutoThumbnail(v.url);
+    if(!thumbNow && platform==='tiktok') setTimeout(()=>loadTikTokThumbInto(v.id, v.url), 0);
+    const thumbHtml = `
+      <img id="video-thumb-img-${v.id}" class="video-thumb-img" style="display:${thumbNow?'block':'none'};" src="${escapeHtml(thumbNow||'')}" alt="" onerror="this.style.display='none';">
+      <span class="video-platform-ico ${platform}" id="video-thumb-ico-${v.id}" style="display:${thumbNow?'none':'flex'};">${PLATFORM_ICONS[platform]}</span>`;
     if(videoEditingId===v.id){
       return `
-      <div class="video-row video-row-editing" data-id="${v.id}">
-        ${iconHtml}
-        <div class="video-row-body tool-edit-row">
+      <div class="video-card" data-id="${v.id}">
+        <div class="tool-edit-row" style="padding:16px;">
           <input type="text" value="${escapeHtml(v.titulo)}" placeholder="título" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','titulo',this.value)">
           <input type="text" value="${escapeHtml(v.url)}" placeholder="link" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','url',this.value)">
           <input type="text" value="${escapeHtml(v.nota||'')}" placeholder="nota curta" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','nota',this.value)">
-          <input type="text" value="${escapeHtml(v.thumbnail||'')}" placeholder="link da thumbnail (opcional)" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','thumbnail',this.value)">
           <textarea placeholder="descrição" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="event.stopPropagation();removeVideo('${v.id}')">✕ excluir</button>
@@ -2790,27 +2955,23 @@ function renderVideos(){
     }
     const hasDesc = v.descricao && v.descricao.trim();
     return `
-    <div class="video-row" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
-      <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
-      ${iconHtml}
-      <div class="video-row-body">
-        <div class="video-title">${escapeHtml(v.titulo)}</div>
-        ${v.nota ? `<div class="video-meta"><span class="video-nota">${escapeHtml(v.nota)}</span></div>` : ''}
-        ${hasDesc ? `<div class="video-desc-full">${escapeHtml(v.descricao)}</div>` : ''}
+    <div class="video-card" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
+      <div class="video-card-thumb">
+        ${thumbHtml}
+        <div class="video-play-overlay">▶</div>
+        <span class="drag-handle video-card-drag" onclick="event.stopPropagation()">⠿</span>
+        <button class="video-card-del" onclick="event.stopPropagation();removeVideo('${v.id}')" title="excluir">✕</button>
       </div>
-      <button class="video-edit-ico" onclick="toggleVideoEdit('${v.id}', event)" title="editar">✎</button>
-      <span class="video-open-ico">→</span>
-      <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
+      <div class="tool-card-head" style="padding:12px 14px 0 14px;">
+        <div class="tool-name" style="flex:1;">${escapeHtml(v.titulo)}</div>
+        <button class="mining-edit-btn" onclick="toggleVideoEdit('${v.id}', event)">✎</button>
+      </div>
+      <div style="padding:0 14px 14px 14px;">
+        ${v.nota ? `<span class="tool-cat" style="margin-top:6px;">${escapeHtml(v.nota)}</span>` : ''}
+        ${hasDesc ? `<div class="tool-field-value" style="margin-top:8px;">${escapeHtml(v.descricao)}</div>` : ''}
+      </div>
     </div>`;
   }).join('');
-}
-function toggleVideoDesc(id, event){
-  if(event) event.stopPropagation();
-  const el = document.getElementById('video-desc-'+id);
-  if(!el) return;
-  const btn = event.target;
-  const open = el.classList.toggle('open');
-  btn.innerText = open ? '▴ descrição' : '▾ descrição';
 }
 
 /* ---------- CENTRAL DE FERRAMENTAS ---------- */
@@ -3265,7 +3426,7 @@ function applyHideValuesPreference(){
   document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
   document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
-const TAB_NAMES = ['home','finance','products','mining','projects','tools','content','warmup'];
+const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup'];
 function switchTab(tab){
   TAB_NAMES.forEach(t=>{
     const view = document.getElementById(t+'View');
@@ -4066,9 +4227,13 @@ function attachSortable(containerId, onReordered){
     const startY = e.clientY;
     const baseTop = dragging.getBoundingClientRect().top;
     let moved = false;
+    let lastY = e.clientY;
+    let rafPending = false;
 
     dragging.classList.add('dragging');
     handle.setPointerCapture(e.pointerId);
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'grabbing';
 
     const siblings = ()=> [...container.querySelectorAll(':scope > [data-id]')].filter(el=>el!==dragging);
     const captureRects = ()=>{
@@ -4093,23 +4258,30 @@ function attachSortable(containerId, onReordered){
       });
     };
 
-    const onMove = (ev)=>{
-      if(Math.abs(ev.clientY - startY) > 2) moved = true;
+    const applyMove = ()=>{
+      rafPending = false;
       const before = captureRects();
-      const after = getAfterElement(container, ev.clientY, dragging);
+      const after = getAfterElement(container, lastY, dragging);
       const prevNext = dragging.nextElementSibling;
       if(after == null){ if(container.lastElementChild!==dragging) container.appendChild(dragging); }
       else if(after !== dragging && after !== prevNext) container.insertBefore(dragging, after);
       dragging.style.transform = '';
       const newTop = dragging.getBoundingClientRect().top;
-      const desiredTop = baseTop + (ev.clientY - startY);
+      const desiredTop = baseTop + (lastY - startY);
       dragging.style.transform = `translateY(${desiredTop - newTop}px) scale(1.015)`;
       flip(before);
+    };
+    const onMove = (ev)=>{
+      lastY = ev.clientY;
+      if(Math.abs(ev.clientY - startY) > 2) moved = true;
+      if(!rafPending){ rafPending = true; requestAnimationFrame(applyMove); }
     };
     const onUp = ()=>{
       dragging.classList.remove('dragging');
       dragging.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
       dragging.style.transform = '';
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       handle.removeEventListener('pointercancel', onUp);
