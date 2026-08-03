@@ -139,6 +139,15 @@
     filter:blur(7px);user-select:none;transition:filter .15s;
   }
   body.hide-financials .today-stat .trend{filter:blur(4px);user-select:none;}
+  body.hide-financials .fin-num,
+  body.hide-financials .msum .v,
+  body.hide-financials .pstat .v,
+  body.hide-financials #desempenhoMesChart,
+  body.hide-financials .chart-legend,
+  body.hide-financials .panel-total{
+    filter:blur(7px);user-select:none;transition:filter .15s;
+  }
+  body.hide-financials .day-cell-input{pointer-events:none;}
   .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
   @media(max-width:800px){.today-stats{grid-template-columns:1fr 1fr;}}
   .today-stat{background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:12px 14px;}
@@ -286,7 +295,7 @@
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
   .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
-  .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging{
+  .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging, .tool-card.dragging{
     opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;
     box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright), var(--shadow-glow-blue);
     will-change:transform;
@@ -326,6 +335,11 @@
   .task-tag.bloqueada{color:var(--urgent);background:rgba(255,77,109,.15);}
   .item-body{flex:1;min-width:0;}
   .item-text{font-size:13.5px;line-height:1.4;word-break:break-word;}
+  .processo-step-num{color:var(--blue-bright);font-weight:700;}
+  .processo-desc{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap;}
+  .item.done .processo-desc{opacity:0.7;}
+  .processo-edit-btn{background:none;border:none;color:var(--muted2);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;transition:color .15s;}
+  .processo-edit-btn:hover{color:var(--blue-bright);}
   .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
   .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
   .del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:2px 6px;flex-shrink:0;}
@@ -603,15 +617,13 @@
   .video-row:hover{border-color:var(--blue);background:var(--surface3);}
   .video-row.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
   .video-row .drag-handle{flex-shrink:0;color:var(--muted2);cursor:grab;padding:2px;}
-  .video-desc-toggle{
-    background:none;border:none;color:var(--blue-bright);font-size:10.5px;cursor:pointer;padding:2px 0;
-    margin-top:2px;font-family:var(--mono);
-  }
   .video-desc-full{
-    display:none;font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
+    font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
     padding:8px 10px;background:var(--bg);border-radius:8px;white-space:pre-wrap;
   }
-  .video-desc-full.open{display:block;}
+  .video-thumb-img{
+    flex-shrink:0;width:32px;height:32px;border-radius:9px;object-fit:cover;background:var(--bg);
+  }
   .empty-block{text-align:center;padding:44px 20px;}
   .empty-block-icon{font-size:30px;margin-bottom:10px;opacity:.65;}
   .empty-block-title{font-family:var(--display);font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px;}
@@ -770,11 +782,32 @@
   .modal-overlay{
     display:none;position:fixed;inset:0;background:rgba(2,4,8,0.72);backdrop-filter:blur(3px);
     z-index:100;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .18s ease;
   }
+  .modal-overlay.open{display:flex;}
   .modal-box{
     background:var(--surface2);border:1px solid var(--border-strong);border-radius:var(--radius-lg);
     padding:22px;max-width:420px;width:100%;box-shadow:var(--shadow-md);
+    animation:modalPopIn .22s cubic-bezier(.22,.85,.32,1);
   }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes modalPopIn{
+    from{opacity:0;transform:translateY(14px) scale(.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .confirm-modal-msg{font-size:13.5px;color:var(--muted);line-height:1.6;margin:2px 0 18px 0;}
+  .confirm-modal-actions{display:flex;gap:10px;}
+  .confirm-modal-actions .btn-cancel{
+    flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;
+    padding:11px 16px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;
+  }
+  .confirm-modal-actions .btn-cancel:hover{border-color:var(--border-strong);color:var(--text);}
+  .confirm-modal-actions .btn-danger{
+    flex:1;background:linear-gradient(135deg,var(--urgent),#c62f45);border:none;color:#fff;
+    border-radius:10px;padding:11px 16px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;
+    box-shadow:0 6px 16px -4px rgba(240,69,92,0.5);transition:transform .15s,box-shadow .15s;
+  }
+  .confirm-modal-actions .btn-danger:hover{transform:translateY(-1px);box-shadow:0 8px 20px -4px rgba(240,69,92,0.65);}
   .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
   .modal-head h3{margin:0;font-family:var(--display);font-size:16px;font-weight:700;}
   .modal-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
@@ -1087,14 +1120,32 @@
           <button class="add" onclick="addOffer()">+ add</button>
         </div>
       </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Estrutura pra escalar</h2></div>
-        <div id="structuralList"></div>
-        <div class="add-row">
-          <input type="text" id="structuralInput" placeholder="nova tarefa estrutural...">
-          <button class="add" onclick="addTask('estrutural')">+ add</button>
+      <div class="panel" id="processosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">documente os passos pra validar e escalar uma oferta</span>Processos da Empresa</h2>
+          <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
+        </div>
+        <div id="processosList"></div>
+        <div class="add-form collapsible-form" id="newProcessoRow">
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="processoTitulo" placeholder="nome da etapa (ex: Validar oferta com 3 dias de anúncio)">
+            <textarea id="processoDescricao" placeholder="descreva o passo a passo dessa etapa..."></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar etapa</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewProcessoForm(false)">cancelar</button>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
+      <div class="planner-focus">
+        <label class="field-label">foco da semana</label>
+        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
+      </div>
+      <div class="planner-days" id="plannerDays"></div>
     </div>
 
     <div class="panel full">
@@ -1110,15 +1161,6 @@
           <button class="add" onclick="addLog()">+ registrar</button>
         </div>
       </div>
-    </div>
-
-    <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
-      <div class="planner-focus">
-        <label class="field-label">foco da semana</label>
-        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
-      </div>
-      <div class="planner-days" id="plannerDays"></div>
     </div>
 
     <div class="row-two">
@@ -1201,6 +1243,13 @@
         <div class="panel full">
           <div class="panel-head">
             <h2>Financeiro</h2>
+            <button class="hide-values-btn" id="hideValuesBtnFinance" onclick="toggleHideValues()" title="ocultar valores financeiros">
+              <span id="hideValuesIconFinance" class="eye-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </span>
+            </button>
           </div>
 
           <div class="month-nav">
@@ -1405,7 +1454,10 @@
           <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
           <input type="text" id="videoNota" placeholder="nota curta (opcional)">
         </div>
-        <textarea id="videoDescricao" placeholder="descrição completa (opcional) — fica escondida até você clicar pra expandir" style="margin-top:8px;"></textarea>
+        <div class="add-row" style="margin-top:8px;">
+          <input type="text" id="videoThumbnail" placeholder="link da thumbnail/imagem de capa (opcional)">
+        </div>
+        <textarea id="videoDescricao" placeholder="descrição (opcional) — fica visível no card" style="margin-top:8px;"></textarea>
         <div class="add-row" style="margin-top:8px;">
           <button class="add" onclick="addVideo()">+ add</button>
           <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
@@ -1606,6 +1658,20 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="confirmModal" onclick="if(event.target===this) closeConfirmModal()">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-head">
+      <h3 id="confirmModalTitle">Excluir item</h3>
+      <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+    </div>
+    <p class="confirm-modal-msg" id="confirmModalMsg">Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.</p>
+    <div class="confirm-modal-actions">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="btn-danger" onclick="confirmModalProceed()">Excluir</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const STORAGE_KEY = 'painel-operacao-v4';
 
@@ -1674,7 +1740,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -1691,6 +1757,25 @@ function showToast(message){
     el.classList.remove('show');
     setTimeout(()=>el.remove(), 300);
   }, 2800);
+}
+
+/* ---------- CONFIRMAÇÃO DE EXCLUSÃO (padrão em todo o app) ---------- */
+let _confirmModalAction = null;
+function openConfirmModal(message, action, opts){
+  opts = opts || {};
+  document.getElementById('confirmModalTitle').innerText = opts.title || 'Excluir item';
+  document.getElementById('confirmModalMsg').innerText = message || 'Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.';
+  _confirmModalAction = action;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirmModal(){
+  document.getElementById('confirmModal').classList.remove('open');
+  _confirmModalAction = null;
+}
+function confirmModalProceed(){
+  const action = _confirmModalAction;
+  closeConfirmModal();
+  if(action) action();
 }
 
 function renderFinanceChart(containerId, series, totalDays, opts){
@@ -1967,6 +2052,11 @@ async function loadState(){
       if(!state.customGateways) state.customGateways = [];
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
+      if(!state.processos){
+        state.processos = (state.tasks||[]).filter(t=>t.priority==='estrutural').map(t=>({
+          id: uid(), titulo: t.text || '', descricao: '', concluido: t.status==='done'
+        }));
+      }
       state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
@@ -2046,7 +2136,7 @@ function nextStatus(s, cycle){ const i=cycle.indexOf(s); return cycle[(i+1)%cycl
 
 function renderTasks(){
   renderTaskGroup('urgentList', state.tasks.filter(t=>t.priority==='urgente'));
-  renderTaskGroup('structuralList', state.tasks.filter(t=>t.priority==='estrutural'));
+  renderProcessos();
 }
 function renderTaskGroup(containerId, arr){
   const el = document.getElementById(containerId);
@@ -2072,6 +2162,89 @@ function toggleTaskDone(id){
   item.status = item.status==='done' ? 'pending' : 'done';
   saveState(); render();
 }
+
+/* ---------- PROCESSOS DA EMPRESA ---------- */
+function toggleNewProcessoForm(show){
+  document.getElementById('newProcessoRow').classList.toggle('open', show);
+  document.getElementById('newProcessoToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('processosPanel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('processoTitulo').focus();
+  else{
+    document.getElementById('processoTitulo').value = '';
+    document.getElementById('processoDescricao').value = '';
+  }
+}
+function addProcesso(){
+  const titulo = document.getElementById('processoTitulo');
+  const descricao = document.getElementById('processoDescricao').value.trim();
+  if(!titulo.value.trim()) return;
+  state.processos.push({id:uid(), titulo:titulo.value.trim(), descricao, concluido:false});
+  saveState(); renderProcessos();
+  toggleNewProcessoForm(false);
+  showToast('Etapa adicionada.');
+}
+function toggleProcessoDone(id){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p.concluido = !p.concluido;
+  saveState(); renderProcessos();
+}
+let processoEditingId = null;
+function toggleProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = (processoEditingId===id) ? null : id;
+  renderProcessos();
+}
+function updateProcessoField(id, field, value){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p[field] = value;
+  saveState();
+}
+function saveProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = null;
+  saveState(); renderProcessos();
+  showToast('Etapa atualizada.');
+}
+function removeProcesso(id){
+  openConfirmModal('Tem certeza que deseja excluir esta etapa do processo? Esta ação não poderá ser desfeita.', ()=>{
+    state.processos = state.processos.filter(p=>p.id!==id);
+    saveState(); renderProcessos();
+    showToast('Etapa excluída.');
+  });
+}
+function renderProcessos(){
+  const el = document.getElementById('processosList');
+  if(!el) return;
+  if(state.processos.length===0){ el.innerHTML = '<div class="empty">nenhuma etapa cadastrada ainda — documente o passo a passo pra validar e escalar uma oferta.</div>'; return; }
+  el.innerHTML = state.processos.map((p,idx)=>{
+    if(processoEditingId===p.id){
+      return `
+      <div class="item" data-id="${p.id}">
+        <div class="item-body tool-edit-row" style="padding:8px 0;">
+          <input type="text" value="${escapeHtml(p.titulo)}" placeholder="nome da etapa" onchange="updateProcessoField('${p.id}','titulo',this.value)">
+          <textarea placeholder="descrição do passo a passo" onchange="updateProcessoField('${p.id}','descricao',this.value)">${escapeHtml(p.descricao||'')}</textarea>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeProcesso('${p.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="saveProcessoEdit('${p.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="item processo-item ${p.concluido?'done':''}" data-id="${p.id}">
+      <span class="drag-handle">⠿</span>
+      <div class="check-box ${p.concluido?'checked':''}" onclick="toggleProcessoDone('${p.id}')" title="marcar como concluída"></div>
+      <div class="item-body">
+        <div class="item-text"><span class="processo-step-num">${idx+1}.</span> ${escapeHtml(p.titulo)}</div>
+        ${p.descricao ? `<div class="processo-desc">${escapeHtml(p.descricao)}</div>` : ''}
+      </div>
+      <button class="mining-edit-btn processo-edit-btn" onclick="toggleProcessoEdit('${p.id}', event)">✎</button>
+      <button class="del-btn" onclick="removeProcesso('${p.id}')">✕</button>
+    </div>
+  `;}).join('');
+}
 function cycleTaskTag(id){
   const item = state.tasks.find(t=>t.id===id);
   if(!item) return;
@@ -2080,7 +2253,12 @@ function cycleTaskTag(id){
   item.tag = cycle[(i+1)%cycle.length];
   saveState(); render();
 }
-function removeTask(id){ state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render(); }
+function removeTask(id){
+  openConfirmModal('Tem certeza que deseja excluir esta tarefa? Esta ação não poderá ser desfeita.', ()=>{
+    state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render();
+    showToast('Tarefa excluída.');
+  });
+}
 function addTask(priority){
   const inputId = priority==='urgente' ? 'urgentInput' : 'structuralInput';
   const input = document.getElementById(inputId);
@@ -2113,9 +2291,12 @@ function cycleSimple(containerId,id){
   saveState(); render();
 }
 function removeSimple(containerId,id){
-  const {key} = simpleMap[containerId];
-  state[key] = state[key].filter(i=>i.id!==id);
-  saveState(); render();
+  openConfirmModal('Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.', ()=>{
+    const {key} = simpleMap[containerId];
+    state[key] = state[key].filter(i=>i.id!==id);
+    saveState(); render();
+    showToast('Item excluído.');
+  });
 }
 function addInfra(){
   const input = document.getElementById('infraInput');
@@ -2181,7 +2362,12 @@ function addManager(){
   toggleNewManagerForm(false);
   showToast('Gerente adicionado.');
 }
-function removeManager(id){ state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers(); }
+function removeManager(id){
+  openConfirmModal('Tem certeza que deseja excluir este gerente de conta? Esta ação não poderá ser desfeita.', ()=>{
+    state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers();
+    showToast('Gerente excluído.');
+  });
+}
 
 /* ---------- ATIVOS ---------- */
 function toggleNewAssetForm(show){
@@ -2204,7 +2390,12 @@ function addAsset(){
   toggleNewAssetForm(false);
   showToast('Ativo cadastrado.');
 }
-function removeAsset(id){ state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets(); }
+function removeAsset(id){
+  openConfirmModal('Tem certeza que deseja excluir este ativo? Esta ação não poderá ser desfeita.', ()=>{
+    state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets();
+    showToast('Ativo excluído.');
+  });
+}
 
 /* ---------- PLANEJAMENTO ---------- */
 const WEEK_DAYS = [
@@ -2257,8 +2448,11 @@ function togglePlannerItem(dayKey, id){
   saveState(); renderPlanner();
 }
 function removePlannerItem(dayKey, id){
-  state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
-  saveState(); renderPlanner();
+  openConfirmModal('Tem certeza que deseja excluir este item do planejamento? Esta ação não poderá ser desfeita.', ()=>{
+    state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
+    saveState(); renderPlanner();
+    showToast('Item excluído.');
+  });
 }
 
 /* ---------- NÚMEROS DE RECUPERAÇÃO ---------- */
@@ -2282,7 +2476,12 @@ function addPhone(){
   numero.value=''; document.getElementById('phoneProduto').value='';
   saveState(); renderPhones();
 }
-function removePhone(id){ state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones(); }
+function removePhone(id){
+  openConfirmModal('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{
+    state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones();
+    showToast('Número excluído.');
+  });
+}
 
 /* ---------- PRODUTOS (funil de mensagens) ---------- */
 function renderProductSelect(){
@@ -2333,10 +2532,13 @@ function addFunnelLink(){
   saveState(); renderProducts();
 }
 function removeFunnelLink(id){
-  const product = currentProduct();
-  if(!product) return;
-  product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir este link? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
+    saveState(); renderProducts();
+    showToast('Link excluído.');
+  });
 }
 function reorderFunnelLinks(ids){
   const product = currentProduct();
@@ -2377,10 +2579,13 @@ function addStep(type){
   saveState(); renderProducts();
 }
 function removeStep(type, id){
-  const product = currentProduct();
-  if(!product) return;
-  product[type] = product[type].filter(s=>s.id!==id);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir esta mensagem/etapa? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    product[type] = product[type].filter(s=>s.id!==id);
+    saveState(); renderProducts();
+    showToast('Etapa excluída.');
+  });
 }
 function reorderProductSteps(type, ids){
   const product = currentProduct();
@@ -2413,12 +2618,15 @@ function addVariation(type, stepId){
   saveState(); renderProducts();
 }
 function removeVariation(type, stepId, varId){
-  const product = currentProduct();
-  if(!product) return;
-  const step = product[type].find(s=>s.id===stepId);
-  if(!step) return;
-  step.variations = step.variations.filter(v=>v.id!==varId);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir esta variação de mensagem? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    const step = product[type].find(s=>s.id===stepId);
+    if(!step) return;
+    step.variations = step.variations.filter(v=>v.id!==varId);
+    saveState(); renderProducts();
+    showToast('Variação excluída.');
+  });
 }
 function updateVariationText(type, stepId, varId, value){
   const product = currentProduct();
@@ -2507,22 +2715,27 @@ function toggleNewVideoForm(show){
   if(show) document.getElementById('videoTitulo').focus();
   else{
     document.getElementById('videoTitulo').value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
+    document.getElementById('videoThumbnail').value=''; document.getElementById('videoDescricao').value='';
   }
 }
 function addVideo(){
   const titulo = document.getElementById('videoTitulo');
   const url = document.getElementById('videoUrl').value;
   const nota = document.getElementById('videoNota').value;
+  const thumbnail = document.getElementById('videoThumbnail') ? document.getElementById('videoThumbnail').value.trim() : '';
   const descricao = document.getElementById('videoDescricao') ? document.getElementById('videoDescricao').value.trim() : '';
   if(!titulo.value.trim() || !url.trim()) return;
-  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, descricao});
+  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, thumbnail, descricao});
   saveState(); renderVideos();
   toggleNewVideoForm(false);
   showToast('Vídeo adicionado.');
 }
 function removeVideo(id){
-  state.videos = state.videos.filter(v=>v.id!==id);
-  saveState(); renderVideos();
+  openConfirmModal('Tem certeza que deseja excluir este conteúdo? Esta ação não poderá ser desfeita.', ()=>{
+    state.videos = state.videos.filter(v=>v.id!==id);
+    saveState(); renderVideos();
+    showToast('Conteúdo excluído.');
+  });
 }
 const PLATFORM_ICONS = {
   youtube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M10.5 9.5v5l4.5-2.5-4.5-2.5z" fill="currentColor" stroke="none"/></svg>',
@@ -2554,15 +2767,20 @@ function renderVideos(){
   if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
   el.innerHTML = state.videos.map(v=>{
     const platform = detectVideoPlatform(v.url);
+    const iconHtml = v.thumbnail
+      ? `<img src="${escapeHtml(v.thumbnail)}" alt="" class="video-thumb-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+         <span class="video-platform-ico ${platform}" style="display:none;">${PLATFORM_ICONS[platform]}</span>`
+      : `<span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>`;
     if(videoEditingId===v.id){
       return `
       <div class="video-row video-row-editing" data-id="${v.id}">
-        <span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>
+        ${iconHtml}
         <div class="video-row-body tool-edit-row">
           <input type="text" value="${escapeHtml(v.titulo)}" placeholder="título" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','titulo',this.value)">
           <input type="text" value="${escapeHtml(v.url)}" placeholder="link" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','url',this.value)">
           <input type="text" value="${escapeHtml(v.nota||'')}" placeholder="nota curta" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','nota',this.value)">
-          <textarea placeholder="descrição completa" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
+          <input type="text" value="${escapeHtml(v.thumbnail||'')}" placeholder="link da thumbnail (opcional)" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','thumbnail',this.value)">
+          <textarea placeholder="descrição" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="event.stopPropagation();removeVideo('${v.id}')">✕ excluir</button>
             <button class="mining-save-btn" onclick="saveVideoEdit('${v.id}', event)"><span class="ico">✓</span> Concluir edição</button>
@@ -2574,14 +2792,11 @@ function renderVideos(){
     return `
     <div class="video-row" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
       <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
-      <span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>
+      ${iconHtml}
       <div class="video-row-body">
         <div class="video-title">${escapeHtml(v.titulo)}</div>
         ${v.nota ? `<div class="video-meta"><span class="video-nota">${escapeHtml(v.nota)}</span></div>` : ''}
-        ${hasDesc ? `
-          <button class="video-desc-toggle" onclick="event.stopPropagation();toggleVideoDesc('${v.id}', event)">▾ descrição</button>
-          <div class="video-desc-full" id="video-desc-${v.id}">${escapeHtml(v.descricao)}</div>
-        ` : ''}
+        ${hasDesc ? `<div class="video-desc-full">${escapeHtml(v.descricao)}</div>` : ''}
       </div>
       <button class="video-edit-ico" onclick="toggleVideoEdit('${v.id}', event)" title="editar">✎</button>
       <span class="video-open-ico">→</span>
@@ -2626,8 +2841,11 @@ function addTool(){
   showToast('Ferramenta salva.');
 }
 function removeTool(id){
-  state.tools = state.tools.filter(t=>t.id!==id);
-  saveState(); renderTools();
+  openConfirmModal('Tem certeza que deseja excluir esta ferramenta? Esta ação não poderá ser desfeita.', ()=>{
+    state.tools = state.tools.filter(t=>t.id!==id);
+    saveState(); renderTools();
+    showToast('Ferramenta excluída.');
+  });
 }
 let toolEditingId = null;
 function toggleToolEdit(id){
@@ -2647,7 +2865,7 @@ function renderTools(){
   el.innerHTML = state.tools.map(t=>{
     if(toolEditingId===t.id){
       return `
-      <div class="tool-card">
+      <div class="tool-card" data-id="${t.id}">
         <div class="tool-edit-row">
           <input type="text" value="${escapeHtml(t.nome)}" placeholder="nome" onchange="updateToolField('${t.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(t.categoria||'')}" placeholder="categoria" onchange="updateToolField('${t.id}','categoria',this.value)">
@@ -2670,9 +2888,10 @@ function renderTools(){
     }
     const TOOL_TYPE_LABELS = { extensao:'🧩 Extensão', aplicativo:'📱 Aplicativo', site:'🌐 Site' };
     return `
-    <div class="tool-card">
+    <div class="tool-card" data-id="${t.id}">
       <div class="tool-card-head">
-        <div class="tool-name">${escapeHtml(t.nome)}</div>
+        <span class="drag-handle">⠿</span>
+        <div class="tool-name" style="flex:1;">${escapeHtml(t.nome)}</div>
         <button class="mining-edit-btn" onclick="toggleToolEdit('${t.id}')">✎ editar</button>
       </div>
       <div class="tool-tags-row">
@@ -2709,8 +2928,11 @@ function addWarmupGroup(){
   showToast('Grupo adicionado com sucesso.');
 }
 function removeWarmupGroup(id){
-  state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
-  saveState(); renderWarmupGroups();
+  openConfirmModal('Tem certeza que deseja excluir este grupo? Esta ação não poderá ser desfeita.', ()=>{
+    state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
+    saveState(); renderWarmupGroups();
+    showToast('Grupo excluído.');
+  });
 }
 let warmupEditingId = null;
 function toggleWarmupEdit(id, ev){
@@ -2799,9 +3021,11 @@ function addMiningEntry(){
 function removeMiningEntry(id){
   const item = state.mining.find(m=>m.id===id);
   const nome = item ? item.nome : 'esta oferta';
-  if(!confirm(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`)) return;
-  state.mining = state.mining.filter(m=>m.id!==id);
-  saveState(); renderMining();
+  openConfirmModal(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`, ()=>{
+    state.mining = state.mining.filter(m=>m.id!==id);
+    saveState(); renderMining();
+    showToast('Oferta excluída.');
+  });
 }
 function updateMiningField(id, field, value){
   const item = state.mining.find(m=>m.id===id);
@@ -3030,18 +3254,16 @@ const EYE_CLOSED_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 function toggleHideValues(){
   const hidden = !document.body.classList.contains('hide-financials');
   document.body.classList.toggle('hide-financials', hidden);
-  document.getElementById('hideValuesIcon').innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
-  document.getElementById('hideValuesBtn').classList.toggle('active', hidden);
+  document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
+  document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
   try{ localStorage.setItem('laka_hide_values', hidden ? '1' : '0'); }catch(e){}
 }
 function applyHideValuesPreference(){
   let hidden = false;
   try{ hidden = localStorage.getItem('laka_hide_values') === '1'; }catch(e){}
   document.body.classList.toggle('hide-financials', hidden);
-  const icon = document.getElementById('hideValuesIcon');
-  const btn = document.getElementById('hideValuesBtn');
-  if(icon) icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
-  if(btn) btn.classList.toggle('active', hidden);
+  document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
+  document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
 const TAB_NAMES = ['home','finance','products','mining','projects','tools','content','warmup'];
 function switchTab(tab){
@@ -3170,7 +3392,12 @@ function addCost(){
   closeCostAddForm();
   showToast('Custo adicionado.');
 }
-function removeCost(id){ state.costs = state.costs.filter(c=>c.id!==id); saveState(); render(); }
+function removeCost(id){
+  openConfirmModal('Tem certeza que deseja excluir este custo? Esta ação não poderá ser desfeita.', ()=>{
+    state.costs = state.costs.filter(c=>c.id!==id); saveState(); render();
+    showToast('Custo excluído.');
+  });
+}
 
 /* ---------- FINANCEIRO POR MÊS (estilo planilha) ---------- */
 const MONTH_NAMES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -3374,10 +3601,11 @@ function renderLogs(){
 function removeLog(id){
   const l = state.logs.find(l=>l.id===id);
   const preview = l ? (l.text.length>40 ? l.text.slice(0,40)+'…' : l.text) : 'este registro';
-  if(!confirm(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`)) return;
-  state.logs = state.logs.filter(l=>l.id!==id);
-  saveState(); renderLogs();
-  showToast('Registro excluído.');
+  openConfirmModal(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`, ()=>{
+    state.logs = state.logs.filter(l=>l.id!==id);
+    saveState(); renderLogs();
+    showToast('Registro excluído.');
+  });
 }
 function addLog(){
   const input = document.getElementById('logInput');
@@ -3538,10 +3766,12 @@ function removeProject(id, ev){
   if(ev) ev.stopPropagation();
   const p = state.projects.find(p=>p.id===id);
   if(!p) return;
-  if(!confirm(`Tem certeza que quer excluir o projeto "${p.nome}" e todo o histórico de versões dele? Essa ação não pode ser desfeita.`)) return;
-  state.projects = state.projects.filter(p=>p.id!==id);
-  if(state.currentProjectId===id) state.currentProjectId = null;
-  saveState(); renderProjects();
+  openConfirmModal(`Tem certeza que quer excluir o projeto "${p.nome}" e todo o histórico de versões dele? Essa ação não pode ser desfeita.`, ()=>{
+    state.projects = state.projects.filter(p=>p.id!==id);
+    if(state.currentProjectId===id) state.currentProjectId = null;
+    saveState(); renderProjects();
+    showToast('Projeto excluído.');
+  });
 }
 function openProjectDetail(id){
   state.currentProjectId = id;
@@ -3687,10 +3917,13 @@ function addProjectResource(){
   showToast('Recurso adicionado.');
 }
 function removeProjectResource(resId){
-  const p = currentProject();
-  if(!p) return;
-  p.resources = p.resources.filter(r=>r.id!==resId);
-  saveState(); renderProjects();
+  openConfirmModal('Tem certeza que deseja excluir este recurso? Esta ação não poderá ser desfeita.', ()=>{
+    const p = currentProject();
+    if(!p) return;
+    p.resources = p.resources.filter(r=>r.id!==resId);
+    saveState(); renderProjects();
+    showToast('Recurso excluído.');
+  });
 }
 const PROJECT_STATUS_LABELS = { desenvolvimento:'Em desenvolvimento', pausado:'Pausado', finalizado:'Finalizado' };
 const PROJECT_RESOURCE_ICONS = {
@@ -3904,12 +4137,13 @@ function reorderArray(key, ids){
 }
 function setupDragHandlers(){
   attachSortable('urgentList', reorderTasksGroup);
-  attachSortable('structuralList', reorderTasksGroup);
+  attachSortable('processosList', ids=>reorderArray('processos', ids));
   attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
   attachSortable('miningList', ids=>reorderArray('mining', ids));
   attachSortable('videosList', ids=>reorderArray('videos', ids));
+  attachSortable('toolsList', ids=>reorderArray('tools', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
