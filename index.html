@@ -139,20 +139,15 @@
     filter:blur(7px);user-select:none;transition:filter .15s;
   }
   body.hide-financials .today-stat .trend{filter:blur(4px);user-select:none;}
-  body.hide-financials .pstat .v,
   body.hide-financials .fin-num,
   body.hide-financials .msum .v,
-  body.hide-financials .gateway-chip,
-  body.hide-financials #costTotal,
-  body.hide-financials .cost-amount,
-  body.hide-financials .cost-computed,
-  body.hide-financials .cost-row input[type=number]{
+  body.hide-financials .pstat .v,
+  body.hide-financials #desempenhoMesChart,
+  body.hide-financials .chart-legend,
+  body.hide-financials .panel-total{
     filter:blur(7px);user-select:none;transition:filter .15s;
   }
-  body.hide-financials .fin-chart-wrap,
-  body.hide-financials #desempenhoMesChart{
-    filter:blur(9px);user-select:none;pointer-events:none;transition:filter .15s;
-  }
+  body.hide-financials .day-cell-input{pointer-events:none;}
   .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
   @media(max-width:800px){.today-stats{grid-template-columns:1fr 1fr;}}
   .today-stat{background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:12px 14px;}
@@ -340,6 +335,11 @@
   .task-tag.bloqueada{color:var(--urgent);background:rgba(255,77,109,.15);}
   .item-body{flex:1;min-width:0;}
   .item-text{font-size:13.5px;line-height:1.4;word-break:break-word;}
+  .processo-step-num{color:var(--blue-bright);font-weight:700;}
+  .processo-desc{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap;}
+  .item.done .processo-desc{opacity:0.7;}
+  .processo-edit-btn{background:none;border:none;color:var(--muted2);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;transition:color .15s;}
+  .processo-edit-btn:hover{color:var(--blue-bright);}
   .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
   .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
   .del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:2px 6px;flex-shrink:0;}
@@ -427,10 +427,8 @@
     transition:border-color .15s, background .15s;
   }
   input[type=text]:focus, input[type=number]:focus, input[type=date]:focus, select:focus, textarea:focus{
-    outline:none;border-color:var(--blue);background:var(--bg);box-shadow:0 0 0 3px var(--blue-soft);
+    outline:none;border-color:var(--blue);background:var(--bg);
   }
-  button{transition:transform .12s ease, opacity .12s ease, background .15s, border-color .15s, box-shadow .15s;}
-  button:active{transform:scale(0.97);opacity:0.85;}
   input[type=text]{flex:1;min-width:120px;}
   input[type=number]{width:100px;}
   input[type=date]{width:140px;}
@@ -619,15 +617,13 @@
   .video-row:hover{border-color:var(--blue);background:var(--surface3);}
   .video-row.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
   .video-row .drag-handle{flex-shrink:0;color:var(--muted2);cursor:grab;padding:2px;}
-  .video-desc-toggle{
-    background:none;border:none;color:var(--blue-bright);font-size:10.5px;cursor:pointer;padding:2px 0;
-    margin-top:2px;font-family:var(--mono);
-  }
   .video-desc-full{
-    display:none;font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
+    font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
     padding:8px 10px;background:var(--bg);border-radius:8px;white-space:pre-wrap;
   }
-  .video-desc-full.open{display:block;}
+  .video-thumb-img{
+    flex-shrink:0;width:32px;height:32px;border-radius:9px;object-fit:cover;background:var(--bg);
+  }
   .empty-block{text-align:center;padding:44px 20px;}
   .empty-block-icon{font-size:30px;margin-bottom:10px;opacity:.65;}
   .empty-block-title{font-family:var(--display);font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px;}
@@ -637,7 +633,6 @@
     background:var(--surface3);border:1px solid var(--border-strong);color:var(--blue-bright);
   }
   .video-platform-ico svg{width:16px;height:16px;}
-  .video-thumb-sm{flex-shrink:0;width:32px;height:32px;border-radius:9px;object-fit:cover;background:var(--surface3);border:1px solid var(--border-strong);}
   .video-row-body{flex:1;min-width:0;}
   .video-title{font-family:var(--display);font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .video-meta{display:flex;align-items:center;gap:6px;margin-top:2px;}
@@ -666,32 +661,6 @@
   .mining-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:2px;}
   .mining-edit-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10.5px;border-radius:6px;padding:4px 9px;cursor:pointer;}
   .mining-edit-btn:hover{border-color:var(--blue);color:var(--blue);}
-
-  /* ---------- PROCESSOS DA EMPRESA ---------- */
-  .process-stage{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;transition:border-color .15s;}
-  .process-stage:hover{border-color:var(--border-strong);}
-  .process-stage.dragging{opacity:1;border-color:var(--blue-bright);position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
-  .process-stage-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
-  .process-stage-name{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:14.5px;}
-  .process-stage-name-input{
-    flex:1;min-width:120px;background:var(--surface);border:1px solid var(--blue);border-radius:8px;
-    padding:6px 10px;color:var(--text);font-family:var(--display);font-weight:700;font-size:14px;
-  }
-  .process-stage-progress{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-  .process-stage-bar{width:70px;height:6px;background:var(--surface3);border-radius:4px;overflow:hidden;flex-shrink:0;}
-  .process-stage-bar-fill{height:100%;background:var(--green);border-radius:4px;transition:width .25s ease;}
-  .process-stage-pct{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap;}
-  .process-stage-items{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
-  .process-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;background:var(--surface);border:1px solid var(--border);transition:border-color .15s;}
-  .process-item:hover{border-color:var(--border-strong);}
-  .process-item.dragging{opacity:1;border-color:var(--blue-bright);position:relative;z-index:40;box-shadow:0 8px 20px -4px rgba(0,0,0,0.45);}
-  .process-item-text{flex:1;min-width:0;font-size:12.5px;line-height:1.4;}
-  .process-item-text.done{color:var(--muted);text-decoration:line-through;}
-  .process-item-add-row{margin-top:0;}
-  @media(max-width:640px){
-    .process-stage-head{gap:8px;}
-    .process-stage-progress{order:3;width:100%;}
-  }
   .mining-save-btn{
     display:flex;align-items:center;gap:8px;justify-content:center;
     background:linear-gradient(135deg,var(--green),#16a34a);border:none;color:#04140a;
@@ -813,11 +782,32 @@
   .modal-overlay{
     display:none;position:fixed;inset:0;background:rgba(2,4,8,0.72);backdrop-filter:blur(3px);
     z-index:100;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .18s ease;
   }
+  .modal-overlay.open{display:flex;}
   .modal-box{
     background:var(--surface2);border:1px solid var(--border-strong);border-radius:var(--radius-lg);
     padding:22px;max-width:420px;width:100%;box-shadow:var(--shadow-md);
+    animation:modalPopIn .22s cubic-bezier(.22,.85,.32,1);
   }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes modalPopIn{
+    from{opacity:0;transform:translateY(14px) scale(.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .confirm-modal-msg{font-size:13.5px;color:var(--muted);line-height:1.6;margin:2px 0 18px 0;}
+  .confirm-modal-actions{display:flex;gap:10px;}
+  .confirm-modal-actions .btn-cancel{
+    flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;
+    padding:11px 16px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;
+  }
+  .confirm-modal-actions .btn-cancel:hover{border-color:var(--border-strong);color:var(--text);}
+  .confirm-modal-actions .btn-danger{
+    flex:1;background:linear-gradient(135deg,var(--urgent),#c62f45);border:none;color:#fff;
+    border-radius:10px;padding:11px 16px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;
+    box-shadow:0 6px 16px -4px rgba(240,69,92,0.5);transition:transform .15s,box-shadow .15s;
+  }
+  .confirm-modal-actions .btn-danger:hover{transform:translateY(-1px);box-shadow:0 8px 20px -4px rgba(240,69,92,0.65);}
   .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
   .modal-head h3{margin:0;font-family:var(--display);font-size:16px;font-weight:700;}
   .modal-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
@@ -832,32 +822,11 @@
   .gateway-opt:hover{border-color:var(--blue);}
   .gateway-opt.selected{border-color:var(--green);background:var(--green-soft);color:var(--green);font-weight:700;}
 
-  /* ---------- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO ---------- */
-  .confirm-delete-box{max-width:360px;text-align:center;padding:26px 24px 22px;animation:confirmPop .18s cubic-bezier(.34,1.56,.64,1);}
-  @keyframes confirmPop{from{opacity:0;transform:scale(.94);}to{opacity:1;transform:scale(1);}}
-  .confirm-delete-icon{
-    width:44px;height:44px;border-radius:50%;background:var(--urgent-soft);color:var(--urgent);
-    display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 14px;
-  }
-  .confirm-delete-title{font-family:var(--display);font-size:16px;font-weight:800;margin:0 0 8px;}
-  .confirm-delete-msg{margin:0 0 20px;font-size:12.5px;line-height:1.5;}
-  .confirm-delete-actions{display:flex;gap:10px;}
-  .confirm-delete-cancel, .confirm-delete-btn{
-    flex:1;border-radius:10px;padding:11px 14px;font-family:var(--sans);font-size:13px;font-weight:700;
-    cursor:pointer;transition:background .15s,border-color .15s,transform .12s;
-  }
-  .confirm-delete-cancel{background:var(--surface3);border:1px solid var(--border-strong);color:var(--text);}
-  .confirm-delete-cancel:hover{border-color:var(--muted);}
-  .confirm-delete-btn{background:var(--urgent);border:1px solid var(--urgent);color:#fff;}
-  .confirm-delete-btn:hover{background:#dc2626;transform:translateY(-1px);}
-
   /* ---------- FERRAMENTAS ---------- */
   .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
   .tool-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:border-color .15s, transform .15s;}
   .tool-card:hover{border-color:var(--blue);transform:translateY(-2px);}
-  .tool-card-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;}
-  .tool-card-head .tool-name{flex:1;min-width:0;}
-  .tool-card-head .drag-handle{margin-top:1px;}
+  .tool-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
   .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;}
   .tool-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
@@ -1100,8 +1069,8 @@
       <div class="today-head">
         <div class="eyebrow">tráfego direto • infoprodutos</div>
         <div style="display:flex;align-items:center;gap:10px;">
-          <button class="hide-values-btn" onclick="toggleHideValues()" title="ocultar valores financeiros">
-            <span class="eye-icon">
+          <button class="hide-values-btn" id="hideValuesBtn" onclick="toggleHideValues()" title="ocultar valores financeiros">
+            <span id="hideValuesIcon" class="eye-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
               </svg>
@@ -1129,7 +1098,7 @@
       <button class="goto-btn" onclick="switchTab('finance')">ver financeiro →</button>
     </div>
 
-    <div class="row-two" id="urgentPanel">
+    <div class="row-three" id="urgentPanel">
       <div class="panel urgent-panel">
         <div class="panel-head"><h2><span class="urgent-panel-icon" aria-hidden="true">⚠</span>Urgências</h2></div>
         <div id="urgentList"></div>
@@ -1151,20 +1120,22 @@
           <button class="add" onclick="addOffer()">+ add</button>
         </div>
       </div>
-    </div>
-
-    <div class="panel full" id="processosPanel">
-      <div class="panel-head">
-        <h2><span class="sub">o passo a passo que sigo pra validar uma oferta e escalar — documentado em etapas</span>🏗️ Processos da Empresa</h2>
-        <button class="add-tool-btn" id="newProcessStageToggleBtn" onclick="toggleNewProcessStageForm(true)">+ Nova etapa</button>
-      </div>
-      <div id="processStagesWrap"></div>
-      <div class="add-form" id="newProcessStageRow">
-      <div class="add-row">
-        <input type="text" id="processStageNome" placeholder="nome da etapa (ex: Validação da oferta)">
-        <button class="add" onclick="addProcessStage()">+ criar etapa</button>
-        <button class="add-cost-cancel-btn" onclick="toggleNewProcessStageForm(false)">cancelar</button>
-      </div>
+      <div class="panel" id="processosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">documente os passos pra validar e escalar uma oferta</span>Processos da Empresa</h2>
+          <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
+        </div>
+        <div id="processosList"></div>
+        <div class="add-form collapsible-form" id="newProcessoRow">
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="processoTitulo" placeholder="nome da etapa (ex: Validar oferta com 3 dias de anúncio)">
+            <textarea id="processoDescricao" placeholder="descreva o passo a passo dessa etapa..."></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar etapa</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewProcessoForm(false)">cancelar</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1272,8 +1243,8 @@
         <div class="panel full">
           <div class="panel-head">
             <h2>Financeiro</h2>
-            <button class="hide-values-btn" onclick="toggleHideValues()" title="ocultar valores financeiros">
-              <span class="eye-icon">
+            <button class="hide-values-btn" id="hideValuesBtnFinance" onclick="toggleHideValues()" title="ocultar valores financeiros">
+              <span id="hideValuesIconFinance" class="eye-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                 </svg>
@@ -1484,9 +1455,9 @@
           <input type="text" id="videoNota" placeholder="nota curta (opcional)">
         </div>
         <div class="add-row" style="margin-top:8px;">
-          <input type="text" id="videoThumbnail" placeholder="link da thumbnail (opcional — imagem de capa)">
+          <input type="text" id="videoThumbnail" placeholder="link da thumbnail/imagem de capa (opcional)">
         </div>
-        <textarea id="videoDescricao" placeholder="descrição completa (opcional) — fica escondida até você clicar pra expandir" style="margin-top:8px;"></textarea>
+        <textarea id="videoDescricao" placeholder="descrição (opcional) — fica visível no card" style="margin-top:8px;"></textarea>
         <div class="add-row" style="margin-top:8px;">
           <button class="add" onclick="addVideo()">+ add</button>
           <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
@@ -1687,14 +1658,16 @@
   </div>
 </div>
 
-<div class="modal-overlay confirm-delete-overlay" id="confirmDeleteModal" onclick="if(event.target===this) closeConfirmDelete()">
-  <div class="modal-box confirm-delete-box">
-    <div class="confirm-delete-icon">⚠</div>
-    <h3 class="confirm-delete-title" id="confirmDeleteTitle">Confirmar exclusão</h3>
-    <p class="modal-sub confirm-delete-msg" id="confirmDeleteMsg">Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.</p>
-    <div class="confirm-delete-actions">
-      <button class="confirm-delete-cancel" onclick="closeConfirmDelete()">Cancelar</button>
-      <button class="confirm-delete-btn" onclick="runConfirmedDelete()">Excluir</button>
+<div class="modal-overlay" id="confirmModal" onclick="if(event.target===this) closeConfirmModal()">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-head">
+      <h3 id="confirmModalTitle">Excluir item</h3>
+      <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+    </div>
+    <p class="confirm-modal-msg" id="confirmModalMsg">Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.</p>
+    <div class="confirm-modal-actions">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="btn-danger" onclick="confirmModalProceed()">Excluir</button>
     </div>
   </div>
 </div>
@@ -1784,6 +1757,25 @@ function showToast(message){
     el.classList.remove('show');
     setTimeout(()=>el.remove(), 300);
   }, 2800);
+}
+
+/* ---------- CONFIRMAÇÃO DE EXCLUSÃO (padrão em todo o app) ---------- */
+let _confirmModalAction = null;
+function openConfirmModal(message, action, opts){
+  opts = opts || {};
+  document.getElementById('confirmModalTitle').innerText = opts.title || 'Excluir item';
+  document.getElementById('confirmModalMsg').innerText = message || 'Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.';
+  _confirmModalAction = action;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirmModal(){
+  document.getElementById('confirmModal').classList.remove('open');
+  _confirmModalAction = null;
+}
+function confirmModalProceed(){
+  const action = _confirmModalAction;
+  closeConfirmModal();
+  if(action) action();
 }
 
 function renderFinanceChart(containerId, series, totalDays, opts){
@@ -2060,7 +2052,11 @@ async function loadState(){
       if(!state.customGateways) state.customGateways = [];
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
-      if(!state.processos) state.processos = defaultProcessos();
+      if(!state.processos){
+        state.processos = (state.tasks||[]).filter(t=>t.priority==='estrutural').map(t=>({
+          id: uid(), titulo: t.text || '', descricao: '', concluido: t.status==='done'
+        }));
+      }
       state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
@@ -2140,6 +2136,7 @@ function nextStatus(s, cycle){ const i=cycle.indexOf(s); return cycle[(i+1)%cycl
 
 function renderTasks(){
   renderTaskGroup('urgentList', state.tasks.filter(t=>t.priority==='urgente'));
+  renderProcessos();
 }
 function renderTaskGroup(containerId, arr){
   const el = document.getElementById(containerId);
@@ -2165,6 +2162,89 @@ function toggleTaskDone(id){
   item.status = item.status==='done' ? 'pending' : 'done';
   saveState(); render();
 }
+
+/* ---------- PROCESSOS DA EMPRESA ---------- */
+function toggleNewProcessoForm(show){
+  document.getElementById('newProcessoRow').classList.toggle('open', show);
+  document.getElementById('newProcessoToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('processosPanel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('processoTitulo').focus();
+  else{
+    document.getElementById('processoTitulo').value = '';
+    document.getElementById('processoDescricao').value = '';
+  }
+}
+function addProcesso(){
+  const titulo = document.getElementById('processoTitulo');
+  const descricao = document.getElementById('processoDescricao').value.trim();
+  if(!titulo.value.trim()) return;
+  state.processos.push({id:uid(), titulo:titulo.value.trim(), descricao, concluido:false});
+  saveState(); renderProcessos();
+  toggleNewProcessoForm(false);
+  showToast('Etapa adicionada.');
+}
+function toggleProcessoDone(id){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p.concluido = !p.concluido;
+  saveState(); renderProcessos();
+}
+let processoEditingId = null;
+function toggleProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = (processoEditingId===id) ? null : id;
+  renderProcessos();
+}
+function updateProcessoField(id, field, value){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p[field] = value;
+  saveState();
+}
+function saveProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = null;
+  saveState(); renderProcessos();
+  showToast('Etapa atualizada.');
+}
+function removeProcesso(id){
+  openConfirmModal('Tem certeza que deseja excluir esta etapa do processo? Esta ação não poderá ser desfeita.', ()=>{
+    state.processos = state.processos.filter(p=>p.id!==id);
+    saveState(); renderProcessos();
+    showToast('Etapa excluída.');
+  });
+}
+function renderProcessos(){
+  const el = document.getElementById('processosList');
+  if(!el) return;
+  if(state.processos.length===0){ el.innerHTML = '<div class="empty">nenhuma etapa cadastrada ainda — documente o passo a passo pra validar e escalar uma oferta.</div>'; return; }
+  el.innerHTML = state.processos.map((p,idx)=>{
+    if(processoEditingId===p.id){
+      return `
+      <div class="item" data-id="${p.id}">
+        <div class="item-body tool-edit-row" style="padding:8px 0;">
+          <input type="text" value="${escapeHtml(p.titulo)}" placeholder="nome da etapa" onchange="updateProcessoField('${p.id}','titulo',this.value)">
+          <textarea placeholder="descrição do passo a passo" onchange="updateProcessoField('${p.id}','descricao',this.value)">${escapeHtml(p.descricao||'')}</textarea>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeProcesso('${p.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="saveProcessoEdit('${p.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="item processo-item ${p.concluido?'done':''}" data-id="${p.id}">
+      <span class="drag-handle">⠿</span>
+      <div class="check-box ${p.concluido?'checked':''}" onclick="toggleProcessoDone('${p.id}')" title="marcar como concluída"></div>
+      <div class="item-body">
+        <div class="item-text"><span class="processo-step-num">${idx+1}.</span> ${escapeHtml(p.titulo)}</div>
+        ${p.descricao ? `<div class="processo-desc">${escapeHtml(p.descricao)}</div>` : ''}
+      </div>
+      <button class="mining-edit-btn processo-edit-btn" onclick="toggleProcessoEdit('${p.id}', event)">✎</button>
+      <button class="del-btn" onclick="removeProcesso('${p.id}')">✕</button>
+    </div>
+  `;}).join('');
+}
 function cycleTaskTag(id){
   const item = state.tasks.find(t=>t.id===id);
   if(!item) return;
@@ -2173,154 +2253,18 @@ function cycleTaskTag(id){
   item.tag = cycle[(i+1)%cycle.length];
   saveState(); render();
 }
-function removeTask(id){ confirmDelete('Tem certeza que deseja excluir esta tarefa? Esta ação não poderá ser desfeita.', ()=>{ state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render(); showToast('Tarefa excluída.'); }); }
+function removeTask(id){
+  openConfirmModal('Tem certeza que deseja excluir esta tarefa? Esta ação não poderá ser desfeita.', ()=>{
+    state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render();
+    showToast('Tarefa excluída.');
+  });
+}
 function addTask(priority){
   const inputId = priority==='urgente' ? 'urgentInput' : 'structuralInput';
   const input = document.getElementById(inputId);
   if(!input.value.trim()) return;
   state.tasks.push({id:uid(), text:input.value.trim(), status:'pending', priority, tag:'none'});
   input.value=''; saveState(); render();
-}
-
-/* ---------- PROCESSOS DA EMPRESA ---------- */
-function defaultProcessos(){
-  const mk = (texto)=>({id:uid(), texto, done:false});
-  return [
-    { id:uid(), nome:'Mineração de Ofertas', itens:[
-      mk('Buscar 10+ concorrentes na biblioteca de anúncios'),
-      mk('Filtrar por tempo de anúncio ativo (30+ dias = validado)'),
-      mk('Anotar ticket, nicho e criativo principal na aba Mineração'),
-    ]},
-    { id:uid(), nome:'Validação da Oferta', itens:[
-      mk('Definir CPA máximo aceitável antes de rodar'),
-      mk('Rodar teste com orçamento mínimo por 3-5 dias'),
-      mk('Analisar CTR, CPM e taxa de conversão'),
-    ]},
-    { id:uid(), nome:'Estruturação da Campanha', itens:[
-      mk('Criar 3-5 variações de criativo'),
-      mk('Configurar pixel e eventos de conversão'),
-      mk('Definir públicos e posicionamentos'),
-    ]},
-    { id:uid(), nome:'Escala', itens:[
-      mk('Duplicar campanhas vencedoras'),
-      mk('Aumentar orçamento gradual (20-30%/dia)'),
-      mk('Monitorar fadiga de criativo'),
-    ]},
-    { id:uid(), nome:'Operação Contínua', itens:[
-      mk('Revisar métricas diariamente'),
-      mk('Trocar criativos fadigados'),
-      mk('Registrar aprendizados no Diário da Operação'),
-    ]},
-  ];
-}
-let processStageEditingId = null;
-function renderProcessos(){
-  const wrap = document.getElementById('processStagesWrap');
-  if(!wrap) return;
-  if(!state.processos || state.processos.length===0){
-    wrap.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🏗️</div><div class="empty-block-title">Nenhuma etapa criada ainda</div><div class="empty-block-sub">Use o botão "+ Nova etapa" acima pra começar a documentar seus processos.</div></div>';
-    return;
-  }
-  wrap.innerHTML = state.processos.map(stage=>{
-    const total = stage.itens.length;
-    const done = stage.itens.filter(i=>i.done).length;
-    const pct = total>0 ? Math.round(done/total*100) : 0;
-    const isEditing = processStageEditingId===stage.id;
-    return `
-    <div class="process-stage" data-id="${stage.id}">
-      <div class="process-stage-head">
-        <span class="drag-handle">⠿</span>
-        ${isEditing
-          ? `<input type="text" class="process-stage-name-input" value="${escapeHtml(stage.nome)}" onchange="renameProcessStage('${stage.id}',this.value)" onblur="processStageEditingId=null;renderProcessos();">`
-          : `<div class="process-stage-name">${escapeHtml(stage.nome)}</div>`
-        }
-        <div class="process-stage-progress">
-          <div class="process-stage-bar"><div class="process-stage-bar-fill" style="width:${pct}%;"></div></div>
-          <span class="process-stage-pct">${done}/${total}</span>
-        </div>
-        <button class="mining-edit-btn" onclick="processStageEditingId='${stage.id}';renderProcessos();document.querySelector('.process-stage-name-input')?.focus();">✎</button>
-        <button class="del-btn" onclick="removeProcessStage('${stage.id}')">✕</button>
-      </div>
-      <div class="process-stage-items" id="processItems-${stage.id}">
-        ${stage.itens.map(item=>`
-          <div class="process-item" data-id="${item.id}">
-            <span class="drag-handle">⠿</span>
-            <div class="check-box ${item.done?'checked':''}" onclick="toggleProcessItem('${stage.id}','${item.id}')"></div>
-            <div class="process-item-text ${item.done?'done':''}">${escapeHtml(item.texto)}</div>
-            <button class="del-btn" onclick="removeProcessItem('${stage.id}','${item.id}')">✕</button>
-          </div>
-        `).join('')}
-      </div>
-      <div class="add-row process-item-add-row">
-        <input type="text" id="processItemInput-${stage.id}" placeholder="novo passo dessa etapa..." onkeydown="if(event.key==='Enter')addProcessItem('${stage.id}')">
-        <button class="add" onclick="addProcessItem('${stage.id}')">+ add</button>
-      </div>
-    </div>`;
-  }).join('');
-  state.processos.forEach(stage=>{
-    attachSortable(`processItems-${stage.id}`, ids=>reorderProcessItems(stage.id, ids));
-  });
-}
-function toggleNewProcessStageForm(show){
-  document.getElementById('newProcessStageRow').classList.toggle('open', show);
-  document.getElementById('newProcessStageToggleBtn').style.display = show ? 'none' : 'inline-flex';
-  document.getElementById('processosPanel').classList.toggle('panel-editing', show);
-  if(show) document.getElementById('processStageNome').focus();
-  else document.getElementById('processStageNome').value = '';
-}
-function addProcessStage(){
-  const input = document.getElementById('processStageNome');
-  if(!input.value.trim()) return;
-  state.processos.push({id:uid(), nome:input.value.trim(), itens:[]});
-  saveState(); renderProcessos(); setupDragHandlers();
-  toggleNewProcessStageForm(false);
-  showToast('Etapa criada.');
-}
-function renameProcessStage(id, novoNome){
-  const stage = state.processos.find(s=>s.id===id);
-  if(!stage || !novoNome.trim()) return;
-  stage.nome = novoNome.trim();
-  saveState();
-}
-function removeProcessStage(id){
-  const stage = state.processos.find(s=>s.id===id);
-  if(!stage) return;
-  confirmDelete(`Tem certeza que deseja excluir a etapa "${stage.nome}" e todos os seus passos? Esta ação não poderá ser desfeita.`, ()=>{
-    state.processos = state.processos.filter(s=>s.id!==id);
-    saveState(); renderProcessos();
-    showToast('Etapa excluída.');
-  });
-}
-function addProcessItem(stageId){
-  const input = document.getElementById(`processItemInput-${stageId}`);
-  if(!input || !input.value.trim()) return;
-  const stage = state.processos.find(s=>s.id===stageId);
-  if(!stage) return;
-  stage.itens.push({id:uid(), texto:input.value.trim(), done:false});
-  saveState(); renderProcessos(); setupDragHandlers();
-}
-function toggleProcessItem(stageId, itemId){
-  const stage = state.processos.find(s=>s.id===stageId);
-  if(!stage) return;
-  const item = stage.itens.find(i=>i.id===itemId);
-  if(!item) return;
-  item.done = !item.done;
-  saveState(); renderProcessos(); setupDragHandlers();
-}
-function removeProcessItem(stageId, itemId){
-  const stage = state.processos.find(s=>s.id===stageId);
-  if(!stage) return;
-  confirmDelete('Tem certeza que deseja excluir este passo? Esta ação não poderá ser desfeita.', ()=>{
-    stage.itens = stage.itens.filter(i=>i.id!==itemId);
-    saveState(); renderProcessos(); setupDragHandlers();
-    showToast('Passo excluído.');
-  });
-}
-function reorderProcessItems(stageId, ids){
-  const stage = state.processos.find(s=>s.id===stageId);
-  if(!stage) return;
-  stage.itens = ids.map(id=>stage.itens.find(i=>i.id===id)).filter(Boolean);
-  saveState();
 }
 
 function renderSimpleList(containerId, arr, cycle){
@@ -2347,8 +2291,8 @@ function cycleSimple(containerId,id){
   saveState(); render();
 }
 function removeSimple(containerId,id){
-  const {key} = simpleMap[containerId];
-  confirmDelete('Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.', ()=>{
+    const {key} = simpleMap[containerId];
     state[key] = state[key].filter(i=>i.id!==id);
     saveState(); render();
     showToast('Item excluído.');
@@ -2418,7 +2362,12 @@ function addManager(){
   toggleNewManagerForm(false);
   showToast('Gerente adicionado.');
 }
-function removeManager(id){ confirmDelete('Tem certeza que deseja excluir este gerente? Esta ação não poderá ser desfeita.', ()=>{ state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers(); showToast('Gerente excluído.'); }); }
+function removeManager(id){
+  openConfirmModal('Tem certeza que deseja excluir este gerente de conta? Esta ação não poderá ser desfeita.', ()=>{
+    state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers();
+    showToast('Gerente excluído.');
+  });
+}
 
 /* ---------- ATIVOS ---------- */
 function toggleNewAssetForm(show){
@@ -2441,7 +2390,12 @@ function addAsset(){
   toggleNewAssetForm(false);
   showToast('Ativo cadastrado.');
 }
-function removeAsset(id){ confirmDelete('Tem certeza que deseja excluir este ativo? Esta ação não poderá ser desfeita.', ()=>{ state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets(); showToast('Ativo excluído.'); }); }
+function removeAsset(id){
+  openConfirmModal('Tem certeza que deseja excluir este ativo? Esta ação não poderá ser desfeita.', ()=>{
+    state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets();
+    showToast('Ativo excluído.');
+  });
+}
 
 /* ---------- PLANEJAMENTO ---------- */
 const WEEK_DAYS = [
@@ -2494,7 +2448,7 @@ function togglePlannerItem(dayKey, id){
   saveState(); renderPlanner();
 }
 function removePlannerItem(dayKey, id){
-  confirmDelete('Tem certeza que deseja excluir este item do planejamento? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir este item do planejamento? Esta ação não poderá ser desfeita.', ()=>{
     state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
     saveState(); renderPlanner();
     showToast('Item excluído.');
@@ -2522,7 +2476,12 @@ function addPhone(){
   numero.value=''; document.getElementById('phoneProduto').value='';
   saveState(); renderPhones();
 }
-function removePhone(id){ confirmDelete('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{ state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones(); showToast('Número excluído.'); }); }
+function removePhone(id){
+  openConfirmModal('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{
+    state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones();
+    showToast('Número excluído.');
+  });
+}
 
 /* ---------- PRODUTOS (funil de mensagens) ---------- */
 function renderProductSelect(){
@@ -2573,9 +2532,9 @@ function addFunnelLink(){
   saveState(); renderProducts();
 }
 function removeFunnelLink(id){
-  const product = currentProduct();
-  if(!product) return;
-  confirmDelete('Tem certeza que deseja excluir este link do funil? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir este link? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
     product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
     saveState(); renderProducts();
     showToast('Link excluído.');
@@ -2620,9 +2579,9 @@ function addStep(type){
   saveState(); renderProducts();
 }
 function removeStep(type, id){
-  const product = currentProduct();
-  if(!product) return;
-  confirmDelete('Tem certeza que deseja excluir esta etapa e todas as suas mensagens? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir esta mensagem/etapa? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
     product[type] = product[type].filter(s=>s.id!==id);
     saveState(); renderProducts();
     showToast('Etapa excluída.');
@@ -2659,14 +2618,14 @@ function addVariation(type, stepId){
   saveState(); renderProducts();
 }
 function removeVariation(type, stepId, varId){
-  const product = currentProduct();
-  if(!product) return;
-  const step = product[type].find(s=>s.id===stepId);
-  if(!step) return;
-  confirmDelete('Tem certeza que deseja excluir esta mensagem? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir esta variação de mensagem? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    const step = product[type].find(s=>s.id===stepId);
+    if(!step) return;
     step.variations = step.variations.filter(v=>v.id!==varId);
     saveState(); renderProducts();
-    showToast('Mensagem excluída.');
+    showToast('Variação excluída.');
   });
 }
 function updateVariationText(type, stepId, varId, value){
@@ -2756,24 +2715,23 @@ function toggleNewVideoForm(show){
   if(show) document.getElementById('videoTitulo').focus();
   else{
     document.getElementById('videoTitulo').value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
-    if(document.getElementById('videoThumbnail')) document.getElementById('videoThumbnail').value='';
-    if(document.getElementById('videoDescricao')) document.getElementById('videoDescricao').value='';
+    document.getElementById('videoThumbnail').value=''; document.getElementById('videoDescricao').value='';
   }
 }
 function addVideo(){
   const titulo = document.getElementById('videoTitulo');
   const url = document.getElementById('videoUrl').value;
   const nota = document.getElementById('videoNota').value;
-  const descricao = document.getElementById('videoDescricao') ? document.getElementById('videoDescricao').value.trim() : '';
   const thumbnail = document.getElementById('videoThumbnail') ? document.getElementById('videoThumbnail').value.trim() : '';
+  const descricao = document.getElementById('videoDescricao') ? document.getElementById('videoDescricao').value.trim() : '';
   if(!titulo.value.trim() || !url.trim()) return;
-  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, descricao, thumbnail});
+  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, thumbnail, descricao});
   saveState(); renderVideos();
   toggleNewVideoForm(false);
   showToast('Vídeo adicionado.');
 }
 function removeVideo(id){
-  confirmDelete('Tem certeza que deseja excluir este conteúdo? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir este conteúdo? Esta ação não poderá ser desfeita.', ()=>{
     state.videos = state.videos.filter(v=>v.id!==id);
     saveState(); renderVideos();
     showToast('Conteúdo excluído.');
@@ -2809,16 +2767,20 @@ function renderVideos(){
   if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
   el.innerHTML = state.videos.map(v=>{
     const platform = detectVideoPlatform(v.url);
+    const iconHtml = v.thumbnail
+      ? `<img src="${escapeHtml(v.thumbnail)}" alt="" class="video-thumb-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+         <span class="video-platform-ico ${platform}" style="display:none;">${PLATFORM_ICONS[platform]}</span>`
+      : `<span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>`;
     if(videoEditingId===v.id){
       return `
       <div class="video-row video-row-editing" data-id="${v.id}">
-        ${v.thumbnail ? `<img class="video-thumb-sm" src="${escapeHtml(v.thumbnail)}" alt="" onerror="this.style.display='none'">` : `<span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>`}
+        ${iconHtml}
         <div class="video-row-body tool-edit-row">
           <input type="text" value="${escapeHtml(v.titulo)}" placeholder="título" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','titulo',this.value)">
           <input type="text" value="${escapeHtml(v.url)}" placeholder="link" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','url',this.value)">
           <input type="text" value="${escapeHtml(v.nota||'')}" placeholder="nota curta" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','nota',this.value)">
           <input type="text" value="${escapeHtml(v.thumbnail||'')}" placeholder="link da thumbnail (opcional)" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','thumbnail',this.value)">
-          <textarea placeholder="descrição completa" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
+          <textarea placeholder="descrição" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="event.stopPropagation();removeVideo('${v.id}')">✕ excluir</button>
             <button class="mining-save-btn" onclick="saveVideoEdit('${v.id}', event)"><span class="ico">✓</span> Concluir edição</button>
@@ -2830,14 +2792,11 @@ function renderVideos(){
     return `
     <div class="video-row" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
       <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
-      ${v.thumbnail ? `<img class="video-thumb-sm" src="${escapeHtml(v.thumbnail)}" alt="" onerror="this.outerHTML='<span class=&quot;video-platform-ico ${platform}&quot;>${PLATFORM_ICONS[platform].replace(/"/g,'&quot;')}</span>'">` : `<span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>`}
+      ${iconHtml}
       <div class="video-row-body">
         <div class="video-title">${escapeHtml(v.titulo)}</div>
         ${v.nota ? `<div class="video-meta"><span class="video-nota">${escapeHtml(v.nota)}</span></div>` : ''}
-        ${hasDesc ? `
-          <button class="video-desc-toggle" onclick="event.stopPropagation();toggleVideoDesc('${v.id}', event)">▾ descrição</button>
-          <div class="video-desc-full" id="video-desc-${v.id}">${escapeHtml(v.descricao)}</div>
-        ` : ''}
+        ${hasDesc ? `<div class="video-desc-full">${escapeHtml(v.descricao)}</div>` : ''}
       </div>
       <button class="video-edit-ico" onclick="toggleVideoEdit('${v.id}', event)" title="editar">✎</button>
       <span class="video-open-ico">→</span>
@@ -2882,7 +2841,7 @@ function addTool(){
   showToast('Ferramenta salva.');
 }
 function removeTool(id){
-  confirmDelete('Tem certeza que deseja excluir esta ferramenta? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir esta ferramenta? Esta ação não poderá ser desfeita.', ()=>{
     state.tools = state.tools.filter(t=>t.id!==id);
     saveState(); renderTools();
     showToast('Ferramenta excluída.');
@@ -2932,7 +2891,7 @@ function renderTools(){
     <div class="tool-card" data-id="${t.id}">
       <div class="tool-card-head">
         <span class="drag-handle">⠿</span>
-        <div class="tool-name">${escapeHtml(t.nome)}</div>
+        <div class="tool-name" style="flex:1;">${escapeHtml(t.nome)}</div>
         <button class="mining-edit-btn" onclick="toggleToolEdit('${t.id}')">✎ editar</button>
       </div>
       <div class="tool-tags-row">
@@ -2969,7 +2928,7 @@ function addWarmupGroup(){
   showToast('Grupo adicionado com sucesso.');
 }
 function removeWarmupGroup(id){
-  confirmDelete('Tem certeza que deseja excluir este grupo? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir este grupo? Esta ação não poderá ser desfeita.', ()=>{
     state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
     saveState(); renderWarmupGroups();
     showToast('Grupo excluído.');
@@ -3062,7 +3021,7 @@ function addMiningEntry(){
 function removeMiningEntry(id){
   const item = state.mining.find(m=>m.id===id);
   const nome = item ? item.nome : 'esta oferta';
-  confirmDelete(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`, ()=>{
+  openConfirmModal(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`, ()=>{
     state.mining = state.mining.filter(m=>m.id!==id);
     saveState(); renderMining();
     showToast('Oferta excluída.');
@@ -3433,7 +3392,12 @@ function addCost(){
   closeCostAddForm();
   showToast('Custo adicionado.');
 }
-function removeCost(id){ confirmDelete('Tem certeza que deseja excluir este custo? Esta ação não poderá ser desfeita.', ()=>{ state.costs = state.costs.filter(c=>c.id!==id); saveState(); render(); showToast('Custo excluído.'); }); }
+function removeCost(id){
+  openConfirmModal('Tem certeza que deseja excluir este custo? Esta ação não poderá ser desfeita.', ()=>{
+    state.costs = state.costs.filter(c=>c.id!==id); saveState(); render();
+    showToast('Custo excluído.');
+  });
+}
 
 /* ---------- FINANCEIRO POR MÊS (estilo planilha) ---------- */
 const MONTH_NAMES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -3546,25 +3510,6 @@ function openGatewayModal(){
 function closeGatewayModal(){
   document.getElementById('gatewayModal').style.display = 'none';
 }
-
-/* ---------- MODAL GENÉRICO DE CONFIRMAÇÃO DE EXCLUSÃO ---------- */
-let _confirmDeleteCallback = null;
-function confirmDelete(message, onConfirm, title){
-  document.getElementById('confirmDeleteTitle').textContent = title || 'Confirmar exclusão';
-  document.getElementById('confirmDeleteMsg').textContent = message || 'Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.';
-  _confirmDeleteCallback = onConfirm;
-  document.getElementById('confirmDeleteModal').style.display = 'flex';
-}
-function closeConfirmDelete(){
-  document.getElementById('confirmDeleteModal').style.display = 'none';
-  _confirmDeleteCallback = null;
-}
-function runConfirmedDelete(){
-  const cb = _confirmDeleteCallback;
-  closeConfirmDelete();
-  if(cb) cb();
-}
-
 function addCustomGateway(){
   const input = document.getElementById('gatewayCustomInput');
   const val = input.value.trim();
@@ -3656,7 +3601,7 @@ function renderLogs(){
 function removeLog(id){
   const l = state.logs.find(l=>l.id===id);
   const preview = l ? (l.text.length>40 ? l.text.slice(0,40)+'…' : l.text) : 'este registro';
-  confirmDelete(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`, ()=>{
+  openConfirmModal(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`, ()=>{
     state.logs = state.logs.filter(l=>l.id!==id);
     saveState(); renderLogs();
     showToast('Registro excluído.');
@@ -3778,7 +3723,6 @@ function render(){
   renderWarmupGroups();
   renderVideos();
   renderProjects();
-  renderProcessos();
   renderPlanner();
   renderResumoMes();
   renderTodayPanel();
@@ -3822,7 +3766,7 @@ function removeProject(id, ev){
   if(ev) ev.stopPropagation();
   const p = state.projects.find(p=>p.id===id);
   if(!p) return;
-  confirmDelete(`Tem certeza que quer excluir o projeto "${p.nome}" e todo o histórico de versões dele? Essa ação não pode ser desfeita.`, ()=>{
+  openConfirmModal(`Tem certeza que quer excluir o projeto "${p.nome}" e todo o histórico de versões dele? Essa ação não pode ser desfeita.`, ()=>{
     state.projects = state.projects.filter(p=>p.id!==id);
     if(state.currentProjectId===id) state.currentProjectId = null;
     saveState(); renderProjects();
@@ -3973,9 +3917,9 @@ function addProjectResource(){
   showToast('Recurso adicionado.');
 }
 function removeProjectResource(resId){
-  const p = currentProject();
-  if(!p) return;
-  confirmDelete('Tem certeza que deseja excluir este recurso? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir este recurso? Esta ação não poderá ser desfeita.', ()=>{
+    const p = currentProject();
+    if(!p) return;
     p.resources = p.resources.filter(r=>r.id!==resId);
     saveState(); renderProjects();
     showToast('Recurso excluído.');
@@ -4193,7 +4137,7 @@ function reorderArray(key, ids){
 }
 function setupDragHandlers(){
   attachSortable('urgentList', reorderTasksGroup);
-  attachSortable('processStagesWrap', ids=>reorderArray('processos', ids));
+  attachSortable('processosList', ids=>reorderArray('processos', ids));
   attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
