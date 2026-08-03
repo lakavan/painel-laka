@@ -139,6 +139,15 @@
     filter:blur(7px);user-select:none;transition:filter .15s;
   }
   body.hide-financials .today-stat .trend{filter:blur(4px);user-select:none;}
+  body.hide-financials .fin-num,
+  body.hide-financials .msum .v,
+  body.hide-financials .pstat .v,
+  body.hide-financials #desempenhoMesChart,
+  body.hide-financials .chart-legend,
+  body.hide-financials .panel-total{
+    filter:blur(7px);user-select:none;transition:filter .15s;
+  }
+  body.hide-financials .day-cell-input{pointer-events:none;}
   .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
   @media(max-width:800px){.today-stats{grid-template-columns:1fr 1fr;}}
   .today-stat{background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:12px 14px;}
@@ -286,14 +295,24 @@
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
   .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
-  .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging{
+  .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging, .tool-card.dragging{
     opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;
     box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright), var(--shadow-glow-blue);
     will-change:transform;
   }
+  /* durante o arrasto, esconde o conteúdo pesado do card de mineração (gráfico/histórico/campos)
+     mas mantém o cabeçalho (nome + alça) visível — deixa o reordenamento fluido mesmo com muitos itens */
+  .mining-card.dragging .mining-fields,
+  .mining-card.dragging .mining-anuncios-highlight,
+  .mining-card.dragging .mining-history{
+    display:none;
+  }
   .drag-handle{cursor:grab;color:var(--muted2);font-size:13px;line-height:1;padding:2px 4px;touch-action:none;user-select:none;flex-shrink:0;margin-top:2px;transition:color .15s;}
   .drag-handle:hover{color:var(--blue-bright);}
   .drag-handle:active{cursor:grabbing;}
+  @media(max-width:600px){
+    .drag-handle{padding:8px 10px;margin:-8px -6px;font-size:16px;}
+  }
   .item.done{opacity:0.4;}
   .item.done .item-text{text-decoration:line-through;}
   .item-status{width:11px;height:11px;border-radius:50%;margin-top:3px;flex-shrink:0;cursor:pointer;border:1px solid rgba(255,255,255,0.15);}
@@ -316,6 +335,11 @@
   .task-tag.bloqueada{color:var(--urgent);background:rgba(255,77,109,.15);}
   .item-body{flex:1;min-width:0;}
   .item-text{font-size:13.5px;line-height:1.4;word-break:break-word;}
+  .processo-step-num{color:var(--blue-bright);font-weight:700;}
+  .processo-desc{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap;}
+  .item.done .processo-desc{opacity:0.7;}
+  .processo-edit-btn{background:none;border:none;color:var(--muted2);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;transition:color .15s;}
+  .processo-edit-btn:hover{color:var(--blue-bright);}
   .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
   .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
   .del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:2px 6px;flex-shrink:0;}
@@ -593,6 +617,17 @@
   .video-row:hover{border-color:var(--blue);background:var(--surface3);}
   .video-row.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
   .video-row .drag-handle{flex-shrink:0;color:var(--muted2);cursor:grab;padding:2px;}
+  .video-desc-full{
+    font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px;
+    padding:8px 10px;background:var(--bg);border-radius:8px;white-space:pre-wrap;
+  }
+  .video-thumb-img{
+    flex-shrink:0;width:32px;height:32px;border-radius:9px;object-fit:cover;background:var(--bg);
+  }
+  .empty-block{text-align:center;padding:44px 20px;}
+  .empty-block-icon{font-size:30px;margin-bottom:10px;opacity:.65;}
+  .empty-block-title{font-family:var(--display);font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px;}
+  .empty-block-sub{font-size:12px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.5;}
   .video-platform-ico{
     flex-shrink:0;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
     background:var(--surface3);border:1px solid var(--border-strong);color:var(--blue-bright);
@@ -747,11 +782,32 @@
   .modal-overlay{
     display:none;position:fixed;inset:0;background:rgba(2,4,8,0.72);backdrop-filter:blur(3px);
     z-index:100;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .18s ease;
   }
+  .modal-overlay.open{display:flex;}
   .modal-box{
     background:var(--surface2);border:1px solid var(--border-strong);border-radius:var(--radius-lg);
     padding:22px;max-width:420px;width:100%;box-shadow:var(--shadow-md);
+    animation:modalPopIn .22s cubic-bezier(.22,.85,.32,1);
   }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes modalPopIn{
+    from{opacity:0;transform:translateY(14px) scale(.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .confirm-modal-msg{font-size:13.5px;color:var(--muted);line-height:1.6;margin:2px 0 18px 0;}
+  .confirm-modal-actions{display:flex;gap:10px;}
+  .confirm-modal-actions .btn-cancel{
+    flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;
+    padding:11px 16px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;
+  }
+  .confirm-modal-actions .btn-cancel:hover{border-color:var(--border-strong);color:var(--text);}
+  .confirm-modal-actions .btn-danger{
+    flex:1;background:linear-gradient(135deg,var(--urgent),#c62f45);border:none;color:#fff;
+    border-radius:10px;padding:11px 16px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer;
+    box-shadow:0 6px 16px -4px rgba(240,69,92,0.5);transition:transform .15s,box-shadow .15s;
+  }
+  .confirm-modal-actions .btn-danger:hover{transform:translateY(-1px);box-shadow:0 8px 20px -4px rgba(240,69,92,0.65);}
   .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
   .modal-head h3{margin:0;font-family:var(--display);font-size:16px;font-weight:700;}
   .modal-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
@@ -772,7 +828,14 @@
   .tool-card:hover{border-color:var(--blue);transform:translateY(-2px);}
   .tool-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
-  .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;margin-bottom:8px;}
+  .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;}
+  .tool-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .tool-type-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:0.3px;border-radius:5px;padding:2px 8px;display:inline-block;}
+  .tool-type-extensao{color:var(--blue-bright);background:var(--blue-soft);}
+  .tool-type-aplicativo{color:#c084fc;background:rgba(192,132,252,0.13);}
+  .tool-type-site{color:var(--muted);background:var(--surface3);}
+  .tool-email-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;margin-bottom:8px;}
+  .tool-email-tag{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:2px 8px;}
   .tool-field-label{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 2px 0;}
   .tool-field-value{font-size:12.5px;color:var(--muted);line-height:1.5;white-space:pre-wrap;}
   .tool-edit-row{display:flex;flex-direction:column;gap:8px;}
@@ -803,6 +866,13 @@
   .proj-info-row input{background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;text-align:right;width:60%;}
   .proj-version-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;}
   .proj-version-name{font-family:var(--display);font-weight:800;font-size:16px;color:var(--blue-bright);}
+  .proj-stage-badge{
+    font-family:var(--mono);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:5px;
+    margin-left:6px;vertical-align:middle;text-transform:uppercase;
+  }
+  .proj-stage-badge.stage-desenvolvimento{background:var(--blue-soft);color:var(--blue-bright);}
+  .proj-stage-badge.stage-pausado{background:var(--warn-soft,rgba(242,169,60,0.15));color:var(--warn);}
+  .proj-stage-badge.stage-finalizado{background:var(--green-soft);color:var(--green);}
   .proj-version-file{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:2px;}
   .proj-version-resumo{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5;}
   .proj-version-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
@@ -817,12 +887,134 @@
   .timeline-version{font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--blue-bright);}
   .timeline-date{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
   .timeline-meta{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;font-size:11px;color:var(--muted);}
-  .timeline-resumo{font-size:12.5px;color:var(--muted);line-height:1.5;}
+  /* ---------- LOGIN SCREEN ---------- */
+  .login-screen{
+    position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;
+    z-index:100;padding:20px;overflow-y:auto;
+  }
+  .login-screen::before{
+    content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 700px 500px at 15% 10%, rgba(59,130,246,0.10), transparent),
+      radial-gradient(ellipse 600px 500px at 85% 90%, rgba(34,197,94,0.08), transparent);
+    pointer-events:none;
+  }
+  .login-box{
+    position:relative;width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);
+    border-radius:22px;padding:40px 34px;box-shadow:0 24px 70px rgba(0,0,0,0.5);text-align:center;
+    animation:loginFadeIn .4s ease;
+  }
+  @keyframes loginFadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .login-mark{
+    width:64px;height:64px;margin:0 auto 20px auto;border-radius:18px;
+    background:linear-gradient(135deg,var(--blue),var(--green));display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px rgba(59,130,246,0.35);
+  }
+  .login-mark svg{width:32px;height:32px;}
+  .login-title{font-family:var(--display);font-weight:800;font-size:21px;margin-bottom:5px;letter-spacing:-0.2px;}
+  .login-sub{font-size:12.5px;color:var(--muted);margin-bottom:26px;line-height:1.5;}
+
+  .login-tabs{
+    display:flex;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:4px;
+    margin-bottom:24px;gap:4px;
+  }
+  .login-tab{
+    flex:1;background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:700;
+    font-size:12.5px;padding:9px;border-radius:9px;cursor:pointer;transition:all .15s;
+  }
+  .login-tab.active{background:var(--surface2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+
+  #loginForm, #signupForm{text-align:left;}
+  #loginForm input, #signupForm input{
+    width:100%;margin-top:5px;background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:10px;padding:11px 13px;font-size:13.5px;transition:border-color .15s;
+  }
+  #loginForm input:focus, #signupForm input:focus{border-color:var(--blue);outline:none;}
+  #loginForm .field-label, #signupForm .field-label{margin-top:14px;}
+  #loginForm .field-label:first-child, #signupForm .field-label:first-child{margin-top:0;}
+
+  .login-error{
+    background:var(--urgent-soft);color:var(--urgent);font-size:12px;padding:9px 11px;
+    border-radius:9px;margin-top:14px;text-align:left;line-height:1.4;
+  }
+  .login-submit{
+    width:100%;margin-top:22px;background:linear-gradient(135deg,var(--blue),var(--green));
+    color:#06080c;font-weight:800;font-size:13.5px;padding:13px;border:none;border-radius:11px;cursor:pointer;
+    transition:opacity .15s,transform .1s;
+  }
+  .login-submit:hover{opacity:0.9;}
+  .login-submit:active{transform:scale(0.98);}
+  .login-submit:disabled{opacity:0.5;cursor:not-allowed;}
+  .login-link-btn{
+    width:100%;margin-top:14px;background:none;border:none;color:var(--muted);font-size:11.5px;
+    cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+  }
+  .login-link-btn:hover{color:var(--blue-bright);}
+  .login-success{
+    background:var(--green-soft);border:1px solid rgba(34,197,94,0.3);border-radius:12px;
+    padding:18px;text-align:left;
+  }
+  .login-success-icon{font-size:24px;margin-bottom:8px;}
+  .login-success-text{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:14px;}
+  .login-success .login-link-btn{margin-top:0;color:var(--blue-bright);}
+
+  .logout-btn{
+    background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+    border-radius:9px;padding:6px 12px;font-size:11.5px;cursor:pointer;display:flex;align-items:center;gap:5px;
+  }
+  .logout-btn:hover{color:var(--urgent);border-color:var(--urgent);}
 </style>
 </head>
 <body>
 <div id="toastContainer"></div>
-<div class="wrap">
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-mark" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="26" y="54" width="10" height="20" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+        <rect x="42" y="42" width="10" height="32" rx="3.2" fill="#ffffff" fill-opacity="0.82"/>
+        <rect x="58" y="28" width="10" height="46" rx="3.2" fill="#ffffff"/>
+      </svg>
+    </div>
+    <div class="login-title">Painel LAKA</div>
+    <div class="login-sub" id="loginSubText">acesso restrito — entre com suas credenciais</div>
+
+    <div class="login-tabs" id="loginTabs">
+      <button class="login-tab active" id="tabLoginBtn" onclick="switchAuthMode('login')">Entrar</button>
+      <button class="login-tab" id="tabSignupBtn" onclick="switchAuthMode('signup')">Criar conta</button>
+    </div>
+
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+      <label class="field-label">e-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username" required>
+      <label class="field-label">senha</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required>
+      <div id="loginError" class="login-error" style="display:none;"></div>
+      <button type="submit" class="login-submit" id="loginSubmitBtn">Entrar</button>
+      <button type="button" class="login-link-btn" onclick="handleForgotPassword()">Esqueci minha senha</button>
+    </form>
+
+    <form id="signupForm" onsubmit="return handleSignup(event)" style="display:none;">
+      <label class="field-label">e-mail</label>
+      <input type="email" id="signupEmail" autocomplete="email" required>
+      <label class="field-label">senha</label>
+      <input type="password" id="signupPassword" autocomplete="new-password" required minlength="6">
+      <label class="field-label">confirmar senha</label>
+      <input type="password" id="signupPasswordConfirm" autocomplete="new-password" required minlength="6">
+      <div id="signupError" class="login-error" style="display:none;"></div>
+      <button type="submit" class="login-submit" id="signupSubmitBtn">Criar conta</button>
+    </form>
+
+    <div id="signupSuccess" class="login-success" style="display:none;">
+      <div class="login-success-icon">✉️</div>
+      <div class="login-success-text">Enviamos um link de confirmação pro seu e-mail. Confirma por lá antes de entrar aqui.</div>
+      <button type="button" class="login-link-btn" onclick="switchAuthMode('login')">← voltar pro login</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="appWrap" style="display:none;">
 
   <div class="hero">
     <div class="hero-brand">
@@ -841,6 +1033,10 @@
         <h1>Tráfego direto · Infoproduto</h1>
       </div>
     </div>
+    <button class="logout-btn" onclick="handleLogout()" title="sair da conta">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      sair
+    </button>
   </div>
 
   <div id="loading" class="loading">carregando dados...</div>
@@ -852,9 +1048,10 @@
       <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
       <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
       <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
-      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
-      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
       <button class="tab-btn" id="tabBtnProjects" onclick="switchTab('projects')">📦 Projetos</button>
+      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
+      <button class="tab-btn" id="tabBtnContent" onclick="switchTab('content')">🎬 Biblioteca de Conteúdo</button>
+      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">📱 Aquecimento de Chip</button>
     </div>
 
     <div class="tab-view active" id="homeView">
@@ -923,14 +1120,32 @@
           <button class="add" onclick="addOffer()">+ add</button>
         </div>
       </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Estrutura pra escalar</h2></div>
-        <div id="structuralList"></div>
-        <div class="add-row">
-          <input type="text" id="structuralInput" placeholder="nova tarefa estrutural...">
-          <button class="add" onclick="addTask('estrutural')">+ add</button>
+      <div class="panel" id="processosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">documente os passos pra validar e escalar uma oferta</span>Processos da Empresa</h2>
+          <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
+        </div>
+        <div id="processosList"></div>
+        <div class="add-form collapsible-form" id="newProcessoRow">
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="processoTitulo" placeholder="nome da etapa (ex: Validar oferta com 3 dias de anúncio)">
+            <textarea id="processoDescricao" placeholder="descreva o passo a passo dessa etapa..."></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar etapa</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewProcessoForm(false)">cancelar</button>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
+      <div class="planner-focus">
+        <label class="field-label">foco da semana</label>
+        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
+      </div>
+      <div class="planner-days" id="plannerDays"></div>
     </div>
 
     <div class="panel full">
@@ -945,32 +1160,6 @@
           </select>
           <button class="add" onclick="addLog()">+ registrar</button>
         </div>
-      </div>
-    </div>
-
-    <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
-      <div class="planner-focus">
-        <label class="field-label">foco da semana</label>
-        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
-      </div>
-      <div class="planner-days" id="plannerDays"></div>
-    </div>
-
-    <div class="panel full" id="videosPanel">
-      <div class="panel-head">
-        <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Vídeos e conteúdos</h2>
-        <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
-      </div>
-      <div id="videosList" class="videos-list"></div>
-      <div class="add-form" id="newVideoRow">
-      <div class="add-row">
-        <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
-        <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
-        <input type="text" id="videoNota" placeholder="nota (opcional)">
-        <button class="add" onclick="addVideo()">+ add</button>
-        <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
-      </div>
       </div>
     </div>
 
@@ -1054,6 +1243,13 @@
         <div class="panel full">
           <div class="panel-head">
             <h2>Financeiro</h2>
+            <button class="hide-values-btn" id="hideValuesBtnFinance" onclick="toggleHideValues()" title="ocultar valores financeiros">
+              <span id="hideValuesIconFinance" class="eye-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </span>
+            </button>
           </div>
 
           <div class="month-nav">
@@ -1200,7 +1396,11 @@
           <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
         </div>
       </div>
-      <div id="productEmpty" class="empty" style="padding:20px 0;">Cria um produto acima pra começar a montar o funil de mensagens.</div>
+      <div id="productEmpty" class="empty-block">
+        <div class="empty-block-icon">📦</div>
+        <div class="empty-block-title">Nenhum produto selecionado ainda</div>
+        <div class="empty-block-sub">Cria um produto acima ou seleciona um existente pra começar a montar o funil de mensagens.</div>
+      </div>
     </div>
 
     <div class="tab-view" id="miningView">
@@ -1241,6 +1441,31 @@
       </div>
     </div>
 
+    <div class="tab-view" id="contentView">
+      <div class="panel full" id="videosPanel">
+        <div class="panel-head">
+          <h2><span class="sub">tutoriais e conteúdos pra assistir — o que precisa aprender a fazer agora</span>Biblioteca de Conteúdo</h2>
+          <button class="add-tool-btn" id="newVideoToggleBtn" onclick="toggleNewVideoForm(true)">+ Adicionar vídeo</button>
+        </div>
+        <div id="videosList" class="videos-list"></div>
+        <div class="add-form" id="newVideoRow">
+        <div class="add-row">
+          <input type="text" id="videoTitulo" placeholder="título (ex: Como verificar uma BM)">
+          <input type="text" id="videoUrl" placeholder="link do YouTube, Instagram ou TikTok">
+          <input type="text" id="videoNota" placeholder="nota curta (opcional)">
+        </div>
+        <div class="add-row" style="margin-top:8px;">
+          <input type="text" id="videoThumbnail" placeholder="link da thumbnail/imagem de capa (opcional)">
+        </div>
+        <textarea id="videoDescricao" placeholder="descrição (opcional) — fica visível no card" style="margin-top:8px;"></textarea>
+        <div class="add-row" style="margin-top:8px;">
+          <button class="add" onclick="addVideo()">+ add</button>
+          <button class="add-cost-cancel-btn" onclick="toggleNewVideoForm(false)">cancelar</button>
+        </div>
+        </div>
+      </div>
+    </div>
+
     <div class="tab-view" id="toolsView">
       <div class="panel full" id="toolsPanel">
         <div class="panel-head">
@@ -1253,9 +1478,16 @@
           <div class="add-row" style="margin-top:0;">
             <input type="text" id="toolNome" placeholder="nome (ex: Canva)">
             <input type="text" id="toolCategoria" placeholder="categoria (ex: Criação de criativos)">
+            <select id="toolTipo">
+              <option value="">tipo (opcional)</option>
+              <option value="extensao">Extensão</option>
+              <option value="aplicativo">Aplicativo</option>
+              <option value="site">Site</option>
+            </select>
           </div>
           <textarea id="toolDescricao" placeholder="descrição..."></textarea>
           <input type="text" id="toolLink" placeholder="link para acessar ou instalar">
+          <input type="text" id="toolEmails" placeholder="e-mail(s) usados nessa ferramenta — separa por vírgula se for mais de um">
           <textarea id="toolObservacoes" placeholder="observações (opcional)..."></textarea>
           <div class="add-row" style="margin-top:0;">
             <button class="add" style="flex:1;" onclick="addTool()">+ adicionar ferramenta</button>
@@ -1332,20 +1564,14 @@
             <div class="panel-stats-row" id="projSummary"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h2>🚀 Informações do Projeto</h2></div>
-            <div id="projInfo"></div>
+            <div class="panel-head"><h2><span class="sub">de onde esse projeto nasceu</span>Conta Principal</h2></div>
+            <div id="projMainAccount"></div>
           </div>
         </div>
 
-        <div class="row-two">
-          <div class="panel">
-            <div class="panel-head"><h2>Conta principal</h2></div>
-            <div id="projMainAccount"></div>
-          </div>
-          <div class="panel">
-            <div class="panel-head"><h2>Última atualização</h2></div>
-            <div id="projLastUpdate"></div>
-          </div>
+        <div class="panel full">
+          <div class="panel-head"><h2>Última atualização</h2></div>
+          <div id="projLastUpdate"></div>
         </div>
 
         <div class="panel full">
@@ -1366,6 +1592,12 @@
                 <input type="text" id="pvConta" placeholder="conta utilizada (e-mail)">
               </div>
               <input type="text" id="pvConversa" placeholder="conversa utilizada (link ou referência)">
+              <select id="pvEstagio">
+                <option value="">estágio do projeto (opcional)</option>
+                <option value="desenvolvimento">Em desenvolvimento</option>
+                <option value="pausado">Pausado</option>
+                <option value="finalizado">Finalizado</option>
+              </select>
               <textarea id="pvResumo" placeholder="resumo da atualização..."></textarea>
               <textarea id="pvObservacoes" placeholder="observações (opcional)..."></textarea>
               <div class="add-row" style="margin-top:0;">
@@ -1426,6 +1658,20 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="confirmModal" onclick="if(event.target===this) closeConfirmModal()">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-head">
+      <h3 id="confirmModalTitle">Excluir item</h3>
+      <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+    </div>
+    <p class="confirm-modal-msg" id="confirmModalMsg">Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.</p>
+    <div class="confirm-modal-actions">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="btn-danger" onclick="confirmModalProceed()">Excluir</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const STORAGE_KEY = 'painel-operacao-v4';
 
@@ -1465,8 +1711,6 @@ const defaultState = {
     currentMonth: currentMonthKey(),
     months: {}
   },
-  caixaMovs: [],
-  saldoInicial: 0,
   managers: [],
   assets: [],
   phones: [],
@@ -1496,7 +1740,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, caixaMovs:[], saldoInicial:0, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -1513,6 +1757,25 @@ function showToast(message){
     el.classList.remove('show');
     setTimeout(()=>el.remove(), 300);
   }, 2800);
+}
+
+/* ---------- CONFIRMAÇÃO DE EXCLUSÃO (padrão em todo o app) ---------- */
+let _confirmModalAction = null;
+function openConfirmModal(message, action, opts){
+  opts = opts || {};
+  document.getElementById('confirmModalTitle').innerText = opts.title || 'Excluir item';
+  document.getElementById('confirmModalMsg').innerText = message || 'Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.';
+  _confirmModalAction = action;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirmModal(){
+  document.getElementById('confirmModal').classList.remove('open');
+  _confirmModalAction = null;
+}
+function confirmModalProceed(){
+  const action = _confirmModalAction;
+  closeConfirmModal();
+  if(action) action();
 }
 
 function renderFinanceChart(containerId, series, totalDays, opts){
@@ -1642,13 +1905,141 @@ const SUPABASE_KEY = 'sb_publishable_V2tAnUXp7EW16gGKvwpMJw_-wFZHAWL';
 const ROW_ID = 'PnPe7VjL1rlj7zIyJL7o86NvLtyneDAt';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* ---------- AUTENTICAÇÃO ---------- */
+function switchAuthMode(mode){
+  document.getElementById('loginForm').style.display = mode==='login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = mode==='signup' ? 'block' : 'none';
+  document.getElementById('signupSuccess').style.display = 'none';
+  document.getElementById('loginTabs').style.display = 'flex';
+  document.getElementById('tabLoginBtn').classList.toggle('active', mode==='login');
+  document.getElementById('tabSignupBtn').classList.toggle('active', mode==='signup');
+  document.getElementById('loginSubText').innerText = mode==='login'
+    ? 'acesso restrito — entre com suas credenciais'
+    : 'cria sua conta pra acessar o painel';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('signupError').style.display = 'none';
+}
+async function handleLogin(event){
+  event.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginSubmitBtn');
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerText = 'Entrando...';
+  try{
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+  }catch(e){
+    errorEl.innerText = e.message && e.message.includes('Email not confirmed')
+      ? 'Confirma seu e-mail antes de entrar — verifica a caixa de entrada.'
+      : 'E-mail ou senha incorretos.';
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerText = 'Entrar';
+  }
+  return false;
+}
+async function handleSignup(event){
+  event.preventDefault();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupPasswordConfirm').value;
+  const errorEl = document.getElementById('signupError');
+  const btn = document.getElementById('signupSubmitBtn');
+  errorEl.style.display = 'none';
+
+  if(password !== confirm){
+    errorEl.innerText = 'As senhas não coincidem.';
+    errorEl.style.display = 'block';
+    return false;
+  }
+  if(password.length < 6){
+    errorEl.innerText = 'A senha precisa ter pelo menos 6 caracteres.';
+    errorEl.style.display = 'block';
+    return false;
+  }
+
+  btn.disabled = true;
+  btn.innerText = 'Criando conta...';
+  try{
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname }
+    });
+    if(error) throw error;
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginTabs').style.display = 'none';
+    document.getElementById('signupSuccess').style.display = 'block';
+    document.getElementById('loginSubText').innerText = 'quase lá — falta confirmar seu e-mail';
+  }catch(e){
+    errorEl.innerText = e.message && e.message.includes('already registered')
+      ? 'Esse e-mail já tem uma conta. Tenta entrar em vez de cadastrar.'
+      : 'Não deu pra criar a conta: ' + (e.message || 'tenta de novo em instantes.');
+    errorEl.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerText = 'Criar conta';
+  return false;
+}
+async function handleForgotPassword(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const errorEl = document.getElementById('loginError');
+  if(!email){
+    errorEl.innerText = 'Digita seu e-mail no campo acima primeiro, aí clica em "esqueci minha senha" de novo.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  try{
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if(error) throw error;
+    errorEl.style.display = 'block';
+    errorEl.style.background = 'var(--green-soft)';
+    errorEl.style.color = 'var(--green)';
+    errorEl.innerText = 'Se esse e-mail tiver uma conta, enviamos um link pra redefinir a senha.';
+  }catch(e){
+    errorEl.style.background = '';
+    errorEl.style.color = '';
+    errorEl.innerText = 'Não deu pra enviar agora. Tenta de novo em instantes.';
+    errorEl.style.display = 'block';
+  }
+}
+async function handleLogout(){
+  await sb.auth.signOut();
+}
+function showLogin(){
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appWrap').style.display = 'none';
+  const btn = document.getElementById('loginSubmitBtn');
+  if(btn){ btn.disabled = false; btn.innerText = 'Entrar'; }
+}
+function showApp(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'block';
+}
+let appBooted = false;
+sb.auth.onAuthStateChange((event, session)=>{
+  if(session){
+    showApp();
+    if(!appBooted){
+      appBooted = true;
+      loadState().then(setupDragHandlers);
+    }
+  } else {
+    showLogin();
+  }
+});
+
 async function loadState(){
   try{
     const { data, error } = await sb.from('app_state').select('data').eq('id', ROW_ID).single();
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},caixaMovs:[],saldoInicial:0,managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -1661,6 +2052,11 @@ async function loadState(){
       if(!state.customGateways) state.customGateways = [];
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
+      if(!state.processos){
+        state.processos = (state.tasks||[]).filter(t=>t.priority==='estrutural').map(t=>({
+          id: uid(), titulo: t.text || '', descricao: '', concluido: t.status==='done'
+        }));
+      }
       state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
@@ -1740,7 +2136,7 @@ function nextStatus(s, cycle){ const i=cycle.indexOf(s); return cycle[(i+1)%cycl
 
 function renderTasks(){
   renderTaskGroup('urgentList', state.tasks.filter(t=>t.priority==='urgente'));
-  renderTaskGroup('structuralList', state.tasks.filter(t=>t.priority==='estrutural'));
+  renderProcessos();
 }
 function renderTaskGroup(containerId, arr){
   const el = document.getElementById(containerId);
@@ -1766,6 +2162,89 @@ function toggleTaskDone(id){
   item.status = item.status==='done' ? 'pending' : 'done';
   saveState(); render();
 }
+
+/* ---------- PROCESSOS DA EMPRESA ---------- */
+function toggleNewProcessoForm(show){
+  document.getElementById('newProcessoRow').classList.toggle('open', show);
+  document.getElementById('newProcessoToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('processosPanel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('processoTitulo').focus();
+  else{
+    document.getElementById('processoTitulo').value = '';
+    document.getElementById('processoDescricao').value = '';
+  }
+}
+function addProcesso(){
+  const titulo = document.getElementById('processoTitulo');
+  const descricao = document.getElementById('processoDescricao').value.trim();
+  if(!titulo.value.trim()) return;
+  state.processos.push({id:uid(), titulo:titulo.value.trim(), descricao, concluido:false});
+  saveState(); renderProcessos();
+  toggleNewProcessoForm(false);
+  showToast('Etapa adicionada.');
+}
+function toggleProcessoDone(id){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p.concluido = !p.concluido;
+  saveState(); renderProcessos();
+}
+let processoEditingId = null;
+function toggleProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = (processoEditingId===id) ? null : id;
+  renderProcessos();
+}
+function updateProcessoField(id, field, value){
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p[field] = value;
+  saveState();
+}
+function saveProcessoEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  processoEditingId = null;
+  saveState(); renderProcessos();
+  showToast('Etapa atualizada.');
+}
+function removeProcesso(id){
+  openConfirmModal('Tem certeza que deseja excluir esta etapa do processo? Esta ação não poderá ser desfeita.', ()=>{
+    state.processos = state.processos.filter(p=>p.id!==id);
+    saveState(); renderProcessos();
+    showToast('Etapa excluída.');
+  });
+}
+function renderProcessos(){
+  const el = document.getElementById('processosList');
+  if(!el) return;
+  if(state.processos.length===0){ el.innerHTML = '<div class="empty">nenhuma etapa cadastrada ainda — documente o passo a passo pra validar e escalar uma oferta.</div>'; return; }
+  el.innerHTML = state.processos.map((p,idx)=>{
+    if(processoEditingId===p.id){
+      return `
+      <div class="item" data-id="${p.id}">
+        <div class="item-body tool-edit-row" style="padding:8px 0;">
+          <input type="text" value="${escapeHtml(p.titulo)}" placeholder="nome da etapa" onchange="updateProcessoField('${p.id}','titulo',this.value)">
+          <textarea placeholder="descrição do passo a passo" onchange="updateProcessoField('${p.id}','descricao',this.value)">${escapeHtml(p.descricao||'')}</textarea>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeProcesso('${p.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="saveProcessoEdit('${p.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="item processo-item ${p.concluido?'done':''}" data-id="${p.id}">
+      <span class="drag-handle">⠿</span>
+      <div class="check-box ${p.concluido?'checked':''}" onclick="toggleProcessoDone('${p.id}')" title="marcar como concluída"></div>
+      <div class="item-body">
+        <div class="item-text"><span class="processo-step-num">${idx+1}.</span> ${escapeHtml(p.titulo)}</div>
+        ${p.descricao ? `<div class="processo-desc">${escapeHtml(p.descricao)}</div>` : ''}
+      </div>
+      <button class="mining-edit-btn processo-edit-btn" onclick="toggleProcessoEdit('${p.id}', event)">✎</button>
+      <button class="del-btn" onclick="removeProcesso('${p.id}')">✕</button>
+    </div>
+  `;}).join('');
+}
 function cycleTaskTag(id){
   const item = state.tasks.find(t=>t.id===id);
   if(!item) return;
@@ -1774,7 +2253,12 @@ function cycleTaskTag(id){
   item.tag = cycle[(i+1)%cycle.length];
   saveState(); render();
 }
-function removeTask(id){ state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render(); }
+function removeTask(id){
+  openConfirmModal('Tem certeza que deseja excluir esta tarefa? Esta ação não poderá ser desfeita.', ()=>{
+    state.tasks = state.tasks.filter(t=>t.id!==id); saveState(); render();
+    showToast('Tarefa excluída.');
+  });
+}
 function addTask(priority){
   const inputId = priority==='urgente' ? 'urgentInput' : 'structuralInput';
   const input = document.getElementById(inputId);
@@ -1807,9 +2291,12 @@ function cycleSimple(containerId,id){
   saveState(); render();
 }
 function removeSimple(containerId,id){
-  const {key} = simpleMap[containerId];
-  state[key] = state[key].filter(i=>i.id!==id);
-  saveState(); render();
+  openConfirmModal('Tem certeza que deseja excluir este item? Esta ação não poderá ser desfeita.', ()=>{
+    const {key} = simpleMap[containerId];
+    state[key] = state[key].filter(i=>i.id!==id);
+    saveState(); render();
+    showToast('Item excluído.');
+  });
 }
 function addInfra(){
   const input = document.getElementById('infraInput');
@@ -1875,7 +2362,12 @@ function addManager(){
   toggleNewManagerForm(false);
   showToast('Gerente adicionado.');
 }
-function removeManager(id){ state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers(); }
+function removeManager(id){
+  openConfirmModal('Tem certeza que deseja excluir este gerente de conta? Esta ação não poderá ser desfeita.', ()=>{
+    state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers();
+    showToast('Gerente excluído.');
+  });
+}
 
 /* ---------- ATIVOS ---------- */
 function toggleNewAssetForm(show){
@@ -1898,7 +2390,12 @@ function addAsset(){
   toggleNewAssetForm(false);
   showToast('Ativo cadastrado.');
 }
-function removeAsset(id){ state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets(); }
+function removeAsset(id){
+  openConfirmModal('Tem certeza que deseja excluir este ativo? Esta ação não poderá ser desfeita.', ()=>{
+    state.assets = state.assets.filter(a=>a.id!==id); saveState(); renderAssets();
+    showToast('Ativo excluído.');
+  });
+}
 
 /* ---------- PLANEJAMENTO ---------- */
 const WEEK_DAYS = [
@@ -1951,8 +2448,11 @@ function togglePlannerItem(dayKey, id){
   saveState(); renderPlanner();
 }
 function removePlannerItem(dayKey, id){
-  state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
-  saveState(); renderPlanner();
+  openConfirmModal('Tem certeza que deseja excluir este item do planejamento? Esta ação não poderá ser desfeita.', ()=>{
+    state.planner.days[dayKey] = (state.planner.days[dayKey]||[]).filter(i=>i.id!==id);
+    saveState(); renderPlanner();
+    showToast('Item excluído.');
+  });
 }
 
 /* ---------- NÚMEROS DE RECUPERAÇÃO ---------- */
@@ -1976,7 +2476,12 @@ function addPhone(){
   numero.value=''; document.getElementById('phoneProduto').value='';
   saveState(); renderPhones();
 }
-function removePhone(id){ state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones(); }
+function removePhone(id){
+  openConfirmModal('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{
+    state.phones = state.phones.filter(p=>p.id!==id); saveState(); renderPhones();
+    showToast('Número excluído.');
+  });
+}
 
 /* ---------- PRODUTOS (funil de mensagens) ---------- */
 function renderProductSelect(){
@@ -2027,10 +2532,13 @@ function addFunnelLink(){
   saveState(); renderProducts();
 }
 function removeFunnelLink(id){
-  const product = currentProduct();
-  if(!product) return;
-  product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir este link? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
+    saveState(); renderProducts();
+    showToast('Link excluído.');
+  });
 }
 function reorderFunnelLinks(ids){
   const product = currentProduct();
@@ -2071,10 +2579,13 @@ function addStep(type){
   saveState(); renderProducts();
 }
 function removeStep(type, id){
-  const product = currentProduct();
-  if(!product) return;
-  product[type] = product[type].filter(s=>s.id!==id);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir esta mensagem/etapa? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    product[type] = product[type].filter(s=>s.id!==id);
+    saveState(); renderProducts();
+    showToast('Etapa excluída.');
+  });
 }
 function reorderProductSteps(type, ids){
   const product = currentProduct();
@@ -2107,12 +2618,15 @@ function addVariation(type, stepId){
   saveState(); renderProducts();
 }
 function removeVariation(type, stepId, varId){
-  const product = currentProduct();
-  if(!product) return;
-  const step = product[type].find(s=>s.id===stepId);
-  if(!step) return;
-  step.variations = step.variations.filter(v=>v.id!==varId);
-  saveState(); renderProducts();
+  openConfirmModal('Tem certeza que deseja excluir esta variação de mensagem? Esta ação não poderá ser desfeita.', ()=>{
+    const product = currentProduct();
+    if(!product) return;
+    const step = product[type].find(s=>s.id===stepId);
+    if(!step) return;
+    step.variations = step.variations.filter(v=>v.id!==varId);
+    saveState(); renderProducts();
+    showToast('Variação excluída.');
+  });
 }
 function updateVariationText(type, stepId, varId, value){
   const product = currentProduct();
@@ -2201,21 +2715,27 @@ function toggleNewVideoForm(show){
   if(show) document.getElementById('videoTitulo').focus();
   else{
     document.getElementById('videoTitulo').value=''; document.getElementById('videoUrl').value=''; document.getElementById('videoNota').value='';
+    document.getElementById('videoThumbnail').value=''; document.getElementById('videoDescricao').value='';
   }
 }
 function addVideo(){
   const titulo = document.getElementById('videoTitulo');
   const url = document.getElementById('videoUrl').value;
   const nota = document.getElementById('videoNota').value;
+  const thumbnail = document.getElementById('videoThumbnail') ? document.getElementById('videoThumbnail').value.trim() : '';
+  const descricao = document.getElementById('videoDescricao') ? document.getElementById('videoDescricao').value.trim() : '';
   if(!titulo.value.trim() || !url.trim()) return;
-  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota});
+  state.videos.push({id:uid(), titulo:titulo.value.trim(), url:url.trim(), nota, thumbnail, descricao});
   saveState(); renderVideos();
   toggleNewVideoForm(false);
   showToast('Vídeo adicionado.');
 }
 function removeVideo(id){
-  state.videos = state.videos.filter(v=>v.id!==id);
-  saveState(); renderVideos();
+  openConfirmModal('Tem certeza que deseja excluir este conteúdo? Esta ação não poderá ser desfeita.', ()=>{
+    state.videos = state.videos.filter(v=>v.id!==id);
+    saveState(); renderVideos();
+    showToast('Conteúdo excluído.');
+  });
 }
 const PLATFORM_ICONS = {
   youtube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M10.5 9.5v5l4.5-2.5-4.5-2.5z" fill="currentColor" stroke="none"/></svg>',
@@ -2247,13 +2767,20 @@ function renderVideos(){
   if(state.videos.length===0){ el.innerHTML = '<div class="empty">nenhum vídeo salvo ainda.</div>'; return; }
   el.innerHTML = state.videos.map(v=>{
     const platform = detectVideoPlatform(v.url);
+    const iconHtml = v.thumbnail
+      ? `<img src="${escapeHtml(v.thumbnail)}" alt="" class="video-thumb-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+         <span class="video-platform-ico ${platform}" style="display:none;">${PLATFORM_ICONS[platform]}</span>`
+      : `<span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>`;
     if(videoEditingId===v.id){
       return `
       <div class="video-row video-row-editing" data-id="${v.id}">
-        <span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>
+        ${iconHtml}
         <div class="video-row-body tool-edit-row">
           <input type="text" value="${escapeHtml(v.titulo)}" placeholder="título" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','titulo',this.value)">
           <input type="text" value="${escapeHtml(v.url)}" placeholder="link" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','url',this.value)">
+          <input type="text" value="${escapeHtml(v.nota||'')}" placeholder="nota curta" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','nota',this.value)">
+          <input type="text" value="${escapeHtml(v.thumbnail||'')}" placeholder="link da thumbnail (opcional)" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','thumbnail',this.value)">
+          <textarea placeholder="descrição" onclick="event.stopPropagation()" onchange="updateVideoField('${v.id}','descricao',this.value)">${escapeHtml(v.descricao||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="event.stopPropagation();removeVideo('${v.id}')">✕ excluir</button>
             <button class="mining-save-btn" onclick="saveVideoEdit('${v.id}', event)"><span class="ico">✓</span> Concluir edição</button>
@@ -2261,19 +2788,29 @@ function renderVideos(){
         </div>
       </div>`;
     }
+    const hasDesc = v.descricao && v.descricao.trim();
     return `
     <div class="video-row" data-id="${v.id}" onclick="window.open('${escapeHtml(v.url)}','_blank')">
       <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
-      <span class="video-platform-ico ${platform}">${PLATFORM_ICONS[platform]}</span>
+      ${iconHtml}
       <div class="video-row-body">
         <div class="video-title">${escapeHtml(v.titulo)}</div>
         ${v.nota ? `<div class="video-meta"><span class="video-nota">${escapeHtml(v.nota)}</span></div>` : ''}
+        ${hasDesc ? `<div class="video-desc-full">${escapeHtml(v.descricao)}</div>` : ''}
       </div>
       <button class="video-edit-ico" onclick="toggleVideoEdit('${v.id}', event)" title="editar">✎</button>
       <span class="video-open-ico">→</span>
       <button class="video-del" onclick="event.stopPropagation();removeVideo('${v.id}')">✕</button>
     </div>`;
   }).join('');
+}
+function toggleVideoDesc(id, event){
+  if(event) event.stopPropagation();
+  const el = document.getElementById('video-desc-'+id);
+  if(!el) return;
+  const btn = event.target;
+  const open = el.classList.toggle('open');
+  btn.innerText = open ? '▴ descrição' : '▾ descrição';
 }
 
 /* ---------- CENTRAL DE FERRAMENTAS ---------- */
@@ -2291,18 +2828,24 @@ function toggleNewToolForm(show){
 function addTool(){
   const nome = document.getElementById('toolNome');
   const categoria = document.getElementById('toolCategoria').value.trim();
+  const tipo = document.getElementById('toolTipo').value;
   const descricao = document.getElementById('toolDescricao').value.trim();
   const link = document.getElementById('toolLink').value.trim();
+  const emails = document.getElementById('toolEmails').value.trim()
+    .split(',').map(e=>e.trim()).filter(Boolean);
   const observacoes = document.getElementById('toolObservacoes').value.trim();
   if(!nome.value.trim()) return;
-  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, descricao, link, observacoes});
+  state.tools.push({id:uid(), nome:nome.value.trim(), categoria, tipo, descricao, link, emails, observacoes});
   saveState(); renderTools();
   toggleNewToolForm(false);
   showToast('Ferramenta salva.');
 }
 function removeTool(id){
-  state.tools = state.tools.filter(t=>t.id!==id);
-  saveState(); renderTools();
+  openConfirmModal('Tem certeza que deseja excluir esta ferramenta? Esta ação não poderá ser desfeita.', ()=>{
+    state.tools = state.tools.filter(t=>t.id!==id);
+    saveState(); renderTools();
+    showToast('Ferramenta excluída.');
+  });
 }
 let toolEditingId = null;
 function toggleToolEdit(id){
@@ -2318,16 +2861,23 @@ function updateToolField(id, field, value){
 function renderTools(){
   const el = document.getElementById('toolsList');
   if(!el) return;
-  if(state.tools.length===0){ el.innerHTML = '<div class="empty">nenhuma ferramenta cadastrada ainda.</div>'; return; }
+  if(state.tools.length===0){ el.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🧰</div><div class="empty-block-title">Nenhuma ferramenta cadastrada ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar Recurso" abaixo pra começar sua central de ferramentas.</div></div>'; return; }
   el.innerHTML = state.tools.map(t=>{
     if(toolEditingId===t.id){
       return `
-      <div class="tool-card">
+      <div class="tool-card" data-id="${t.id}">
         <div class="tool-edit-row">
           <input type="text" value="${escapeHtml(t.nome)}" placeholder="nome" onchange="updateToolField('${t.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(t.categoria||'')}" placeholder="categoria" onchange="updateToolField('${t.id}','categoria',this.value)">
+          <select onchange="updateToolField('${t.id}','tipo',this.value)">
+            <option value="">tipo (opcional)</option>
+            <option value="extensao" ${t.tipo==='extensao'?'selected':''}>Extensão</option>
+            <option value="aplicativo" ${t.tipo==='aplicativo'?'selected':''}>Aplicativo</option>
+            <option value="site" ${t.tipo==='site'?'selected':''}>Site</option>
+          </select>
           <textarea placeholder="descrição" onchange="updateToolField('${t.id}','descricao',this.value)">${escapeHtml(t.descricao||'')}</textarea>
           <input type="text" value="${escapeHtml(t.link||'')}" placeholder="link para acessar ou instalar" onchange="updateToolField('${t.id}','link',this.value)">
+          <input type="text" value="${escapeHtml((t.emails||[]).join(', '))}" placeholder="e-mail(s), separados por vírgula" onchange="updateToolField('${t.id}','emails', this.value.split(',').map(s=>s.trim()).filter(Boolean))">
           <textarea placeholder="observações" onchange="updateToolField('${t.id}','observacoes',this.value)">${escapeHtml(t.observacoes||'')}</textarea>
           <div class="mining-actions">
             <button class="del-btn" onclick="removeTool('${t.id}')">✕ excluir</button>
@@ -2336,14 +2886,20 @@ function renderTools(){
         </div>
       </div>`;
     }
+    const TOOL_TYPE_LABELS = { extensao:'🧩 Extensão', aplicativo:'📱 Aplicativo', site:'🌐 Site' };
     return `
-    <div class="tool-card">
+    <div class="tool-card" data-id="${t.id}">
       <div class="tool-card-head">
-        <div class="tool-name">${escapeHtml(t.nome)}</div>
+        <span class="drag-handle">⠿</span>
+        <div class="tool-name" style="flex:1;">${escapeHtml(t.nome)}</div>
         <button class="mining-edit-btn" onclick="toggleToolEdit('${t.id}')">✎ editar</button>
       </div>
-      ${t.categoria ? `<span class="tool-cat">${escapeHtml(t.categoria)}</span>` : ''}
+      <div class="tool-tags-row">
+        ${t.categoria ? `<span class="tool-cat">${escapeHtml(t.categoria)}</span>` : ''}
+        ${t.tipo ? `<span class="tool-type-tag tool-type-${t.tipo}">${TOOL_TYPE_LABELS[t.tipo]}</span>` : ''}
+      </div>
       ${t.descricao ? `<div class="tool-field-label">descrição</div><div class="tool-field-value">${escapeHtml(t.descricao)}</div>` : ''}
+      ${(t.emails && t.emails.length) ? `<div class="tool-field-label">e-mail${t.emails.length>1?'s':''}</div><div class="tool-email-tags">${t.emails.map(e=>`<span class="tool-email-tag">${escapeHtml(e)}</span>`).join('')}</div>` : ''}
       ${t.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(t.observacoes)}</div>` : ''}
       ${t.link ? `<a class="tool-open-btn" href="${escapeHtml(t.link)}" target="_blank" rel="noopener">Abrir / instalar →</a>` : ''}
     </div>`;
@@ -2372,8 +2928,11 @@ function addWarmupGroup(){
   showToast('Grupo adicionado com sucesso.');
 }
 function removeWarmupGroup(id){
-  state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
-  saveState(); renderWarmupGroups();
+  openConfirmModal('Tem certeza que deseja excluir este grupo? Esta ação não poderá ser desfeita.', ()=>{
+    state.warmupGroups = state.warmupGroups.filter(g=>g.id!==id);
+    saveState(); renderWarmupGroups();
+    showToast('Grupo excluído.');
+  });
 }
 let warmupEditingId = null;
 function toggleWarmupEdit(id, ev){
@@ -2462,9 +3021,11 @@ function addMiningEntry(){
 function removeMiningEntry(id){
   const item = state.mining.find(m=>m.id===id);
   const nome = item ? item.nome : 'esta oferta';
-  if(!confirm(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`)) return;
-  state.mining = state.mining.filter(m=>m.id!==id);
-  saveState(); renderMining();
+  openConfirmModal(`Tem certeza que quer apagar "${nome}" da mineração? Essa ação não pode ser desfeita.`, ()=>{
+    state.mining = state.mining.filter(m=>m.id!==id);
+    saveState(); renderMining();
+    showToast('Oferta excluída.');
+  });
 }
 function updateMiningField(id, field, value){
   const item = state.mining.find(m=>m.id===id);
@@ -2693,20 +3254,18 @@ const EYE_CLOSED_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 function toggleHideValues(){
   const hidden = !document.body.classList.contains('hide-financials');
   document.body.classList.toggle('hide-financials', hidden);
-  document.getElementById('hideValuesIcon').innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
-  document.getElementById('hideValuesBtn').classList.toggle('active', hidden);
+  document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
+  document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
   try{ localStorage.setItem('laka_hide_values', hidden ? '1' : '0'); }catch(e){}
 }
 function applyHideValuesPreference(){
   let hidden = false;
   try{ hidden = localStorage.getItem('laka_hide_values') === '1'; }catch(e){}
   document.body.classList.toggle('hide-financials', hidden);
-  const icon = document.getElementById('hideValuesIcon');
-  const btn = document.getElementById('hideValuesBtn');
-  if(icon) icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG;
-  if(btn) btn.classList.toggle('active', hidden);
+  document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
+  document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
-const TAB_NAMES = ['home','finance','products','mining','tools','warmup','projects'];
+const TAB_NAMES = ['home','finance','products','mining','projects','tools','content','warmup'];
 function switchTab(tab){
   TAB_NAMES.forEach(t=>{
     const view = document.getElementById(t+'View');
@@ -2833,7 +3392,12 @@ function addCost(){
   closeCostAddForm();
   showToast('Custo adicionado.');
 }
-function removeCost(id){ state.costs = state.costs.filter(c=>c.id!==id); saveState(); render(); }
+function removeCost(id){
+  openConfirmModal('Tem certeza que deseja excluir este custo? Esta ação não poderá ser desfeita.', ()=>{
+    state.costs = state.costs.filter(c=>c.id!==id); saveState(); render();
+    showToast('Custo excluído.');
+  });
+}
 
 /* ---------- FINANCEIRO POR MÊS (estilo planilha) ---------- */
 const MONTH_NAMES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -3037,10 +3601,11 @@ function renderLogs(){
 function removeLog(id){
   const l = state.logs.find(l=>l.id===id);
   const preview = l ? (l.text.length>40 ? l.text.slice(0,40)+'…' : l.text) : 'este registro';
-  if(!confirm(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`)) return;
-  state.logs = state.logs.filter(l=>l.id!==id);
-  saveState(); renderLogs();
-  showToast('Registro excluído.');
+  openConfirmModal(`Tem certeza que quer excluir o registro "${preview}"? Essa ação não pode ser desfeita.`, ()=>{
+    state.logs = state.logs.filter(l=>l.id!==id);
+    saveState(); renderLogs();
+    showToast('Registro excluído.');
+  });
 }
 function addLog(){
   const input = document.getElementById('logInput');
@@ -3201,10 +3766,12 @@ function removeProject(id, ev){
   if(ev) ev.stopPropagation();
   const p = state.projects.find(p=>p.id===id);
   if(!p) return;
-  if(!confirm(`Tem certeza que quer excluir o projeto "${p.nome}" e todo o histórico de versões dele? Essa ação não pode ser desfeita.`)) return;
-  state.projects = state.projects.filter(p=>p.id!==id);
-  if(state.currentProjectId===id) state.currentProjectId = null;
-  saveState(); renderProjects();
+  openConfirmModal(`Tem certeza que quer excluir o projeto "${p.nome}" e todo o histórico de versões dele? Essa ação não pode ser desfeita.`, ()=>{
+    state.projects = state.projects.filter(p=>p.id!==id);
+    if(state.currentProjectId===id) state.currentProjectId = null;
+    saveState(); renderProjects();
+    showToast('Projeto excluído.');
+  });
 }
 function openProjectDetail(id){
   state.currentProjectId = id;
@@ -3266,6 +3833,7 @@ function registerProjectVersion(){
   const ia = document.getElementById('pvIa').value;
   const conta = document.getElementById('pvConta').value.trim();
   const conversa = document.getElementById('pvConversa').value.trim();
+  const estagio = document.getElementById('pvEstagio').value;
   const resumo = document.getElementById('pvResumo').value.trim();
   const observacoes = document.getElementById('pvObservacoes').value.trim();
   const fileInput = document.getElementById('pvZip');
@@ -3275,12 +3843,13 @@ function registerProjectVersion(){
   const finalize = (zipData, zipName, zipSize)=>{
     const now = new Date().toISOString();
     const entry = {
-      id: uid(), versao, data: now, ia, conta, conversa, resumo, observacoes,
+      id: uid(), versao, data: now, ia, conta, conversa, estagio, resumo, observacoes,
       zipName: zipName || null, zipData: zipData || null, zipSize: zipSize || null
     };
     p.versions.unshift(entry);
-    p.currentVersion = { versao, resumo, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
+    p.currentVersion = { versao, resumo, observacoes, estagio, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
     p.ultimaAtualizacao = { conta, data: now, versao };
+    if(estagio) p.status = estagio;
     p.status = p.status || 'desenvolvimento';
     saveState(); renderProjects();
     toggleNewProjectVersionForm(false);
@@ -3348,10 +3917,13 @@ function addProjectResource(){
   showToast('Recurso adicionado.');
 }
 function removeProjectResource(resId){
-  const p = currentProject();
-  if(!p) return;
-  p.resources = p.resources.filter(r=>r.id!==resId);
-  saveState(); renderProjects();
+  openConfirmModal('Tem certeza que deseja excluir este recurso? Esta ação não poderá ser desfeita.', ()=>{
+    const p = currentProject();
+    if(!p) return;
+    p.resources = p.resources.filter(r=>r.id!==resId);
+    saveState(); renderProjects();
+    showToast('Recurso excluído.');
+  });
 }
 const PROJECT_STATUS_LABELS = { desenvolvimento:'Em desenvolvimento', pausado:'Pausado', finalizado:'Finalizado' };
 const PROJECT_RESOURCE_ICONS = {
@@ -3393,13 +3965,6 @@ function renderProjectDetail(p){
     </div>
   `;
 
-  document.getElementById('projInfo').innerHTML = `
-    <div class="proj-info-row"><span class="k">Projeto criado em</span><span class="val">${fmtDate(p.criadoEm)}</span></div>
-    <div class="proj-info-row"><span class="k">IA utilizada</span><span class="val">${escapeHtml(p.ferramenta)}</span></div>
-    <div class="proj-info-row"><span class="k">Conta</span><input type="text" value="${escapeHtml(p.infoConta||'')}" placeholder="e-mail" onchange="updateProjectField('infoConta', this.value)"></div>
-    <div class="proj-info-row"><span class="k">Conversa</span><input type="text" value="${escapeHtml(p.infoConversa||'')}" placeholder="link/referência" onchange="updateProjectField('infoConversa', this.value)"></div>
-  `;
-
   const cp = p.contaPrincipal || {ia:'',conta:'',conversa:''};
   document.getElementById('projMainAccount').innerHTML = `
     <div class="proj-info-row"><span class="k">IA utilizada</span><input type="text" value="${escapeHtml(cp.ia||'')}" onchange="updateProjectMainAccountField('ia', this.value)"></div>
@@ -3416,9 +3981,10 @@ function renderProjectDetail(p){
   const cv = p.currentVersion;
   document.getElementById('projCurrentVersion').innerHTML = cv ? `
     <div class="proj-version-box">
-      <div class="proj-version-name">${escapeHtml(cv.versao)}</div>
+      <div class="proj-version-name">${escapeHtml(cv.versao)} ${cv.estagio?`<span class="proj-stage-badge stage-${cv.estagio}">${PROJECT_STATUS_LABELS[cv.estagio]||cv.estagio}</span>`:''}</div>
       ${cv.zipName ? `<div class="proj-version-file">📎 ${escapeHtml(cv.zipName)} ${cv.zipSize?`· ${fmtBytes(cv.zipSize)}`:''}</div>` : `<div class="proj-version-file">nenhum arquivo anexado</div>`}
       ${cv.resumo ? `<div class="proj-version-resumo">${escapeHtml(cv.resumo)}</div>` : ''}
+      ${cv.observacoes ? `<div class="proj-version-resumo" style="opacity:.75;margin-top:6px;">📝 ${escapeHtml(cv.observacoes)}</div>` : ''}
       <div class="proj-version-actions">
         ${cv.zipData ? `<button class="proj-dl-btn" onclick="downloadCurrentVersionZip()">⬇ baixar ZIP atual</button>` : ''}
       </div>
@@ -3430,7 +3996,7 @@ function renderProjectDetail(p){
     <div class="timeline-item">
       <div class="timeline-dot"></div>
       <div class="timeline-card">
-        <div class="timeline-version">${escapeHtml(v.versao)}</div>
+        <div class="timeline-version">${escapeHtml(v.versao)} ${v.estagio?`<span class="proj-stage-badge stage-${v.estagio}">${PROJECT_STATUS_LABELS[v.estagio]||v.estagio}</span>`:''}</div>
         <div class="timeline-date">${fmtDateTime(v.data)}</div>
         <div class="timeline-meta">
           ${v.conta?`<span>👤 ${escapeHtml(v.conta)}</span>`:''}
@@ -3438,7 +4004,7 @@ function renderProjectDetail(p){
           ${v.ia?`<span>🤖 ${escapeHtml(v.ia)}</span>`:''}
         </div>
         ${v.resumo?`<div class="timeline-resumo">${escapeHtml(v.resumo)}</div>`:''}
-        ${v.observacoes?`<div class="timeline-resumo" style="opacity:.7;margin-top:4px;">${escapeHtml(v.observacoes)}</div>`:''}
+        ${v.observacoes?`<div class="timeline-resumo" style="opacity:.7;margin-top:4px;">📝 ${escapeHtml(v.observacoes)}</div>`:''}
         ${v.zipData?`<div class="proj-version-actions"><button class="proj-dl-btn" onclick="downloadVersionZip('${v.id}')">⬇ ${escapeHtml(v.zipName||'baixar ZIP')}</button></div>`:''}
       </div>
     </div>
@@ -3471,7 +4037,7 @@ function renderProjects(){
     detailWrap.style.display = 'none';
     const grid = document.getElementById('projectsGrid');
     grid.innerHTML = state.projects.length===0
-      ? '<div class="empty">nenhum projeto cadastrado ainda — use o + Novo Projeto acima pra começar.</div>'
+      ? '<div class="empty-block"><div class="empty-block-icon">📦</div><div class="empty-block-title">Nenhum projeto cadastrado ainda</div><div class="empty-block-sub">Use o + Novo Projeto acima pra começar a acompanhar a evolução do seu projeto.</div></div>'
       : state.projects.map(renderProjectCard).join('');
   }
 }
@@ -3571,19 +4137,20 @@ function reorderArray(key, ids){
 }
 function setupDragHandlers(){
   attachSortable('urgentList', reorderTasksGroup);
-  attachSortable('structuralList', reorderTasksGroup);
+  attachSortable('processosList', ids=>reorderArray('processos', ids));
   attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
   attachSortable('miningList', ids=>reorderArray('mining', ids));
   attachSortable('videosList', ids=>reorderArray('videos', ids));
+  attachSortable('toolsList', ids=>reorderArray('tools', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
   attachSortable('funnelLinksList', ids=>{ reorderFunnelLinks(ids); renderProducts(); });
 }
 
-loadState().then(setupDragHandlers);
+// inicialização controlada por sb.auth.onAuthStateChange (ver acima)
 applyHideValuesPreference();
 </script>
 </body>
