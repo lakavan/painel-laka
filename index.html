@@ -912,6 +912,15 @@
   }
   .product-card-name{font-family:var(--display);font-weight:700;font-size:14px;word-break:break-word;}
   .product-card-tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .product-status-badge{
+    display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;
+    background:var(--surface3);border:1px solid var(--border);border-radius:6px;
+    padding:3px 9px;margin-bottom:8px;
+  }
+  .product-card-checklist{display:flex;flex-direction:column;gap:3px;margin-top:4px;}
+  .product-card-checklist span{font-size:11px;font-family:var(--mono);}
+  .product-card-checklist .ok{color:var(--green);}
+  .product-card-checklist .pending{color:var(--muted2);}
   .tool-card:hover{border-color:var(--blue);transform:translateY(-2px);}
   .tool-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
@@ -1466,6 +1475,21 @@
 
       <div id="productDetail" style="display:none;">
         <div class="panel full">
+          <div class="panel-head"><h2>Status do produto</h2></div>
+          <div class="add-row">
+            <select id="productStatusSelect" onchange="handleProductStatusChange(this.value)"></select>
+          </div>
+          <div id="newStatusRow" style="display:none;margin-top:10px;">
+            <div class="add-row">
+              <input type="text" id="newStatusEmoji" placeholder="emoji (ex: 🚀)" style="max-width:90px;">
+              <input type="text" id="newStatusLabel" placeholder="nome do status (ex: Aguardando aprovação)">
+              <button class="add" onclick="createCustomProductStatus()">salvar status</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewStatusRow(false)">cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel full">
           <div class="panel-head"><h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2></div>
           <div id="funnelLinksList" class="funnel-wrap"></div>
           <div class="add-row">
@@ -1632,7 +1656,7 @@
       <div id="projectsListWrap">
         <div class="panel full">
           <div class="panel-head">
-            <h2><span class="sub">histórico da evolução de cada projeto construído com IA</span>📦 Projetos</h2>
+            <h2><span class="sub">histórico da evolução de cada projeto construído com IA</span>Projetos</h2>
             <button class="add-tool-btn" id="newProjectToggleBtn" onclick="toggleNewProjectForm(true)">+ Novo Projeto</button>
           </div>
           <div class="add-form" id="newProjectRow">
@@ -1663,7 +1687,7 @@
         <button class="back-btn" onclick="closeProjectDetail()">← voltar aos projetos</button>
 
         <div class="project-detail-head">
-          <div class="project-detail-title" id="projDetailTitle">📦 —</div>
+          <div class="project-detail-title" id="projDetailTitle">—</div>
           <div class="project-detail-tool" id="projDetailTool">💻 —</div>
         </div>
 
@@ -1830,6 +1854,7 @@ const defaultState = {
   tools: [],
   warmupGroups: [],
   customGateways: [],
+  customProductStatuses: [],
   projects: [],
   currentProjectId: null,
   checklist: {
@@ -1849,7 +1874,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], projects:[], currentProjectId:null, processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -2148,7 +2173,7 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -2159,6 +2184,7 @@ async function loadState(){
       if(!state.tools) state.tools = [];
       if(!state.warmupGroups) state.warmupGroups = [];
       if(!state.customGateways) state.customGateways = [];
+      if(!state.customProductStatuses) state.customProductStatuses = [];
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
       if(!state.processos){
@@ -2961,17 +2987,22 @@ function renderProductSelect(){
   }
   el.innerHTML = state.products.map(p=>{
     const selected = state.currentProductId === p.id;
-    const nMsgs = (p.recovery||[]).length + (p.delivery||[]).length + (p.objections||[]).length;
     const nLinks = (p.funnelLinks||[]).length;
+    const hasFunil = nLinks > 0;
+    const hasRecovery = (p.recovery||[]).some(s=>(s.variations||[]).some(v=>v.texto && v.texto.trim()));
+    const hasDelivery = (p.delivery||[]).some(s=>(s.variations||[]).some(v=>v.texto && v.texto.trim()));
+    const st = findProductStatus(p.status);
     return `
     <div class="product-card ${selected?'selected':''}" onclick="selectProduct('${p.id}')">
       <div class="product-card-head">
         <span class="product-card-ico">🧩</span>
         <div class="product-card-name">${escapeHtml(p.nome)}</div>
       </div>
-      <div class="product-card-tags">
-        <span class="tool-cat">${nLinks} link${nLinks===1?'':'s'} de funil</span>
-        <span class="tool-cat" style="color:var(--green);background:var(--green-soft);">${nMsgs} mensage${nMsgs===1?'m':'ns'}</span>
+      ${st ? `<span class="product-status-badge">${st.emoji} ${escapeHtml(st.label)}</span>` : ''}
+      <div class="product-card-checklist">
+        <span class="${hasFunil?'ok':'pending'}">${hasFunil?'✓':'○'} Funil ${hasFunil?'pronto':'pendente'}</span>
+        <span class="${hasRecovery?'ok':'pending'}">${hasRecovery?'✓':'○'} Recuperação ${hasRecovery?'configurada':'pendente'}</span>
+        <span class="${hasDelivery?'ok':'pending'}">${hasDelivery?'✓':'○'} Entrega ${hasDelivery?'configurada':'pendente'}</span>
       </div>
     </div>`;
   }).join('');
@@ -2987,7 +3018,7 @@ function addProduct(){
   const input = document.getElementById('newProductName');
   if(!input.value.trim()) return;
   const id = uid();
-  state.products.push({id, nome:input.value.trim(), funnelLinks:[], recovery:[], delivery:[], objections:[]});
+  state.products.push({id, nome:input.value.trim(), status:'pendente', funnelLinks:[], recovery:[], delivery:[], objections:[]});
   input.value = '';
   state.currentProductId = id;
   toggleNewProductRow(false);
@@ -2998,6 +3029,61 @@ function selectProduct(id){
   state.currentProductId = id || null;
   saveState(); renderProducts();
 }
+const PRODUCT_STATUS_BASE = [
+  {id:'pendente', emoji:'🟡', label:'Pendente'},
+  {id:'funil_dev', emoji:'🔵', label:'Funil em desenvolvimento'},
+  {id:'funil_pronto', emoji:'🟢', label:'Funil pronto'},
+  {id:'validacao', emoji:'🧪', label:'Em validação'},
+  {id:'escalando', emoji:'📈', label:'Escalando'},
+  {id:'pausado', emoji:'⏸️', label:'Pausado'},
+];
+function allProductStatuses(){
+  return [...PRODUCT_STATUS_BASE, ...(state.customProductStatuses||[])];
+}
+function findProductStatus(id){
+  return allProductStatuses().find(s=>s.id===id) || null;
+}
+function renderProductStatusSelect(){
+  const sel = document.getElementById('productStatusSelect');
+  if(!sel) return;
+  const p = currentProduct();
+  if(!p) return;
+  sel.innerHTML = '<option value="">sem status definido</option>'
+    + allProductStatuses().map(s=>`<option value="${s.id}" ${p.status===s.id?'selected':''}>${s.emoji} ${escapeHtml(s.label)}</option>`).join('')
+    + '<option value="__new__">+ criar novo status...</option>';
+}
+function handleProductStatusChange(value){
+  if(value==='__new__'){
+    renderProductStatusSelect();
+    toggleNewStatusRow(true);
+    return;
+  }
+  const p = currentProduct();
+  if(!p) return;
+  p.status = value || '';
+  saveState(); renderProducts();
+}
+function toggleNewStatusRow(show){
+  document.getElementById('newStatusRow').style.display = show ? 'block' : 'none';
+  if(!show){
+    document.getElementById('newStatusEmoji').value='';
+    document.getElementById('newStatusLabel').value='';
+  }
+}
+function createCustomProductStatus(){
+  const emoji = document.getElementById('newStatusEmoji').value.trim() || '🏷️';
+  const label = document.getElementById('newStatusLabel').value.trim();
+  if(!label) return;
+  if(!state.customProductStatuses) state.customProductStatuses = [];
+  const id = 'custom_' + uid();
+  state.customProductStatuses.push({id, emoji, label});
+  const p = currentProduct();
+  if(p) p.status = id;
+  toggleNewStatusRow(false);
+  saveState(); renderProducts();
+  showToast('Status criado.');
+}
+
 function currentProduct(){
   return state.products.find(p=>p.id===state.currentProductId);
 }
@@ -3176,6 +3262,7 @@ function renderProducts(){
   }
   detail.style.display = 'block';
   emptyMsg.style.display = 'none';
+  renderProductStatusSelect();
   document.getElementById('funnelLinksList').innerHTML = funnelLinksHtml(product.funnelLinks||[]);
   document.getElementById('recoveryStepsList').innerHTML = stepsHtml(product.recovery, 'recovery');
   document.getElementById('deliveryStepsList').innerHTML = stepsHtml(product.delivery, 'delivery');
@@ -3553,7 +3640,8 @@ function addMiningEntry(){
   const today = new Date().toLocaleDateString('pt-BR');
   state.mining.push({
     id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, checkout, link, funil, checkoutLink, descricao, observacao,
-    history: anuncios ? [{date:today, anuncios}] : []
+    origem: 'manual',
+    history: anuncios ? [{date:today, anuncios, origem:'manual'}] : []
   });
   nome.value=''; document.getElementById('miningPagina').value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
   document.getElementById('miningTicket').value=''; document.getElementById('miningCheckout').value='';
@@ -3579,14 +3667,31 @@ function updateMiningField(id, field, value){
     const newVal = Number(value)||0;
     if(newVal !== item.anuncios){
       if(!item.history) item.history = [];
-      item.history.push({date:new Date().toLocaleDateString('pt-BR'), anuncios:newVal});
+      item.history.push({date:new Date().toLocaleDateString('pt-BR'), anuncios:newVal, origem:'manual'});
     }
     item.anuncios = newVal;
+    item.origem = 'manual';
   } else {
     item[field] = value;
   }
   saveState(); renderMining();
 }
+/* ---------- INTEGRAÇÃO FUTURA: atualização automática de anúncios ativos ----------
+   Hoje a quantidade de anúncios ativos é sempre preenchida manualmente (item.origem = 'manual').
+   Quando existir uma fonte de dados automática (ex: Meta Ad Library, ou uma API própria de
+   monitoramento), essa função é o ponto de entrada: ela deve buscar o número atualizado de
+   anúncios ativos a partir do link cadastrado em item.link (biblioteca de anúncios), e então
+   chamar updateMiningField(item.id, 'anuncios', novoValor) normalmente — o histórico e a UI já
+   funcionam automaticamente com base nisso, só marcando item.origem = 'auto' nesse caso.
+   Enquanto não houver uma fonte configurada, essa função não faz nada (retorna null). */
+async function fetchAdsCountFromSource(miningItem){
+  // TODO: implementar quando houver uma fonte de dados disponível (ex: Meta Ad Library API).
+  // Exemplo de uso futuro:
+  //   const count = await fetchAdsCountFromSource(item);
+  //   if(count !== null){ item.origem = 'auto'; updateMiningField(item.id, 'anuncios', count); }
+  return null;
+}
+
 function stepMiningAnuncios(id, delta){
   const item = state.mining.find(m=>m.id===id);
   if(!item) return;
@@ -4480,7 +4585,7 @@ function renderProjectCard(p){
   return `
   <div class="tool-card project-card" data-id="${p.id}" onclick="openProjectDetail('${p.id}')">
     <div class="tool-card-head">
-      <div class="project-card-name">📦 ${escapeHtml(p.nome)}</div>
+      <div class="project-card-name">${escapeHtml(p.nome)}</div>
       <button class="del-btn" onclick="removeProject('${p.id}', event)">✕</button>
     </div>
     <div class="project-card-meta">
@@ -4494,7 +4599,7 @@ function renderProjectCard(p){
   </div>`;
 }
 function renderProjectDetail(p){
-  document.getElementById('projDetailTitle').innerText = `📦 ${p.nome}`;
+  document.getElementById('projDetailTitle').innerText = p.nome;
   document.getElementById('projDetailTool').innerText = `💻 ${p.ferramenta}`;
 
   const statusKey = p.status || 'desenvolvimento';
