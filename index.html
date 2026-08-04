@@ -68,6 +68,8 @@
     letter-spacing:-0.005em;
   }
   .wrap{max-width:1280px;margin:0 auto;}
+  @media(min-width:1500px){ .wrap{max-width:1440px;} }
+  @media(min-width:1800px){ .wrap{max-width:1600px;} }
   ::-webkit-scrollbar{width:10px;height:10px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
@@ -1168,26 +1170,28 @@
       </div>
     </div>
 
-    <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
-      <div class="planner-focus">
-        <label class="field-label">foco da semana</label>
-        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
+    <div class="row-two">
+      <div class="panel">
+        <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
+        <div class="planner-focus">
+          <label class="field-label">foco da semana</label>
+          <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
+        </div>
+        <div class="planner-days" id="plannerDays"></div>
       </div>
-      <div class="planner-days" id="plannerDays"></div>
-    </div>
 
-    <div class="panel full">
-      <div class="panel-head"><h2>Diário da operação</h2></div>
-      <div id="logList"></div>
-      <div class="add-row" style="flex-direction:column;">
-        <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
-        <div style="display:flex;gap:6px;">
-          <select id="logType" style="flex:1;">
-            <option value="win">funcionou</option>
-            <option value="problem">travou / problema</option>
-          </select>
-          <button class="add" onclick="addLog()">+ registrar</button>
+      <div class="panel">
+        <div class="panel-head"><h2>Diário da operação</h2></div>
+        <div id="logList"></div>
+        <div class="add-row" style="flex-direction:column;">
+          <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
+          <div style="display:flex;gap:6px;">
+            <select id="logType" style="flex:1;">
+              <option value="win">funcionou</option>
+              <option value="problem">travou / problema</option>
+            </select>
+            <button class="add" onclick="addLog()">+ registrar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1402,19 +1406,29 @@
       </div>
 
       <div id="productDetail" style="display:none;">
-        <div class="panel full">
-          <div class="panel-head"><h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2></div>
+        <div class="panel full" id="funnelPanel">
+          <div class="panel-head">
+            <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
+            <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar link</button>
+          </div>
           <div id="funnelLinksList" class="funnel-wrap"></div>
+          <div class="add-form" id="newFunnelLinkRow">
           <div class="add-row">
             <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
             <input type="text" id="funnelLinkUrl" placeholder="link/URL">
             <button class="add" onclick="addFunnelLink()">+ add</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewFunnelLinkForm(false)">cancelar</button>
+          </div>
           </div>
         </div>
 
-        <div class="panel full">
-          <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
+        <div class="panel full" id="phonesPanel">
+          <div class="panel-head">
+            <h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
+            <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
+          </div>
           <div id="phonesList"></div>
+          <div class="add-form" id="newPhoneRow">
           <div class="add-row">
             <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
             <input type="text" id="phoneProduto" placeholder="produto/uso">
@@ -1424,6 +1438,8 @@
               <option value="queimado">queimado</option>
             </select>
             <button class="add" onclick="addPhone()">+ add</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
+          </div>
           </div>
         </div>
 
@@ -2734,6 +2750,15 @@ function removePlannerItem(dayKey, id){
 }
 
 /* ---------- NÚMEROS DE RECUPERAÇÃO ---------- */
+function toggleNewPhoneForm(show){
+  document.getElementById('newPhoneRow').classList.toggle('open', show);
+  document.getElementById('newPhoneToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('phonesPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('phoneNumero').focus(); }
+  else{
+    document.getElementById('phoneNumero').value=''; document.getElementById('phoneProduto').value='';
+  }
+}
 function renderPhones(){
   const el = document.getElementById('phonesList');
   if(state.phones.length===0){ el.innerHTML='<div class="empty">nenhum número cadastrado.</div>'; return; }
@@ -2751,8 +2776,9 @@ function addPhone(){
   const status = document.getElementById('phoneStatus').value;
   if(!numero.value.trim()) return;
   state.phones.push({id:uid(), numero:numero.value.trim(), produto, status});
-  numero.value=''; document.getElementById('phoneProduto').value='';
   saveState(); renderPhones();
+  toggleNewPhoneForm(false);
+  showToast('Número adicionado.');
 }
 function removePhone(id){
   openConfirmModal('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{
@@ -2799,6 +2825,15 @@ function funnelWidth(idx, total){
 }
 
 /* --- links do funil --- */
+function toggleNewFunnelLinkForm(show){
+  document.getElementById('newFunnelLinkRow').classList.toggle('open', show);
+  document.getElementById('newFunnelLinkToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('funnelPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('funnelLinkNome').focus(); }
+  else{
+    document.getElementById('funnelLinkNome').value=''; document.getElementById('funnelLinkUrl').value='';
+  }
+}
 function addFunnelLink(){
   const product = currentProduct();
   if(!product) return;
@@ -2806,8 +2841,9 @@ function addFunnelLink(){
   const url = document.getElementById('funnelLinkUrl');
   if(!nome.value.trim()) return;
   product.funnelLinks.push({id:uid(), nome:nome.value.trim(), url:url.value.trim()});
-  nome.value=''; url.value='';
   saveState(); renderProducts();
+  toggleNewFunnelLinkForm(false);
+  showToast('Link adicionado.');
 }
 function removeFunnelLink(id){
   openConfirmModal('Tem certeza que deseja excluir este link? Esta ação não poderá ser desfeita.', ()=>{
@@ -4380,18 +4416,21 @@ function renderProjects(){
 
 
 /* ---------- DRAG & DROP (fluid, Trello/Notion-style, FLIP animated) ---------- */
-function getAfterElement(container, y, dragging){
-  const els = [...container.querySelectorAll(':scope > [data-id]')].filter(el=>el!==dragging);
-  return els.reduce((closest, child)=>{
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height/2;
-    if(offset<0 && offset>closest.offset) return {offset, element:child};
-    return closest;
-  }, {offset:-Infinity}).element;
-}
-// Watchdog global: se um arraste anterior nunca terminou corretamente (ex.: captura de
-// ponteiro falhou em algum navegador/webview mobile), o próximo pointerdown força a limpeza
-// dele antes de começar um novo arraste — isso é o que evita o card "preso" pra sempre.
+// ---------- MOTOR DE ARRASTAR-E-SOLTAR (v2 — fluido) ----------
+// Reescrito do zero pensando em performance: a versão anterior recalculava a posição de
+// TODOS os itens (getBoundingClientRect) e reordenava o DOM (insertBefore) a cada frame do
+// mouse/dedo — isso força o navegador a recalcular o layout da página inteira dezenas de
+// vezes por segundo, e é exatamente isso que trava/engasga, principalmente no computador
+// (mouse gera muito mais eventos de movimento por segundo que o touch).
+//
+// Nova estratégia (é assim que bibliotecas de drag profissionais fazem):
+//  1) Mede a posição de todos os itens UMA VEZ, no momento em que o arraste começa.
+//  2) Durante o arraste, NADA é medido de novo e o DOM não é tocado. O item arrastado só
+//     recebe um `transform: translateY()` (isso é resolvido pela GPU, não gera reflow) que
+//     segue o cursor 1:1 sem atraso. Os outros itens só ganham um `transform` pra abrir/fechar
+//     espaço, e só quando a posição-alvo realmente muda — não a cada pixel.
+//  3) O DOM só é reordenado de verdade UMA VEZ, no exato momento em que o usuário solta.
+// Resultado: zero jank durante o arraste, independente de quantos itens a lista tiver.
 let activeDragCleanup = null;
 function attachSortable(containerId, onReordered){
   const container = document.getElementById(containerId);
@@ -4407,71 +4446,118 @@ function attachSortable(containerId, onReordered){
 
     const pointerId = e.pointerId;
     const startY = e.clientY;
-    const baseTop = dragging.getBoundingClientRect().top;
-    let moved = false;
-    let lastY = e.clientY;
-    let rafPending = false;
     let ended = false;
+    let moved = false;
+
+    // 1) medição única
+    const items = [...container.querySelectorAll(':scope > [data-id]')];
+    const startIndex = items.indexOf(dragging);
+    const rects = items.map(el => el.getBoundingClientRect());
+    const gapGuess = items.length > 1
+      ? Math.max(0, rects[1].top - (rects[0].top + rects[0].height))
+      : 8;
+    const dragH = rects[startIndex].height;
+    const shiftAmount = dragH + gapGuess;
+    let currentIndex = startIndex;
 
     dragging.classList.add('dragging');
+    dragging.style.willChange = 'transform';
+    dragging.style.transition = 'none';
+    dragging.style.zIndex = '40';
     try{ handle.setPointerCapture(pointerId); }catch(err){ /* segue sem capture, os listeners de window cobrem isso */ }
     document.body.style.userSelect = 'none';
     document.body.style.cursor = 'grabbing';
 
-    const siblings = ()=> [...container.querySelectorAll(':scope > [data-id]')].filter(el=>el!==dragging);
-    const captureRects = ()=>{
-      const map = new Map();
-      siblings().forEach(el=> map.set(el, el.getBoundingClientRect()));
-      return map;
-    };
-    const flip = (before)=>{
-      siblings().forEach(el=>{
-        const prev = before.get(el);
-        if(!prev) return;
-        const now = el.getBoundingClientRect();
-        const dy = prev.top - now.top;
-        if(Math.abs(dy) > 0.5){
-          el.style.transition = 'none';
-          el.style.transform = `translateY(${dy}px)`;
-          requestAnimationFrame(()=>{
-            el.style.transition = 'transform .22s cubic-bezier(.22,.85,.32,1)';
-            el.style.transform = '';
-          });
-        }
+    // 2) só re-transforma quando o índice-alvo muda de verdade
+    const applyShift = (newIndex)=>{
+      if(newIndex === currentIndex) return;
+      items.forEach((el, i)=>{
+        if(el === dragging) return;
+        let shift = 0;
+        if(i > startIndex && i <= newIndex) shift = -shiftAmount;
+        else if(i < startIndex && i >= newIndex) shift = shiftAmount;
+        el.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
+        el.style.transform = shift ? `translateY(${shift}px)` : '';
       });
+      currentIndex = newIndex;
     };
 
+    const computeTargetIndex = (draggingCenter)=>{
+      let idx = startIndex;
+      for(let i=0;i<items.length;i++){
+        if(i===startIndex) continue;
+        const center = rects[i].top + rects[i].height/2;
+        if(i < startIndex && draggingCenter < center){ idx = Math.min(idx, i); }
+        if(i > startIndex && draggingCenter > center){ idx = Math.max(idx, i); }
+      }
+      return idx;
+    };
+
+    // auto-scroll da página quando o arraste chega perto da borda da tela
+    let autoScrollRaf = null;
+    let pointerClientY = e.clientY;
+    const AUTOSCROLL_EDGE = 90, AUTOSCROLL_MAX = 18;
+    const autoScrollTick = ()=>{
+      const vh = window.innerHeight;
+      let dy = 0;
+      if(pointerClientY < AUTOSCROLL_EDGE) dy = -AUTOSCROLL_MAX * (1 - pointerClientY/AUTOSCROLL_EDGE);
+      else if(pointerClientY > vh - AUTOSCROLL_EDGE) dy = AUTOSCROLL_MAX * (1 - (vh - pointerClientY)/AUTOSCROLL_EDGE);
+      if(dy) window.scrollBy(0, dy);
+      autoScrollRaf = requestAnimationFrame(autoScrollTick);
+    };
+    autoScrollRaf = requestAnimationFrame(autoScrollTick);
+
+    let rafPending = false;
+    let lastY = e.clientY;
+    let scrollDelta = 0;
+    const startScrollY = window.scrollY;
     const applyMove = ()=>{
       rafPending = false;
-      const before = captureRects();
-      const after = getAfterElement(container, lastY, dragging);
-      const prevNext = dragging.nextElementSibling;
-      if(after == null){ if(container.lastElementChild!==dragging) container.appendChild(dragging); }
-      else if(after !== dragging && after !== prevNext) container.insertBefore(dragging, after);
-      dragging.style.transform = '';
-      const newTop = dragging.getBoundingClientRect().top;
-      const desiredTop = baseTop + (lastY - startY);
-      dragging.style.transform = `translateY(${desiredTop - newTop}px) scale(1.015)`;
-      flip(before);
+      scrollDelta = window.scrollY - startScrollY;
+      const deltaY = (lastY - startY) + scrollDelta;
+      dragging.style.transform = `translateY(${deltaY}px) scale(1.015)`;
+      const draggingCenter = rects[startIndex].top + rects[startIndex].height/2 + deltaY;
+      applyShift(computeTargetIndex(draggingCenter));
     };
     // pointermove/pointerup/pointercancel ficam em `window`, não na alça. Assim o arraste
-    // continua funcionando mesmo se o dedo escorregar pra fora do ícone ⠿ ou se
+    // continua funcionando mesmo se o dedo/mouse escorregar pra fora do ícone ⠿ ou se
     // setPointerCapture não for suportado/honrado pelo navegador (comum em alguns
     // webviews/apps in-app no Android e iOS) — é essa dependência da captura, com os
     // listeners presos só na alça, que causava o card ficar "preso" no meio do arraste.
     const onMove = (ev)=>{
       if(ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
       lastY = ev.clientY;
+      pointerClientY = ev.clientY;
       if(Math.abs(ev.clientY - startY) > 2) moved = true;
       if(!rafPending){ rafPending = true; requestAnimationFrame(applyMove); }
+    };
+    const finish = ()=>{
+      dragging.classList.remove('dragging');
+      dragging.style.willChange = '';
+      dragging.style.zIndex = '';
+      dragging.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
+      dragging.style.transform = '';
+      items.forEach(el=>{ if(el!==dragging){ el.style.transition = ''; el.style.transform = ''; } });
+      setTimeout(()=>{ dragging.style.transition = ''; }, 200);
+
+      if(moved && currentIndex !== startIndex){
+        // 3) única reordenação real do DOM, feita de uma vez só
+        const withoutDragging = items.filter(el=>el!==dragging);
+        const insertAt = Math.max(0, Math.min(currentIndex, withoutDragging.length));
+        const frag = document.createDocumentFragment();
+        withoutDragging.slice(0, insertAt).forEach(el=>frag.appendChild(el));
+        frag.appendChild(dragging);
+        withoutDragging.slice(insertAt).forEach(el=>frag.appendChild(el));
+        container.appendChild(frag);
+        const ids = Array.from(container.querySelectorAll(':scope > [data-id]')).map(el=>el.dataset.id);
+        onReordered(ids);
+      }
     };
     const onEnd = (ev)=>{
       if(ended) return;
       if(ev && ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
       ended = true;
-      dragging.classList.remove('dragging');
-      dragging.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
-      dragging.style.transform = '';
+      if(autoScrollRaf) cancelAnimationFrame(autoScrollRaf);
       document.body.style.userSelect = '';
       document.body.style.cursor = '';
       window.removeEventListener('pointermove', onMove);
@@ -4481,11 +4567,7 @@ function attachSortable(containerId, onReordered){
       document.removeEventListener('visibilitychange', onVisChange);
       try{ handle.releasePointerCapture(pointerId); }catch(err){}
       if(activeDragCleanup === onEnd) activeDragCleanup = null;
-      setTimeout(()=>{ dragging.style.transition = ''; }, 200);
-      if(moved){
-        const ids = Array.from(container.querySelectorAll(':scope > [data-id]')).map(el=>el.dataset.id);
-        onReordered(ids);
-      }
+      finish();
     };
     // rede de segurança: troca de app, notificação puxando a tela, ou minimizar o
     // navegador no meio do arraste também disparam a limpeza — nunca fica pendurado.
@@ -4500,6 +4582,7 @@ function attachSortable(containerId, onReordered){
     activeDragCleanup = onEnd;
   });
 }
+
 function reorderTasksGroup(ids){
   const idSet = new Set(ids);
   const groupItems = ids.map(id => state.tasks.find(t=>t.id===id)).filter(Boolean);
