@@ -340,6 +340,40 @@
   .item.done .processo-desc{opacity:0.7;}
   .processo-edit-btn{background:none;border:none;color:var(--muted2);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;transition:color .15s;}
   .processo-edit-btn:hover{color:var(--blue-bright);}
+
+  /* ---------- PROCESSOS: cartões de fase com tópicos ---------- */
+  .processo-card{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--processo-accent, var(--blue));border-radius:12px;margin-bottom:10px;overflow:hidden;transition:box-shadow .18s, border-color .18s;}
+  .processo-card.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
+  .processo-card.done .processo-card-title{opacity:0.5;text-decoration:line-through;}
+  .processo-card-head{display:flex;align-items:center;gap:10px;padding:12px 12px;}
+  .processo-icon{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:color-mix(in srgb, var(--processo-accent, var(--blue)) 18%, transparent);border:1px solid color-mix(in srgb, var(--processo-accent, var(--blue)) 35%, transparent);}
+  .processo-card-title{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:13.5px;cursor:pointer;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .processo-topico-count{font-family:var(--mono);font-size:10px;font-weight:400;color:var(--muted2);text-transform:uppercase;letter-spacing:.3px;}
+  .processo-chevron{background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer;padding:4px 6px;flex-shrink:0;transition:color .15s;}
+  .processo-chevron:hover{color:var(--blue-bright);}
+  .processo-card-body{padding:0 14px 14px 50px;display:grid;grid-template-rows:1fr;opacity:1;transition:grid-template-rows .28s cubic-bezier(.4,0,.2,1), opacity .2s ease, padding .28s cubic-bezier(.4,0,.2,1);}
+  .processo-card-body > *{min-height:0;overflow:visible;}
+  .processo-card.collapsed .processo-card-body{grid-template-rows:0fr;opacity:0;padding-top:0;padding-bottom:0;}
+  .processo-card.collapsed .processo-card-body > *{overflow:hidden;}
+  .processo-card.collapsed .processo-chevron{transform:none;}
+  .processo-topicos{list-style:none;margin:0;padding:0;}
+  .processo-topico{display:flex;align-items:flex-start;gap:8px;padding:6px 4px;border-radius:8px;transition:background .15s, box-shadow .18s, border-color .18s;}
+  .processo-topico:hover{background:rgba(255,255,255,0.03);}
+  .processo-topico.dragging{opacity:1;background:var(--surface3);box-shadow:0 10px 24px -6px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);position:relative;z-index:30;}
+  .topico-drag-handle{padding:2px 4px;margin-top:1px;}
+  .topico-bullet{color:var(--blue-bright);font-weight:700;margin-top:1px;flex-shrink:0;}
+  .topico-body{flex:1;min-width:0;}
+  .topico-texto{font-size:12.5px;line-height:1.45;word-break:break-word;}
+  .topico-desc{margin-top:3px;font-size:11.5px;color:var(--muted);line-height:1.5;white-space:pre-wrap;}
+  .processo-topico .processo-edit-btn, .processo-topico .del-btn{opacity:0;transition:opacity .15s;}
+  .processo-topico:hover .processo-edit-btn, .processo-topico:hover .del-btn{opacity:1;}
+  .topico-edit-row{display:flex;flex-direction:column;gap:8px;padding:6px 4px 10px;width:100%;}
+  .add-topico-btn{background:none;border:1px dashed var(--border-strong);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:11.5px;cursor:pointer;margin-top:6px;transition:border-color .15s, color .15s;}
+  .add-topico-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  @media (max-width:640px){
+    .processo-card-body{padding-left:14px;}
+    .processo-topico .processo-edit-btn, .processo-topico .del-btn{opacity:1;}
+  }
   .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
   .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
   .del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:2px 6px;flex-shrink:0;}
@@ -1336,10 +1370,9 @@
         <div id="processosList"></div>
         <div class="add-form collapsible-form" id="newProcessoRow">
           <div class="add-row" style="flex-direction:column;">
-            <input type="text" id="processoTitulo" placeholder="nome da etapa (ex: Validar oferta com 3 dias de anúncio)">
-            <textarea id="processoDescricao" placeholder="descreva o passo a passo dessa etapa..."></textarea>
+            <input type="text" id="processoTitulo" placeholder="nome da fase (ex: Mineração, Validação...)">
             <div class="add-row" style="margin-top:0;">
-              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar etapa</button>
+              <button class="add" style="flex:1;" onclick="addProcesso()">+ adicionar fase</button>
               <button class="add-cost-cancel-btn" onclick="toggleNewProcessoForm(false)">cancelar</button>
             </div>
           </div>
@@ -2067,9 +2100,20 @@ async function loadState(){
       if(state.currentProjectId===undefined) state.currentProjectId = null;
       if(!state.processos){
         state.processos = (state.tasks||[]).filter(t=>t.priority==='estrutural').map(t=>({
-          id: uid(), titulo: t.text || '', descricao: '', concluido: t.status==='done'
+          id: uid(), titulo: t.text || '', concluido: t.status==='done', collapsed:false, topicos:[]
         }));
       }
+      // migração: etapas antigas guardavam um texto único (descricao) com "•" por linha.
+      // convertemos pra uma lista real de tópicos, sem perder nenhuma informação já salva.
+      state.processos.forEach(p=>{
+        if(!Array.isArray(p.topicos)){
+          const linhas = (p.descricao||'').split('\n').map(l=>l.trim()).filter(Boolean);
+          p.topicos = linhas.map(l=>({ id: uid(), texto: l.replace(/^[•\-\*]\s*/,''), descricao:'' }));
+        }
+        delete p.descricao;
+        if(typeof p.collapsed === 'undefined') p.collapsed = false;
+        p.topicos.forEach(t=>{ if(typeof t.descricao !== 'string') t.descricao = ''; });
+      });
       state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
@@ -2204,17 +2248,86 @@ function toggleNewProcessoForm(show){
   if(show) document.getElementById('processoTitulo').focus();
   else{
     document.getElementById('processoTitulo').value = '';
-    document.getElementById('processoDescricao').value = '';
   }
 }
 function addProcesso(){
   const titulo = document.getElementById('processoTitulo');
-  const descricao = document.getElementById('processoDescricao').value.trim();
   if(!titulo.value.trim()) return;
-  state.processos.push({id:uid(), titulo:titulo.value.trim(), descricao, concluido:false});
+  state.processos.push({id:uid(), titulo:titulo.value.trim(), concluido:false, collapsed:false, topicos:[]});
   saveState(); renderProcessos();
   toggleNewProcessoForm(false);
-  showToast('Etapa adicionada.');
+  showToast('Fase adicionada.');
+}
+function toggleProcessoCollapse(id, ev){
+  if(ev) ev.stopPropagation();
+  const p = state.processos.find(p=>p.id===id);
+  if(!p) return;
+  p.collapsed = !p.collapsed;
+  saveState(); renderProcessos();
+}
+function toggleAddTopicoForm(procId, show, ev){
+  if(ev) ev.stopPropagation();
+  const row = document.getElementById('newTopicoRow-'+procId);
+  if(!row) return;
+  row.classList.toggle('open', show);
+  if(show){
+    const input = document.getElementById('novoTopicoTexto-'+procId);
+    if(input) input.focus();
+  } else {
+    const t = document.getElementById('novoTopicoTexto-'+procId);
+    const d = document.getElementById('novoTopicoDesc-'+procId);
+    if(t) t.value = '';
+    if(d) d.value = '';
+  }
+}
+function addTopico(procId){
+  const p = state.processos.find(p=>p.id===procId);
+  if(!p) return;
+  const textoEl = document.getElementById('novoTopicoTexto-'+procId);
+  const descEl = document.getElementById('novoTopicoDesc-'+procId);
+  const texto = (textoEl?.value || '').trim();
+  const descricao = (descEl?.value || '').trim();
+  if(!texto) return;
+  p.topicos.push({id:uid(), texto, descricao});
+  saveState(); renderProcessos();
+  toggleAddTopicoForm(procId, true); // mantém o form aberto pra adicionar vários seguidos
+  document.getElementById('novoTopicoTexto-'+procId).focus();
+  showToast('Tópico adicionado.');
+}
+let topicoEditingId = null;
+function toggleTopicoEdit(procId, topicoId, ev){
+  if(ev) ev.stopPropagation();
+  topicoEditingId = (topicoEditingId===topicoId) ? null : topicoId;
+  renderProcessos();
+}
+function updateTopicoField(procId, topicoId, field, value){
+  const p = state.processos.find(p=>p.id===procId);
+  const t = p && p.topicos.find(t=>t.id===topicoId);
+  if(!t) return;
+  t[field] = value;
+  saveState();
+}
+function saveTopicoEdit(ev){
+  if(ev) ev.stopPropagation();
+  topicoEditingId = null;
+  saveState(); renderProcessos();
+  showToast('Tópico atualizado.');
+}
+function removeTopico(procId, topicoId, ev){
+  if(ev) ev.stopPropagation();
+  openConfirmModal('Tem certeza que deseja excluir este tópico?', ()=>{
+    const p = state.processos.find(p=>p.id===procId);
+    if(!p) return;
+    p.topicos = p.topicos.filter(t=>t.id!==topicoId);
+    saveState(); renderProcessos();
+    showToast('Tópico excluído.');
+  });
+}
+function reorderProcessoTopicos(procId, ids){
+  const p = state.processos.find(p=>p.id===procId);
+  if(!p) return;
+  p.topicos = ids.map(id => p.topicos.find(t=>t.id===id)).filter(Boolean);
+  saveState();
 }
 function toggleProcessoDone(id){
   const p = state.processos.find(p=>p.id===id);
@@ -2238,75 +2351,114 @@ function saveProcessoEdit(id, ev){
   if(ev) ev.stopPropagation();
   processoEditingId = null;
   saveState(); renderProcessos();
-  showToast('Etapa atualizada.');
+  showToast('Fase atualizada.');
 }
 function removeProcesso(id){
-  openConfirmModal('Tem certeza que deseja excluir esta etapa do processo? Esta ação não poderá ser desfeita.', ()=>{
+  openConfirmModal('Tem certeza que deseja excluir esta fase e todos os seus tópicos? Esta ação não poderá ser desfeita.', ()=>{
     state.processos = state.processos.filter(p=>p.id!==id);
     saveState(); renderProcessos();
-    showToast('Etapa excluída.');
+    showToast('Fase excluída.');
   });
 }
 const PROCESSOS_TEMPLATE = [
-  { titulo:'Mineração', descricao:
-`• Minerar ofertas, criativos e funis (Biblioteca de Anúncios, AdHeart, Adspy etc.)
-• Registrar todas as informações no Painel LAKA
-• Acompanhar a performance das ofertas (meta: automatizar isso no futuro)
-• Validar oportunidades pra criar, modelar, clonar ou melhorar` },
-  { titulo:'Estrutura da Oferta', descricao:
-`• Escolher a oferta
-• Preparar domínio, hospedagem, rastreamento e infraestrutura
-• Clonar, criar ou otimizar o funil
-• Configurar toda a operação pra iniciar os testes` },
-  { titulo:'Validação', descricao:
-`• Testar criativos clonados, adaptados e novos
-• Desenvolver novos ângulos de venda
-• Produzir novos criativos com base nos vencedores
-• Validar campanhas
-• Otimizar campanhas
-• Escalar campanhas vencedoras
-• Replicar estratégias` },
-  { titulo:'Produto / Entregável', descricao:
-`• Criar os entregáveis
-• Melhorar continuamente o produto e a experiência do cliente (funil pós-venda)
-• Desenvolver produtos de recorrência
-• Criar novas ofertas dentro do ecossistema
-• Evoluir continuamente o funil de pós-venda` },
-  { titulo:'Monetização', descricao:
-`• Maximizar a conversão do funil
-• Desenvolver upsells, downsells e cross-sells
-• Aumentar ticket médio
-• Aumentar LTV e retenção` },
-  { titulo:'Recuperação de Vendas', descricao:
-`• Estruturar recuperação via WhatsApp, e-mail e automações
-• Recuperar carrinhos e vendas perdidas
-• Melhorar o relacionamento e a recompra no pós-venda` },
-  { titulo:'Automação', descricao:
-`• Automatizar processos operacionais
-• Automatizar criação de criativos e conteúdos
-• Automatizar recuperação de vendas e entrega dos produtos
-• Automatizar marketing, análises e acompanhamento das campanhas
-• Automatizar organização da operação e uso de IA` },
-  { titulo:'Gestão', descricao:
-`• Gerenciar custos, faturamento e lucratividade
-• Organizar ativos, ferramentas e infraestrutura
-• Garantir disponibilidade de contas, perfis, BMs e contingência
-• Planejar prioridades, metas e indicadores` },
-  { titulo:'Expansão', descricao:
-`• Lançar novas ofertas
-• Diversificar fontes de tráfego
-• Expandir pra novos nichos e produtos
-• Escalar a operação de forma sustentável` },
-  { titulo:'Desenvolvimento de Ativos', descricao:
-`• Evoluir o Painel LAKA
-• Desenvolver novos aplicativos e ferramentas com foco em venda recorrente` }
+  { titulo:'Mineração', icone:'🔍', topicos:[
+    'Minerar ofertas, criativos e funis (Biblioteca de Anúncios, AdHeart, Adspy etc.)',
+    'Registrar todas as informações no Painel LAKA',
+    'Acompanhar a performance das ofertas (meta: automatizar isso no futuro)',
+    'Validar oportunidades pra criar, modelar, clonar ou melhorar' ]},
+  { titulo:'Estrutura da Oferta', icone:'📦', topicos:[
+    'Escolher a oferta',
+    'Preparar domínio, hospedagem, rastreamento e infraestrutura',
+    'Clonar, criar ou otimizar o funil',
+    'Configurar toda a operação pra iniciar os testes' ]},
+  { titulo:'Validação', icone:'🎯', topicos:[
+    'Testar criativos clonados, adaptados e novos',
+    'Desenvolver novos ângulos de venda',
+    'Produzir novos criativos com base nos vencedores',
+    'Validar campanhas',
+    'Otimizar campanhas',
+    'Escalar campanhas vencedoras',
+    'Replicar estratégias' ]},
+  { titulo:'Produto / Entregável', icone:'🧩', topicos:[
+    'Criar os entregáveis',
+    'Melhorar continuamente o produto e a experiência do cliente (funil pós-venda)',
+    'Desenvolver produtos de recorrência',
+    'Criar novas ofertas dentro do ecossistema',
+    'Evoluir continuamente o funil de pós-venda' ]},
+  { titulo:'Monetização', icone:'💰', topicos:[
+    'Maximizar a conversão do funil',
+    'Desenvolver upsells, downsells e cross-sells',
+    'Aumentar ticket médio',
+    'Aumentar LTV e retenção' ]},
+  { titulo:'Recuperação de Vendas', icone:'🔁', topicos:[
+    'Estruturar recuperação via WhatsApp, e-mail e automações',
+    'Recuperar carrinhos e vendas perdidas',
+    'Melhorar o relacionamento e a recompra no pós-venda' ]},
+  { titulo:'Automação', icone:'⚡', topicos:[
+    'Automatizar processos operacionais',
+    'Automatizar criação de criativos e conteúdos',
+    'Automatizar recuperação de vendas e entrega dos produtos',
+    'Automatizar marketing, análises e acompanhamento das campanhas',
+    'Automatizar organização da operação e uso de IA' ]},
+  { titulo:'Gestão', icone:'📊', topicos:[
+    'Gerenciar custos, faturamento e lucratividade',
+    'Organizar ativos, ferramentas e infraestrutura',
+    'Garantir disponibilidade de contas, perfis, BMs e contingência',
+    'Planejar prioridades, metas e indicadores' ]},
+  { titulo:'Expansão', icone:'🚀', topicos:[
+    'Lançar novas ofertas',
+    'Diversificar fontes de tráfego',
+    'Expandir pra novos nichos e produtos',
+    'Escalar a operação de forma sustentável' ]},
+  { titulo:'Desenvolvimento de Ativos', icone:'💎', topicos:[
+    'Evoluir o Painel LAKA',
+    'Desenvolver novos aplicativos e ferramentas com foco em venda recorrente' ]}
 ];
 function seedProcessosPadrao(){
   PROCESSOS_TEMPLATE.forEach(t=>{
-    state.processos.push({id:uid(), titulo:t.titulo, descricao:t.descricao, concluido:false});
+    state.processos.push({
+      id:uid(), titulo:t.titulo, icone:t.icone, concluido:false, collapsed:false,
+      topicos: t.topicos.map(texto=>({id:uid(), texto, descricao:''}))
+    });
   });
   saveState(); renderProcessos();
   showToast('Modelo de processos carregado.');
+}
+const PROCESSO_ICON_PALETTE = [
+  {icone:'🔍', cor:'#3b82f6'}, {icone:'📦', cor:'#22c55e'}, {icone:'🎯', cor:'#10b981'},
+  {icone:'🧩', cor:'#a855f7'}, {icone:'💰', cor:'#eab308'}, {icone:'🔁', cor:'#06b6d4'},
+  {icone:'⚡', cor:'#f97316'}, {icone:'📊', cor:'#5b9dff'}, {icone:'🚀', cor:'#ec4899'},
+  {icone:'💎', cor:'#8b5cf6'}
+];
+function processoVisual(p, idx){
+  const fallback = PROCESSO_ICON_PALETTE[idx % PROCESSO_ICON_PALETTE.length];
+  return { icone: p.icone || fallback.icone, cor: fallback.cor };
+}
+function topicoRow(procId, t){
+  if(topicoEditingId === t.id){
+    return `
+    <li class="processo-topico editing" data-id="${t.id}">
+      <div class="topico-edit-row">
+        <input type="text" value="${escapeHtml(t.texto)}" placeholder="texto do tópico" onchange="updateTopicoField('${procId}','${t.id}','texto',this.value)">
+        <textarea placeholder="descrição (opcional)" onchange="updateTopicoField('${procId}','${t.id}','descricao',this.value)">${escapeHtml(t.descricao||'')}</textarea>
+        <div class="mining-actions">
+          <button class="del-btn" onclick="removeTopico('${procId}','${t.id}', event)">✕ excluir</button>
+          <button class="mining-save-btn" onclick="saveTopicoEdit(event)"><span class="ico">✓</span> Concluir edição</button>
+        </div>
+      </div>
+    </li>`;
+  }
+  return `
+  <li class="processo-topico" data-id="${t.id}">
+    <span class="drag-handle topico-drag-handle">⠿</span>
+    <span class="topico-bullet">•</span>
+    <div class="topico-body">
+      <div class="topico-texto">${escapeHtml(t.texto)}</div>
+      ${t.descricao ? `<div class="topico-desc">${escapeHtml(t.descricao)}</div>` : ''}
+    </div>
+    <button class="processo-edit-btn" onclick="toggleTopicoEdit('${procId}','${t.id}', event)">✎</button>
+    <button class="del-btn" onclick="removeTopico('${procId}','${t.id}', event)">✕</button>
+  </li>`;
 }
 function renderProcessos(){
   const el = document.getElementById('processosList');
@@ -2322,31 +2474,54 @@ function renderProcessos(){
     return;
   }
   el.innerHTML = state.processos.map((p,idx)=>{
+    const v = processoVisual(p, idx);
     if(processoEditingId===p.id){
       return `
-      <div class="item" data-id="${p.id}">
-        <div class="item-body tool-edit-row" style="padding:8px 0;">
-          <input type="text" value="${escapeHtml(p.titulo)}" placeholder="nome da etapa" onchange="updateProcessoField('${p.id}','titulo',this.value)">
-          <textarea placeholder="descrição do passo a passo" onchange="updateProcessoField('${p.id}','descricao',this.value)">${escapeHtml(p.descricao||'')}</textarea>
+      <div class="processo-card" data-id="${p.id}">
+        <div class="item-body tool-edit-row" style="padding:10px 12px;">
+          <input type="text" value="${escapeHtml(p.titulo)}" placeholder="nome da fase" onchange="updateProcessoField('${p.id}','titulo',this.value)">
           <div class="mining-actions">
-            <button class="del-btn" onclick="removeProcesso('${p.id}')">✕ excluir</button>
+            <button class="del-btn" onclick="removeProcesso('${p.id}')">✕ excluir fase</button>
             <button class="mining-save-btn" onclick="saveProcessoEdit('${p.id}', event)"><span class="ico">✓</span> Concluir edição</button>
           </div>
         </div>
       </div>`;
     }
+    const topicosHtml = p.topicos.length===0
+      ? `<div class="empty" style="padding:6px 0;">nenhum tópico ainda — adicione o passo a passo dessa fase.</div>`
+      : `<ul class="processo-topicos" id="topicosList-${p.id}">${p.topicos.map(t=>topicoRow(p.id, t)).join('')}</ul>`;
     return `
-    <div class="item processo-item ${p.concluido?'done':''}" data-id="${p.id}">
-      <span class="drag-handle">⠿</span>
-      <div class="check-box ${p.concluido?'checked':''}" onclick="toggleProcessoDone('${p.id}')" title="marcar como concluída"></div>
-      <div class="item-body">
-        <div class="item-text"><span class="processo-step-num">${idx+1}.</span> ${escapeHtml(p.titulo)}</div>
-        ${p.descricao ? `<div class="processo-desc">${escapeHtml(p.descricao)}</div>` : ''}
+    <div class="processo-card ${p.collapsed?'collapsed':''} ${p.concluido?'done':''}" data-id="${p.id}" style="--processo-accent:${v.cor}">
+      <div class="processo-card-head">
+        <span class="drag-handle">⠿</span>
+        <div class="processo-icon">${v.icone}</div>
+        <div class="processo-card-title" onclick="toggleProcessoCollapse('${p.id}', event)">
+          <span class="processo-step-num">${idx+1}.</span> ${escapeHtml(p.titulo)}
+          <span class="processo-topico-count">${p.topicos.length} tópico${p.topicos.length===1?'':'s'}</span>
+        </div>
+        <div class="check-box ${p.concluido?'checked':''}" onclick="toggleProcessoDone('${p.id}')" title="marcar fase como concluída"></div>
+        <button class="processo-edit-btn" onclick="toggleProcessoEdit('${p.id}', event)">✎</button>
+        <button class="processo-chevron" onclick="toggleProcessoCollapse('${p.id}', event)">${p.collapsed?'▸':'▾'}</button>
       </div>
-      <button class="mining-edit-btn processo-edit-btn" onclick="toggleProcessoEdit('${p.id}', event)">✎</button>
-      <button class="del-btn" onclick="removeProcesso('${p.id}')">✕</button>
+      <div class="processo-card-body">
+        ${topicosHtml}
+        <div class="add-form collapsible-form" id="newTopicoRow-${p.id}">
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="novoTopicoTexto-${p.id}" placeholder="novo tópico...">
+            <textarea id="novoTopicoDesc-${p.id}" placeholder="descrição (opcional)"></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addTopico('${p.id}')">+ adicionar tópico</button>
+              <button class="add-cost-cancel-btn" onclick="toggleAddTopicoForm('${p.id}', false)">fechar</button>
+            </div>
+          </div>
+        </div>
+        <button class="add-topico-btn" onclick="toggleAddTopicoForm('${p.id}', true)">+ tópico</button>
+      </div>
     </div>
   `;}).join('');
+  state.processos.forEach(p=>{
+    attachSortable('topicosList-'+p.id, ids=>reorderProcessoTopicos(p.id, ids));
+  });
 }
 function cycleTaskTag(id){
   const item = state.tasks.find(t=>t.id===id);
@@ -4214,6 +4389,10 @@ function getAfterElement(container, y, dragging){
     return closest;
   }, {offset:-Infinity}).element;
 }
+// Watchdog global: se um arraste anterior nunca terminou corretamente (ex.: captura de
+// ponteiro falhou em algum navegador/webview mobile), o próximo pointerdown força a limpeza
+// dele antes de começar um novo arraste — isso é o que evita o card "preso" pra sempre.
+let activeDragCleanup = null;
 function attachSortable(containerId, onReordered){
   const container = document.getElementById(containerId);
   if(!container) return;
@@ -4224,14 +4403,18 @@ function attachSortable(containerId, onReordered){
     if(!dragging || dragging.parentElement !== container) return;
     e.preventDefault();
 
+    if(activeDragCleanup) activeDragCleanup();
+
+    const pointerId = e.pointerId;
     const startY = e.clientY;
     const baseTop = dragging.getBoundingClientRect().top;
     let moved = false;
     let lastY = e.clientY;
     let rafPending = false;
+    let ended = false;
 
     dragging.classList.add('dragging');
-    handle.setPointerCapture(e.pointerId);
+    try{ handle.setPointerCapture(pointerId); }catch(err){ /* segue sem capture, os listeners de window cobrem isso */ }
     document.body.style.userSelect = 'none';
     document.body.style.cursor = 'grabbing';
 
@@ -4271,29 +4454,50 @@ function attachSortable(containerId, onReordered){
       dragging.style.transform = `translateY(${desiredTop - newTop}px) scale(1.015)`;
       flip(before);
     };
+    // pointermove/pointerup/pointercancel ficam em `window`, não na alça. Assim o arraste
+    // continua funcionando mesmo se o dedo escorregar pra fora do ícone ⠿ ou se
+    // setPointerCapture não for suportado/honrado pelo navegador (comum em alguns
+    // webviews/apps in-app no Android e iOS) — é essa dependência da captura, com os
+    // listeners presos só na alça, que causava o card ficar "preso" no meio do arraste.
     const onMove = (ev)=>{
+      if(ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
       lastY = ev.clientY;
       if(Math.abs(ev.clientY - startY) > 2) moved = true;
       if(!rafPending){ rafPending = true; requestAnimationFrame(applyMove); }
     };
-    const onUp = ()=>{
+    const onEnd = (ev)=>{
+      if(ended) return;
+      if(ev && ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
+      ended = true;
       dragging.classList.remove('dragging');
       dragging.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
       dragging.style.transform = '';
       document.body.style.userSelect = '';
       document.body.style.cursor = '';
-      handle.removeEventListener('pointermove', onMove);
-      handle.removeEventListener('pointerup', onUp);
-      handle.removeEventListener('pointercancel', onUp);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('pointercancel', onEnd);
+      window.removeEventListener('blur', onEnd);
+      document.removeEventListener('visibilitychange', onVisChange);
+      try{ handle.releasePointerCapture(pointerId); }catch(err){}
+      if(activeDragCleanup === onEnd) activeDragCleanup = null;
       setTimeout(()=>{ dragging.style.transition = ''; }, 200);
       if(moved){
         const ids = Array.from(container.querySelectorAll(':scope > [data-id]')).map(el=>el.dataset.id);
         onReordered(ids);
       }
     };
-    handle.addEventListener('pointermove', onMove);
-    handle.addEventListener('pointerup', onUp);
-    handle.addEventListener('pointercancel', onUp);
+    // rede de segurança: troca de app, notificação puxando a tela, ou minimizar o
+    // navegador no meio do arraste também disparam a limpeza — nunca fica pendurado.
+    const onVisChange = ()=>{ if(document.visibilityState === 'hidden') onEnd(); };
+
+    window.addEventListener('pointermove', onMove, { passive:true });
+    window.addEventListener('pointerup', onEnd);
+    window.addEventListener('pointercancel', onEnd);
+    window.addEventListener('blur', onEnd);
+    document.addEventListener('visibilitychange', onVisChange);
+
+    activeDragCleanup = onEnd;
   });
 }
 function reorderTasksGroup(ids){
