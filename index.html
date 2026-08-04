@@ -68,8 +68,6 @@
     letter-spacing:-0.005em;
   }
   .wrap{max-width:1280px;margin:0 auto;}
-  @media(min-width:1500px){ .wrap{max-width:1440px;} }
-  @media(min-width:1800px){ .wrap{max-width:1600px;} }
   ::-webkit-scrollbar{width:10px;height:10px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
@@ -344,7 +342,25 @@
   .processo-edit-btn:hover{color:var(--blue-bright);}
 
   /* ---------- PROCESSOS: cartões de fase com tópicos ---------- */
-  .processo-card{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--processo-accent, var(--blue));border-radius:12px;margin-bottom:10px;overflow:hidden;transition:box-shadow .18s, border-color .18s;}
+  .processo-card{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--processo-accent, var(--blue));border-radius:12px;margin-bottom:8px;overflow:hidden;transition:box-shadow .18s, border-color .18s;}
+  /* ---------- OPERAÇÃO ATUAL ---------- */
+  .offer-card{
+    background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--offer-accent, var(--blue));
+    border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:box-shadow .18s, border-color .18s;
+  }
+  .offer-card.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
+  .offer-card-head{display:flex;align-items:center;gap:8px;}
+  .offer-dot{font-size:11px;flex-shrink:0;}
+  .offer-name{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:14px;word-break:break-word;}
+  .offer-card-body{margin-top:8px;padding-left:22px;display:flex;flex-direction:column;gap:5px;}
+  .offer-row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .offer-label{font-family:var(--mono);font-size:9.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;min-width:78px;}
+  .offer-value{font-size:12.5px;color:var(--text);word-break:break-word;}
+  .offer-obs{color:var(--muted);}
+  .offer-status-chip{
+    display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;
+    padding:2px 9px;border-radius:20px;border:1px solid;
+  }
   .processo-card.dragging{opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;box-shadow:0 16px 32px -8px rgba(0,0,0,0.5), 0 0 0 1.5px var(--blue-bright);}
   .processo-card.done .processo-card-title{opacity:0.5;text-decoration:line-through;}
   .processo-card-head{display:flex;align-items:center;gap:10px;padding:12px 12px;}
@@ -531,6 +547,16 @@
     .mining-fields{ grid-template-columns:1fr; }
     .cost-computed{ width:100%; text-align:right; }
     .panel-stats-row{ grid-template-columns:1fr 1fr; }
+    .fin-table-wrap{ margin:0 -14px; padding:0 14px; }
+    .fin-table{ min-width:520px; font-size:12px; }
+    .fin-table th, .fin-table td{ padding:6px 5px; }
+    .panel-head{ gap:10px; }
+    .panel-head h2{ font-size:15px; }
+    .chart-legend{ font-size:10.5px; gap:10px; flex-wrap:wrap; }
+    .month-nav{ gap:8px; }
+    .msum .v{ font-size:14px; }
+    .video-card-thumb, .video-card{ min-width:0; }
+    .videos-grid{ grid-template-columns:1fr; }
   }
 
   /* ---------- TABS ---------- */
@@ -740,8 +766,14 @@
     background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px;
   }
   .planner-focus textarea{width:100%;background:transparent;border:none;color:var(--text);font-size:13.5px;min-height:34px;}
-  .planner-days{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
-  .planner-day{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;min-height:80px;flex:0 0 200px;scroll-snap-align:start;}
+  .planner-days{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+  .planner-day{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;min-height:80px;min-width:0;}
+  .planner-day h4{white-space:normal;word-break:break-word;}
+  .planner-day .p-text{word-break:break-word;}
+  @media(max-width:900px){
+    .planner-days{display:flex;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
+    .planner-day{flex:0 0 200px;scroll-snap-align:start;}
+  }
   @media(max-width:600px){ .planner-day{flex:0 0 78%;} }
   .planner-day.today{border-color:var(--blue);background:var(--blue-soft);}
   .planner-day h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin:0 0 8px 0;}
@@ -867,6 +899,19 @@
   /* ---------- FERRAMENTAS ---------- */
   .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
   .tool-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:border-color .15s, transform .15s;}
+  .product-card{
+    background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;
+    cursor:pointer;transition:border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .product-card:hover{border-color:var(--blue);transform:translateY(-2px);}
+  .product-card.selected{border-color:var(--blue-bright);box-shadow:0 0 0 1px var(--blue-bright), 0 8px 20px -8px rgba(59,130,246,0.4);}
+  .product-card-head{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+  .product-card-ico{
+    width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-size:15px;background:var(--blue-soft);border:1px solid rgba(59,130,246,0.3);
+  }
+  .product-card-name{font-family:var(--display);font-weight:700;font-size:14px;word-break:break-word;}
+  .product-card-tags{display:flex;flex-wrap:wrap;gap:6px;}
   .tool-card:hover{border-color:var(--blue);transform:translateY(-2px);}
   .tool-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
@@ -1156,42 +1201,53 @@
         </div>
       </div>
       <div class="panel" id="offersPanel">
-        <div class="panel-head"><h2>Ofertas em foco</h2></div>
+        <div class="panel-head">
+          <h2><span class="sub">as ofertas que estão rodando agora — de onde cada uma está, sem precisar abrir nada</span>🎯 Operação Atual</h2>
+          <button class="add-tool-btn" id="newOfferToggleBtn" onclick="toggleNewOfferForm(true)">+ Adicionar oferta</button>
+        </div>
         <div id="offersList"></div>
-        <div class="add-row">
-          <input type="text" id="offerInput" placeholder="nome da oferta...">
-          <select id="offerStatus">
-            <option value="pending">validando</option>
-            <option value="done">escalando</option>
-            <option value="blocked">pausada/matada</option>
-          </select>
-          <button class="add" onclick="addOffer()">+ add</button>
+        <div class="add-form collapsible-form" id="newOfferRow">
+          <div class="add-row" style="flex-direction:column;">
+            <input type="text" id="offerInput" placeholder="nome da oferta (ex: CNP, Ganhos Brutais)">
+            <div class="add-row" style="margin-top:0;">
+              <select id="offerStatus" style="flex:1;">
+                <option value="validando" selected>🧪 Validando</option>
+                <option value="escalando">📈 Escalando</option>
+                <option value="minerando">🔍 Minerando</option>
+                <option value="pausada">⏸️ Pausada</option>
+              </select>
+              <input type="text" id="offerProximaAcao" placeholder="próxima ação (ex: Verificar BM)" style="flex:1;">
+            </div>
+            <textarea id="offerObservacao" placeholder="observação rápida (opcional)"></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addOffer()">+ adicionar oferta</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewOfferForm(false)">cancelar</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="row-two">
-      <div class="panel">
-        <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
-        <div class="planner-focus">
-          <label class="field-label">foco da semana</label>
-          <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
-        </div>
-        <div class="planner-days" id="plannerDays"></div>
+    <div class="panel full">
+      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
+      <div class="planner-focus">
+        <label class="field-label">foco da semana</label>
+        <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
       </div>
+      <div class="planner-days" id="plannerDays"></div>
+    </div>
 
-      <div class="panel">
-        <div class="panel-head"><h2>Diário da operação</h2></div>
-        <div id="logList"></div>
-        <div class="add-row" style="flex-direction:column;">
-          <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
-          <div style="display:flex;gap:6px;">
-            <select id="logType" style="flex:1;">
-              <option value="win">funcionou</option>
-              <option value="problem">travou / problema</option>
-            </select>
-            <button class="add" onclick="addLog()">+ registrar</button>
-          </div>
+    <div class="panel full">
+      <div class="panel-head"><h2>Diário da operação</h2></div>
+      <div id="logList"></div>
+      <div class="add-row" style="flex-direction:column;">
+        <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
+        <div style="display:flex;gap:6px;">
+          <select id="logType" style="flex:1;">
+            <option value="win">funcionou</option>
+            <option value="problem">travou / problema</option>
+          </select>
+          <button class="add" onclick="addLog()">+ registrar</button>
         </div>
       </div>
     </div>
@@ -1369,7 +1425,10 @@
       <div class="panel full" id="processosPanel">
         <div class="panel-head">
           <h2><span class="sub">o passo a passo pra validar e escalar uma oferta, do zero até virar operação</span>Processos da Empresa</h2>
-          <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
+          <div class="panel-head-actions">
+            <button class="add-cost-cancel-btn" onclick="toggleAllProcessos()" id="toggleAllProcessosBtn">recolher tudo</button>
+            <button class="add-tool-btn" id="newProcessoToggleBtn" onclick="toggleNewProcessoForm(true)">+ Adicionar etapa</button>
+          </div>
         </div>
         <div id="processosList"></div>
         <div class="add-form collapsible-form" id="newProcessoRow">
@@ -1390,8 +1449,8 @@
           <h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2>
           <button class="add-tool-btn" id="newProductToggleBtn" onclick="toggleNewProductRow(true)">+ Criar novo produto</button>
         </div>
-        <label class="field-label">produto selecionado</label>
-        <select id="productSelect" onchange="selectProduct(this.value)" style="width:100%;margin-bottom:14px;"></select>
+        <label class="field-label">seus produtos</label>
+        <div id="productSelectorGrid" class="tools-grid" style="margin-bottom:14px;"></div>
 
         <div class="add-form" id="newProductRow">
         <div>
@@ -1406,29 +1465,19 @@
       </div>
 
       <div id="productDetail" style="display:none;">
-        <div class="panel full" id="funnelPanel">
-          <div class="panel-head">
-            <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
-            <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar link</button>
-          </div>
+        <div class="panel full">
+          <div class="panel-head"><h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2></div>
           <div id="funnelLinksList" class="funnel-wrap"></div>
-          <div class="add-form" id="newFunnelLinkRow">
           <div class="add-row">
             <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
             <input type="text" id="funnelLinkUrl" placeholder="link/URL">
             <button class="add" onclick="addFunnelLink()">+ add</button>
-            <button class="add-cost-cancel-btn" onclick="toggleNewFunnelLinkForm(false)">cancelar</button>
-          </div>
           </div>
         </div>
 
-        <div class="panel full" id="phonesPanel">
-          <div class="panel-head">
-            <h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
-            <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
-          </div>
+        <div class="panel full">
+          <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
           <div id="phonesList"></div>
-          <div class="add-form" id="newPhoneRow">
           <div class="add-row">
             <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
             <input type="text" id="phoneProduto" placeholder="produto/uso">
@@ -1438,8 +1487,6 @@
               <option value="queimado">queimado</option>
             </select>
             <button class="add" onclick="addPhone()">+ add</button>
-            <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
-          </div>
           </div>
         </div>
 
@@ -2131,6 +2178,11 @@ async function loadState(){
         p.topicos.forEach(t=>{ if(typeof t.descricao !== 'string') t.descricao = ''; });
       });
       state.costs.forEach(c=>{ if(!c.valueType) c.valueType = 'fixo'; if(c.percent===undefined) c.percent = 0; if(!c.revenueBase) c.revenueBase = 'faturamento'; });
+      (state.offers||[]).forEach(o=>{
+        o.status = migrateOfferStatus(o.status);
+        if(o.proximaAcao===undefined) o.proximaAcao = '';
+        if(o.observacao===undefined) o.observacao = '';
+      });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
         if(!p.objections) p.objections = [];
@@ -2225,6 +2277,19 @@ function statusClass(s){
 const taskCycle = ['pending','delegated','blocked','done'];
 const infraCycle = ['pending','blocked','done'];
 const offerCycle = ['pending','done','blocked'];
+const OFFER_STATUS = {
+  minerando: { label:'Minerando', icon:'🔍', color:'#8b5cf6', dot:'🟣', priority:3 },
+  validando: { label:'Validando', icon:'🧪', color:'#eab308', dot:'🟡', priority:1 },
+  escalando: { label:'Escalando', icon:'📈', color:'#22c55e', dot:'🟢', priority:2 },
+  pausada:   { label:'Pausada',   icon:'⏸️', color:'#f0455c', dot:'🔴', priority:4 }
+};
+function migrateOfferStatus(s){
+  if(OFFER_STATUS[s]) return s;
+  if(s==='pending') return 'validando';
+  if(s==='done') return 'escalando';
+  if(s==='blocked') return 'pausada';
+  return 'minerando';
+}
 function nextStatus(s, cycle){ const i=cycle.indexOf(s); return cycle[(i+1)%cycle.length]; }
 
 function renderTasks(){
@@ -2279,6 +2344,11 @@ function toggleProcessoCollapse(id, ev){
   const p = state.processos.find(p=>p.id===id);
   if(!p) return;
   p.collapsed = !p.collapsed;
+  saveState(); renderProcessos();
+}
+function toggleAllProcessos(){
+  const anyExpanded = state.processos.some(p=>!p.collapsed);
+  state.processos.forEach(p=> p.collapsed = anyExpanded);
   saveState(); renderProcessos();
 }
 function toggleAddTopicoForm(procId, show, ev){
@@ -2479,6 +2549,12 @@ function topicoRow(procId, t){
 function renderProcessos(){
   const el = document.getElementById('processosList');
   if(!el) return;
+  const toggleBtn = document.getElementById('toggleAllProcessosBtn');
+  if(toggleBtn){
+    toggleBtn.style.display = state.processos.length>1 ? '' : 'none';
+    const anyExpanded = state.processos.some(p=>!p.collapsed);
+    toggleBtn.innerText = anyExpanded ? 'recolher tudo' : 'expandir tudo';
+  }
   if(state.processos.length===0){
     el.innerHTML = `
     <div class="empty-block">
@@ -2576,7 +2652,7 @@ function renderSimpleList(containerId, arr, cycle){
     </div>
   `).join('');
 }
-const simpleMap = {infraList:{key:'infra',cycle:infraCycle}, offersList:{key:'offers',cycle:offerCycle}};
+const simpleMap = {infraList:{key:'infra',cycle:infraCycle}};
 function cycleSimple(containerId,id){
   const {key,cycle} = simpleMap[containerId];
   const item = state[key].find(i=>i.id===id);
@@ -2599,12 +2675,110 @@ function addInfra(){
   state.infra.push({id:uid(), text:input.value.trim(), status});
   input.value=''; saveState(); render();
 }
+/* ---------- OPERAÇÃO ATUAL (antigo "Ofertas em foco") ---------- */
+function toggleNewOfferForm(show){
+  document.getElementById('newOfferRow').classList.toggle('open', show);
+  document.getElementById('newOfferToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('offersPanel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('offerInput').focus();
+  else{
+    document.getElementById('offerInput').value = '';
+    document.getElementById('offerProximaAcao').value = '';
+    document.getElementById('offerObservacao').value = '';
+    document.getElementById('offerStatus').value = 'validando';
+  }
+}
+function sortOffersByPriority(){
+  state.offers = state.offers
+    .map((o,i)=>({o,i}))
+    .sort((a,b)=> (OFFER_STATUS[a.o.status].priority - OFFER_STATUS[b.o.status].priority) || (a.i-b.i))
+    .map(x=>x.o);
+}
 function addOffer(){
   const input = document.getElementById('offerInput');
   const status = document.getElementById('offerStatus').value;
+  const proximaAcao = document.getElementById('offerProximaAcao').value.trim();
+  const observacao = document.getElementById('offerObservacao').value.trim();
   if(!input.value.trim()) return;
-  state.offers.push({id:uid(), text:input.value.trim(), status});
-  input.value=''; saveState(); render();
+  state.offers.push({id:uid(), text:input.value.trim(), status, proximaAcao, observacao});
+  sortOffersByPriority();
+  saveState(); renderOperacaoAtual();
+  toggleNewOfferForm(false);
+  showToast('Oferta adicionada.');
+}
+let offerEditingId = null;
+function toggleOfferEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  offerEditingId = (offerEditingId===id) ? null : id;
+  renderOperacaoAtual();
+}
+function updateOfferField(id, field, value){
+  const o = state.offers.find(o=>o.id===id);
+  if(!o) return;
+  o[field] = value;
+  if(field==='status') sortOffersByPriority();
+  saveState();
+}
+function saveOfferEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  offerEditingId = null;
+  saveState(); renderOperacaoAtual();
+  showToast('Oferta atualizada.');
+}
+function removeOffer(id){
+  openConfirmModal('Tem certeza que deseja excluir esta oferta da operação? Esta ação não poderá ser desfeita.', ()=>{
+    state.offers = state.offers.filter(o=>o.id!==id);
+    saveState(); renderOperacaoAtual();
+    showToast('Oferta excluída.');
+  });
+}
+function renderOperacaoAtual(){
+  const el = document.getElementById('offersList');
+  if(!el) return;
+  if(state.offers.length===0){
+    el.innerHTML = `
+    <div class="empty-block">
+      <div class="empty-block-icon">🎯</div>
+      <div class="empty-block-title">Nenhuma oferta na operação ainda</div>
+      <div class="empty-block-sub">Adicione as ofertas que estão rodando agora pra bater o olho e saber onde cada uma está.</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = state.offers.map(o=>{
+    const st = OFFER_STATUS[o.status] || OFFER_STATUS.minerando;
+    if(offerEditingId===o.id){
+      return `
+      <div class="offer-card" data-id="${o.id}" style="--offer-accent:${st.color};">
+        <div class="tool-edit-row" style="padding:14px;">
+          <input type="text" value="${escapeHtml(o.text)}" placeholder="nome da oferta" onchange="updateOfferField('${o.id}','text',this.value)">
+          <select onchange="updateOfferField('${o.id}','status',this.value)">
+            ${Object.entries(OFFER_STATUS).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${v.icon} ${v.label}</option>`).join('')}
+          </select>
+          <input type="text" value="${escapeHtml(o.proximaAcao||'')}" placeholder="próxima ação (ex: Verificar BM)" onchange="updateOfferField('${o.id}','proximaAcao',this.value)">
+          <textarea placeholder="observação rápida (opcional)" onchange="updateOfferField('${o.id}','observacao',this.value)">${escapeHtml(o.observacao||'')}</textarea>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeOffer('${o.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="saveOfferEdit('${o.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="offer-card" data-id="${o.id}" style="--offer-accent:${st.color};">
+      <div class="offer-card-head">
+        <span class="drag-handle">⠿</span>
+        <span class="offer-dot">${st.dot}</span>
+        <div class="offer-name">${escapeHtml(o.text)}</div>
+        <button class="mining-edit-btn" onclick="toggleOfferEdit('${o.id}', event)">✎</button>
+        <button class="del-btn" onclick="removeOffer('${o.id}')">✕</button>
+      </div>
+      <div class="offer-card-body">
+        <div class="offer-row"><span class="offer-label">Status</span><span class="offer-status-chip" style="color:${st.color};border-color:${st.color}55;background:${st.color}1a;">${st.icon} ${st.label}</span></div>
+        ${o.proximaAcao ? `<div class="offer-row"><span class="offer-label">Próxima ação</span><span class="offer-value">${escapeHtml(o.proximaAcao)}</span></div>` : ''}
+        ${o.observacao ? `<div class="offer-row"><span class="offer-label">Observação</span><span class="offer-value offer-obs">${escapeHtml(o.observacao)}</span></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ---------- GERENTES DE CONTA ---------- */
@@ -2750,15 +2924,6 @@ function removePlannerItem(dayKey, id){
 }
 
 /* ---------- NÚMEROS DE RECUPERAÇÃO ---------- */
-function toggleNewPhoneForm(show){
-  document.getElementById('newPhoneRow').classList.toggle('open', show);
-  document.getElementById('newPhoneToggleBtn').style.display = show ? 'none' : 'inline-flex';
-  document.getElementById('phonesPanel').classList.toggle('panel-editing', show);
-  if(show){ document.getElementById('phoneNumero').focus(); }
-  else{
-    document.getElementById('phoneNumero').value=''; document.getElementById('phoneProduto').value='';
-  }
-}
 function renderPhones(){
   const el = document.getElementById('phonesList');
   if(state.phones.length===0){ el.innerHTML='<div class="empty">nenhum número cadastrado.</div>'; return; }
@@ -2776,9 +2941,8 @@ function addPhone(){
   const status = document.getElementById('phoneStatus').value;
   if(!numero.value.trim()) return;
   state.phones.push({id:uid(), numero:numero.value.trim(), produto, status});
+  numero.value=''; document.getElementById('phoneProduto').value='';
   saveState(); renderPhones();
-  toggleNewPhoneForm(false);
-  showToast('Número adicionado.');
 }
 function removePhone(id){
   openConfirmModal('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{
@@ -2789,9 +2953,28 @@ function removePhone(id){
 
 /* ---------- PRODUTOS (funil de mensagens) ---------- */
 function renderProductSelect(){
-  const sel = document.getElementById('productSelect');
-  sel.innerHTML = '<option value="">selecione um produto...</option>' +
-    state.products.map(p=>`<option value="${p.id}" ${state.currentProductId===p.id?'selected':''}>${escapeHtml(p.nome)}</option>`).join('');
+  const el = document.getElementById('productSelectorGrid');
+  if(!el) return;
+  if(state.products.length===0){
+    el.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🧩</div><div class="empty-block-title">Nenhum produto cadastrado ainda</div><div class="empty-block-sub">Use o botão "+ Criar novo produto" acima pra montar o funil de mensagens do primeiro.</div></div>';
+    return;
+  }
+  el.innerHTML = state.products.map(p=>{
+    const selected = state.currentProductId === p.id;
+    const nMsgs = (p.recovery||[]).length + (p.delivery||[]).length + (p.objections||[]).length;
+    const nLinks = (p.funnelLinks||[]).length;
+    return `
+    <div class="product-card ${selected?'selected':''}" onclick="selectProduct('${p.id}')">
+      <div class="product-card-head">
+        <span class="product-card-ico">🧩</span>
+        <div class="product-card-name">${escapeHtml(p.nome)}</div>
+      </div>
+      <div class="product-card-tags">
+        <span class="tool-cat">${nLinks} link${nLinks===1?'':'s'} de funil</span>
+        <span class="tool-cat" style="color:var(--green);background:var(--green-soft);">${nMsgs} mensage${nMsgs===1?'m':'ns'}</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 function toggleNewProductRow(show){
   document.getElementById('newProductRow').classList.toggle('open', show);
@@ -2825,15 +3008,6 @@ function funnelWidth(idx, total){
 }
 
 /* --- links do funil --- */
-function toggleNewFunnelLinkForm(show){
-  document.getElementById('newFunnelLinkRow').classList.toggle('open', show);
-  document.getElementById('newFunnelLinkToggleBtn').style.display = show ? 'none' : 'inline-flex';
-  document.getElementById('funnelPanel').classList.toggle('panel-editing', show);
-  if(show){ document.getElementById('funnelLinkNome').focus(); }
-  else{
-    document.getElementById('funnelLinkNome').value=''; document.getElementById('funnelLinkUrl').value='';
-  }
-}
 function addFunnelLink(){
   const product = currentProduct();
   if(!product) return;
@@ -2841,9 +3015,8 @@ function addFunnelLink(){
   const url = document.getElementById('funnelLinkUrl');
   if(!nome.value.trim()) return;
   product.funnelLinks.push({id:uid(), nome:nome.value.trim(), url:url.value.trim()});
+  nome.value=''; url.value='';
   saveState(); renderProducts();
-  toggleNewFunnelLinkForm(false);
-  showToast('Link adicionado.');
 }
 function removeFunnelLink(id){
   openConfirmModal('Tem certeza que deseja excluir este link? Esta ação não poderá ser desfeita.', ()=>{
@@ -4050,8 +4223,8 @@ function renderTodayPanel(){
 
 function renderOpSummary(){
   const urgentPending = state.tasks.filter(t=>t.priority==='urgente' && t.status!=='done').length;
-  const validando = state.offers.filter(o=>o.status==='pending').length;
-  const escalando = state.offers.filter(o=>o.status==='done').length;
+  const validando = state.offers.filter(o=>o.status==='validando').length;
+  const escalando = state.offers.filter(o=>o.status==='escalando').length;
   const infraProblemas = state.infra.filter(i=>i.status==='blocked').length;
   const minerados = state.mining.length;
   const el = document.getElementById('opSummary');
@@ -4082,7 +4255,7 @@ function updateTopStats(){
 function render(){
   renderTasks();
   renderSimpleList('infraList', state.infra, infraCycle);
-  renderSimpleList('offersList', state.offers, offerCycle);
+  renderOperacaoAtual();
   renderCosts();
   renderFinanceTable();
   renderLogs();
