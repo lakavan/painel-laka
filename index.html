@@ -1730,6 +1730,7 @@
             <div class="add-row" style="flex-direction:column;">
               <input type="text" id="pvVersao" placeholder="versão (ex: Painel LAKA V30)">
               <input type="file" id="pvZip" accept=".zip">
+              <input type="text" id="pvArquivoLink" placeholder="🔗 link do Google Drive (pasta ou arquivo dessa versão)">
               <div class="add-row" style="margin-top:0;">
                 <select id="pvIa">
                   <option>Claude Code</option><option>ChatGPT</option><option>Claude</option>
@@ -1768,7 +1769,7 @@
             <div class="add-row" style="flex-direction:column;">
               <div class="add-row" style="margin-top:0;">
                 <select id="prTipo">
-                  <option>GitHub</option><option>Supabase</option><option>Netlify</option><option>Cloudflare</option>
+                  <option>Google Drive</option><option>GitHub</option><option>Supabase</option><option>Netlify</option><option>Cloudflare</option>
                   <option>Firebase</option><option>Figma</option><option>Vercel</option><option>Google Analytics</option><option>Outro</option>
                 </select>
                 <input type="text" id="prConta" placeholder="conta utilizada (e-mail)">
@@ -4007,7 +4008,7 @@ function renderTabNav(){
   nav.innerHTML = `<button class="tab-btn ${activeTab==='home'?'active':''}" id="tabBtnHome" onclick="switchTab('home')">Início</button>`
     + order.map(k=>{
       const id = 'tabBtn'+k[0].toUpperCase()+k.slice(1);
-      return `<button class="tab-btn ${activeTab===k?'active':''}" id="${id}" data-id="${k}" onclick="switchTab('${k}')"><span class="tab-drag-handle" onpointerdown="event.stopPropagation()" title="arrastar para reordenar">⠿</span>${escapeHtml(TAB_LABELS[k])}</button>`;
+      return `<button class="tab-btn ${activeTab===k?'active':''}" id="${id}" data-id="${k}" onclick="switchTab('${k}')"><span class="tab-drag-handle" title="arrastar para reordenar">⠿</span>${escapeHtml(TAB_LABELS[k])}</button>`;
     }).join('');
   attachTabSortable();
 }
@@ -4568,6 +4569,7 @@ function toggleNewProjectVersionForm(show){
     document.getElementById('pvZip').value='';
     document.getElementById('pvConta').value='';
     document.getElementById('pvConversa').value='';
+    document.getElementById('pvArquivoLink').value='';
     document.getElementById('pvResumo').value='';
     document.getElementById('pvObservacoes').value='';
   }
@@ -4580,6 +4582,7 @@ function registerProjectVersion(){
   const ia = document.getElementById('pvIa').value;
   const conta = document.getElementById('pvConta').value.trim();
   const conversa = document.getElementById('pvConversa').value.trim();
+  const arquivoLink = document.getElementById('pvArquivoLink').value.trim();
   const estagio = document.getElementById('pvEstagio').value;
   const resumo = document.getElementById('pvResumo').value.trim();
   const observacoes = document.getElementById('pvObservacoes').value.trim();
@@ -4590,11 +4593,11 @@ function registerProjectVersion(){
   const finalize = (zipData, zipName, zipSize)=>{
     const now = new Date().toISOString();
     const entry = {
-      id: uid(), versao, data: now, ia, conta, conversa, estagio, resumo, observacoes,
+      id: uid(), versao, data: now, ia, conta, conversa, arquivoLink, estagio, resumo, observacoes,
       zipName: zipName || null, zipData: zipData || null, zipSize: zipSize || null
     };
     p.versions.unshift(entry);
-    p.currentVersion = { versao, resumo, observacoes, estagio, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
+    p.currentVersion = { versao, resumo, observacoes, estagio, arquivoLink, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
     p.ultimaAtualizacao = { conta, data: now, versao };
     if(estagio) p.status = estagio;
     p.status = p.status || 'desenvolvimento';
@@ -4675,7 +4678,7 @@ function removeProjectResource(resId){
 }
 const PROJECT_STATUS_LABELS = { desenvolvimento:'Em desenvolvimento', pausado:'Pausado', finalizado:'Finalizado' };
 const PROJECT_RESOURCE_ICONS = {
-  GitHub:'🐙', Supabase:'⚡', Netlify:'🌐', Cloudflare:'☁️', Firebase:'🔥',
+  'Google Drive':'🗂️', GitHub:'🐙', Supabase:'⚡', Netlify:'🌐', Cloudflare:'☁️', Firebase:'🔥',
   Figma:'🎨', Vercel:'▲', 'Google Analytics':'📈', Outro:'🔗'
 };
 function renderProjectCard(p){
@@ -4736,6 +4739,7 @@ function renderProjectDetail(p){
       ${cv.observacoes ? `<div class="proj-version-resumo" style="opacity:.75;margin-top:6px;">📝 ${escapeHtml(cv.observacoes)}</div>` : ''}
       <div class="proj-version-actions">
         ${cv.zipData ? `<button class="proj-dl-btn" onclick="downloadCurrentVersionZip()">⬇ baixar ZIP atual</button>` : ''}
+        ${cv.arquivoLink ? `<a class="proj-dl-btn" href="${escapeHtml(cv.arquivoLink)}" target="_blank" rel="noopener">🗂️ abrir no Google Drive</a>` : ''}
       </div>
     </div>
   ` : `<div class="empty">nenhuma versão registrada ainda — use o botão abaixo pra anexar o primeiro ZIP.</div>`;
@@ -4754,7 +4758,10 @@ function renderProjectDetail(p){
         </div>
         ${v.resumo?`<div class="timeline-resumo">${escapeHtml(v.resumo)}</div>`:''}
         ${v.observacoes?`<div class="timeline-resumo" style="opacity:.7;margin-top:4px;">📝 ${escapeHtml(v.observacoes)}</div>`:''}
-        ${v.zipData?`<div class="proj-version-actions"><button class="proj-dl-btn" onclick="downloadVersionZip('${v.id}')">⬇ ${escapeHtml(v.zipName||'baixar ZIP')}</button></div>`:''}
+        <div class="proj-version-actions">
+          ${v.zipData?`<button class="proj-dl-btn" onclick="downloadVersionZip('${v.id}')">⬇ ${escapeHtml(v.zipName||'baixar ZIP')}</button>`:''}
+          ${v.arquivoLink?`<a class="proj-dl-btn" href="${escapeHtml(v.arquivoLink)}" target="_blank" rel="noopener">🗂️ abrir no Drive</a>`:''}
+        </div>
       </div>
     </div>
   `).join('');
@@ -5020,6 +5027,21 @@ function attachTabSortable(){
 
     let rafPending = false;
     let lastX = e.clientX;
+    let pointerClientX = e.clientX;
+    // auto-scroll horizontal do próprio tabNav (ele é overflow-x:auto) quando o arraste
+    // chega perto da borda esquerda/direita — sem isso, não dava pra reordenar uma aba
+    // pra depois de outra que estivesse fora da área visível em telas mais estreitas.
+    let autoScrollRaf = null;
+    const AUTOSCROLL_EDGE = 50, AUTOSCROLL_MAX = 14;
+    const autoScrollTick = ()=>{
+      const navRect = nav.getBoundingClientRect();
+      let dx = 0;
+      if(pointerClientX < navRect.left + AUTOSCROLL_EDGE) dx = -AUTOSCROLL_MAX * (1 - (pointerClientX - navRect.left)/AUTOSCROLL_EDGE);
+      else if(pointerClientX > navRect.right - AUTOSCROLL_EDGE) dx = AUTOSCROLL_MAX * (1 - (navRect.right - pointerClientX)/AUTOSCROLL_EDGE);
+      if(dx) nav.scrollLeft += dx;
+      autoScrollRaf = requestAnimationFrame(autoScrollTick);
+    };
+    autoScrollRaf = requestAnimationFrame(autoScrollTick);
     const applyMove = ()=>{
       rafPending = false;
       const deltaX = lastX - startX;
@@ -5030,10 +5052,12 @@ function attachTabSortable(){
     const onMove = (ev)=>{
       if(ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
       lastX = ev.clientX;
+      pointerClientX = ev.clientX;
       if(Math.abs(ev.clientX - startX) > 2) moved = true;
       if(!rafPending){ rafPending = true; requestAnimationFrame(applyMove); }
     };
     const finish = ()=>{
+      if(autoScrollRaf) cancelAnimationFrame(autoScrollRaf);
       dragging.classList.remove('dragging');
       dragging.style.willChange = '';
       dragging.style.zIndex = '';
