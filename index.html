@@ -67,7 +67,7 @@
     min-height:100vh;
     letter-spacing:-0.005em;
   }
-  .wrap{max-width:1280px;margin:0 auto;}
+  .wrap{max-width:1440px;margin:0 auto;}
   ::-webkit-scrollbar{width:10px;height:10px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
@@ -291,6 +291,8 @@
     width:18px;height:18px;border-radius:50%;background:var(--green);color:#04140a;
     display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;
   }
+  .toast.toast-error{border-color:rgba(240,69,92,0.45);}
+  .toast.toast-error .toast-ico{background:var(--urgent, #F0455C);color:#fff;}
 
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
@@ -572,6 +574,15 @@
   }
   .tab-btn:hover{color:var(--text);background:var(--surface2);}
   .tab-btn.active{color:#fff;background:linear-gradient(135deg,var(--blue),#2563eb);box-shadow:var(--shadow-sm);}
+  .tab-btn.dragging{box-shadow:var(--shadow-md);background:var(--surface2);color:var(--text);}
+  .tab-drag-handle{
+    display:inline-block;width:0;overflow:hidden;opacity:0;font-size:12px;color:var(--muted2);
+    cursor:grab;vertical-align:middle;transition:opacity .15s,width .15s,margin .15s;touch-action:none;
+  }
+  .tab-btn:hover .tab-drag-handle{width:12px;opacity:1;margin-right:5px;}
+  .tab-btn.dragging .tab-drag-handle{width:12px;opacity:1;margin-right:5px;}
+  .tab-drag-handle:active{cursor:grabbing;}
+  @media(max-width:900px){ .tab-drag-handle{display:none;} }
   .tab-view{display:none;}
   .tab-view.active{display:block;animation:fadein .25s ease;}
   @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
@@ -954,6 +965,9 @@
   .project-card-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
   .project-detail-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
   .project-detail-title{font-family:var(--display);font-size:22px;font-weight:800;}
+  .project-detail-title-input{font-family:var(--display);font-size:22px;font-weight:800;color:var(--text);background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;margin:-4px -8px;flex:1;min-width:180px;transition:border-color .15s,background .15s;}
+  .project-detail-title-input:hover{border-color:var(--border);}
+  .project-detail-title-input:focus{outline:none;border-color:var(--blue);background:var(--surface2);}
   .project-detail-tool{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:6px 12px;}
   .proj-info-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
   .proj-info-row:last-child{border-bottom:none;}
@@ -1144,16 +1158,8 @@
 
   <div id="mainContent" style="display:none;">
 
-    <div class="tab-nav">
+    <div class="tab-nav" id="tabNav">
       <button class="tab-btn active" id="tabBtnHome" onclick="switchTab('home')">Início</button>
-      <button class="tab-btn" id="tabBtnFinance" onclick="switchTab('finance')">Financeiro mensal</button>
-      <button class="tab-btn" id="tabBtnProcessos" onclick="switchTab('processos')">Processos</button>
-      <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">Produtos</button>
-      <button class="tab-btn" id="tabBtnMining" onclick="switchTab('mining')">Mineração</button>
-      <button class="tab-btn" id="tabBtnProjects" onclick="switchTab('projects')">Projetos</button>
-      <button class="tab-btn" id="tabBtnTools" onclick="switchTab('tools')">Ferramentas</button>
-      <button class="tab-btn" id="tabBtnContent" onclick="switchTab('content')">Biblioteca de Conteúdo</button>
-      <button class="tab-btn" id="tabBtnWarmup" onclick="switchTab('warmup')">Aquecimento de Chip</button>
     </div>
 
     <div class="tab-view active" id="homeView">
@@ -1455,7 +1461,7 @@
     <div class="tab-view" id="productsView">
       <div class="panel full" id="productsPanel">
         <div class="panel-head">
-          <h2><span class="sub">ordem das mensagens, por produto</span>Produtos</h2>
+          <h2>Produtos</h2>
           <button class="add-tool-btn" id="newProductToggleBtn" onclick="toggleNewProductRow(true)">+ Criar novo produto</button>
         </div>
         <label class="field-label">seus produtos</label>
@@ -1474,6 +1480,12 @@
       </div>
 
       <div id="productDetail" style="display:none;">
+        <button class="back-btn" onclick="selectProduct(null)">← voltar aos produtos</button>
+        <div class="project-detail-head">
+          <input type="text" id="prodDetailTitleInput" class="project-detail-title-input" placeholder="nome do produto" onchange="renameCurrentProduct(this.value)">
+          <button class="del-btn" onclick="deleteCurrentProduct()">✕ excluir produto</button>
+        </div>
+
         <div class="panel full">
           <div class="panel-head"><h2>Status do produto</h2></div>
           <div class="add-row">
@@ -1487,6 +1499,7 @@
               <button class="add-cost-cancel-btn" onclick="toggleNewStatusRow(false)">cancelar</button>
             </div>
           </div>
+          <div id="customStatusManageList" style="margin-top:10px;"></div>
         </div>
 
         <div class="panel full">
@@ -1857,6 +1870,7 @@ const defaultState = {
   customProductStatuses: [],
   projects: [],
   currentProjectId: null,
+  tabOrder: ['finance','processos','products','mining','projects','tools','content','warmup'],
   checklist: {
     template: [
       {id:'ck1', text:'Subir criativo novo'},
@@ -1874,23 +1888,23 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
 function brl(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-function showToast(message){
+function showToast(message, type){
   const container = document.getElementById('toastContainer');
   if(!container) return;
   const el = document.createElement('div');
-  el.className = 'toast';
-  el.innerHTML = `<span class="toast-ico">✓</span><span>${escapeHtml(message)}</span>`;
+  el.className = 'toast' + (type==='error' ? ' toast-error' : '');
+  el.innerHTML = `<span class="toast-ico">${type==='error'?'!':'✓'}</span><span>${escapeHtml(message)}</span>`;
   container.appendChild(el);
   requestAnimationFrame(()=>el.classList.add('show'));
   setTimeout(()=>{
     el.classList.remove('show');
     setTimeout(()=>el.remove(), 300);
-  }, 2800);
+  }, type==='error' ? 6000 : 2800);
 }
 
 /* ---------- CONFIRMAÇÃO DE EXCLUSÃO (padrão em todo o app) ---------- */
@@ -2185,6 +2199,7 @@ async function loadState(){
       if(!state.warmupGroups) state.warmupGroups = [];
       if(!state.customGateways) state.customGateways = [];
       if(!state.customProductStatuses) state.customProductStatuses = [];
+      if(!state.tabOrder || !Array.isArray(state.tabOrder)) state.tabOrder = ['finance','processos','products','mining','projects','tools','content','warmup'];
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
       if(!state.processos){
@@ -2266,6 +2281,7 @@ async function loadState(){
 
 let saveTimeout = null;
 let saveInFlight = null;
+let lastSaveErrorToastAt = 0;
 function doSaveNow(){
   const indicator = document.getElementById('saveIndicator');
   if(indicator){ indicator.classList.add('saving'); indicator.innerText = 'salvando…'; }
@@ -2276,6 +2292,11 @@ function doSaveNow(){
     .catch(e=>{
       console.error('erro ao salvar no Supabase', e);
       if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'erro ao salvar'; }
+      const now = Date.now();
+      if(now - lastSaveErrorToastAt > 5000){
+        lastSaveErrorToastAt = now;
+        showToast('Falha ao salvar — suas últimas alterações podem não ter sido guardadas. Verifique sua internet e tente de novo.', 'error');
+      }
     });
   return saveInFlight;
 }
@@ -2993,8 +3014,9 @@ function renderProductSelect(){
     const hasDelivery = (p.delivery||[]).some(s=>(s.variations||[]).some(v=>v.texto && v.texto.trim()));
     const st = findProductStatus(p.status);
     return `
-    <div class="product-card ${selected?'selected':''}" onclick="selectProduct('${p.id}')">
+    <div class="product-card ${selected?'selected':''}" data-id="${p.id}" onclick="selectProduct('${p.id}')">
       <div class="product-card-head">
+        <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
         <span class="product-card-ico">🧩</span>
         <div class="product-card-name">${escapeHtml(p.nome)}</div>
       </div>
@@ -3082,6 +3104,35 @@ function createCustomProductStatus(){
   toggleNewStatusRow(false);
   saveState(); renderProducts();
   showToast('Status criado.');
+}
+function updateCustomStatusField(id, field, value){
+  const s = (state.customProductStatuses||[]).find(s=>s.id===id);
+  if(!s) return;
+  s[field] = value;
+  saveState(); renderProductStatusSelect();
+}
+function deleteCustomStatus(id){
+  const s = (state.customProductStatuses||[]).find(s=>s.id===id);
+  if(!s) return;
+  openConfirmModal(`Tem certeza que deseja excluir o status "${s.label}"? Produtos usando esse status ficarão sem status definido.`, ()=>{
+    state.customProductStatuses = state.customProductStatuses.filter(x=>x.id!==id);
+    state.products.forEach(p=>{ if(p.status===id) p.status=''; });
+    saveState(); renderProducts();
+    showToast('Status excluído.');
+  });
+}
+function renderCustomStatusManageList(){
+  const el = document.getElementById('customStatusManageList');
+  if(!el) return;
+  const list = state.customProductStatuses||[];
+  if(list.length===0){ el.innerHTML=''; return; }
+  el.innerHTML = `<label class="field-label">seus status personalizados</label>` + list.map(s=>`
+    <div class="add-row" style="margin-top:6px;align-items:center;">
+      <input type="text" value="${escapeHtml(s.emoji)}" style="max-width:60px;text-align:center;" onchange="updateCustomStatusField('${s.id}','emoji',this.value)">
+      <input type="text" value="${escapeHtml(s.label)}" onchange="updateCustomStatusField('${s.id}','label',this.value)">
+      <button class="del-btn" onclick="deleteCustomStatus('${s.id}')">✕</button>
+    </div>
+  `).join('');
 }
 
 function currentProduct(){
@@ -3254,15 +3305,21 @@ function renderProducts(){
   renderProductSelect();
   const product = currentProduct();
   const detail = document.getElementById('productDetail');
+  const listPanel = document.getElementById('productsPanel');
   const emptyMsg = document.getElementById('productEmpty');
   if(!product){
     detail.style.display = 'none';
-    emptyMsg.style.display = 'block';
+    if(listPanel) listPanel.style.display = 'block';
+    if(emptyMsg) emptyMsg.style.display = 'block';
     return;
   }
   detail.style.display = 'block';
-  emptyMsg.style.display = 'none';
+  if(listPanel) listPanel.style.display = 'none';
+  if(emptyMsg) emptyMsg.style.display = 'none';
+  const titleInput = document.getElementById('prodDetailTitleInput');
+  if(titleInput && document.activeElement !== titleInput) titleInput.value = product.nome;
   renderProductStatusSelect();
+  renderCustomStatusManageList();
   document.getElementById('funnelLinksList').innerHTML = funnelLinksHtml(product.funnelLinks||[]);
   document.getElementById('recoveryStepsList').innerHTML = stepsHtml(product.recovery, 'recovery');
   document.getElementById('deliveryStepsList').innerHTML = stepsHtml(product.delivery, 'delivery');
@@ -3272,6 +3329,25 @@ function renderProducts(){
     growAllTextareas('deliveryStepsList');
     growAllTextareas('objectionsStepsList');
   }, 0);
+}
+function renameCurrentProduct(newName){
+  const product = currentProduct();
+  if(!product) return;
+  const nome = (newName||'').trim();
+  if(!nome){ document.getElementById('prodDetailTitleInput').value = product.nome; return; }
+  product.nome = nome;
+  saveState(); renderProductSelect();
+  showToast('Produto renomeado.');
+}
+function deleteCurrentProduct(){
+  const product = currentProduct();
+  if(!product) return;
+  openConfirmModal(`Tem certeza que deseja excluir o produto "${product.nome}" e todo o funil de mensagens dele? Esta ação não poderá ser desfeita.`, ()=>{
+    state.products = state.products.filter(p=>p.id!==product.id);
+    state.currentProductId = null;
+    saveState(); renderProducts();
+    showToast('Produto excluído.');
+  });
 }
 
 /* ---------- VÍDEOS E CONTEÚDOS ---------- */
@@ -3588,7 +3664,7 @@ function renderWarmupGroups(){
   el.innerHTML = state.warmupGroups.map(g=>{
     if(warmupEditingId===g.id){
       return `
-      <div class="tool-card">
+      <div class="tool-card" data-id="${g.id}">
         <div class="tool-edit-row">
           <input type="text" value="${escapeHtml(g.nome)}" placeholder="nome do grupo" onchange="updateWarmupField('${g.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(g.link||'')}" placeholder="link do grupo" onchange="updateWarmupField('${g.id}','link',this.value)">
@@ -3601,8 +3677,9 @@ function renderWarmupGroups(){
       </div>`;
     }
     return `
-    <div class="tool-card" style="cursor:pointer;" onclick="openWarmupGroup('${escapeHtml(g.link||'')}')">
+    <div class="tool-card" data-id="${g.id}" style="cursor:pointer;" onclick="openWarmupGroup('${escapeHtml(g.link||'')}')">
       <div class="tool-card-head">
+        <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
         <div class="tool-name">${escapeHtml(g.nome)}</div>
         <button class="mining-edit-btn" onclick="toggleWarmupEdit('${g.id}', event)">✎ editar</button>
       </div>
@@ -3916,6 +3993,24 @@ function applyHideValuesPreference(){
   document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
 const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup'];
+const TAB_LABELS = {
+  home:'Início', finance:'Financeiro mensal', processos:'Processos', products:'Produtos',
+  mining:'Mineração', projects:'Projetos', tools:'Ferramentas', content:'Biblioteca de Conteúdo', warmup:'Aquecimento de Chip'
+};
+function renderTabNav(){
+  const nav = document.getElementById('tabNav');
+  if(!nav) return;
+  const order = (state.tabOrder||[]).filter(k=>TAB_LABELS[k] && k!=='home');
+  TAB_NAMES.forEach(k=>{ if(k!=='home' && !order.includes(k)) order.push(k); }); // inclui abas novas que ainda não estão na ordem salva
+  const activeBtn = nav.querySelector('.tab-btn.active');
+  const activeTab = activeBtn ? activeBtn.id.replace('tabBtn','').toLowerCase() : 'home';
+  nav.innerHTML = `<button class="tab-btn ${activeTab==='home'?'active':''}" id="tabBtnHome" onclick="switchTab('home')">Início</button>`
+    + order.map(k=>{
+      const id = 'tabBtn'+k[0].toUpperCase()+k.slice(1);
+      return `<button class="tab-btn ${activeTab===k?'active':''}" id="${id}" data-id="${k}" onclick="switchTab('${k}')"><span class="tab-drag-handle" onpointerdown="event.stopPropagation()" title="arrastar para reordenar">⠿</span>${escapeHtml(TAB_LABELS[k])}</button>`;
+    }).join('');
+  attachTabSortable();
+}
 function switchTab(tab){
   TAB_NAMES.forEach(t=>{
     const view = document.getElementById(t+'View');
@@ -4358,6 +4453,8 @@ function updateTopStats(){
 }
 
 function render(){
+  if(typeof activeDragCleanup !== 'undefined' && activeDragCleanup) activeDragCleanup();
+  renderTabNav();
   renderTasks();
   renderSimpleList('infraList', state.infra, infraCycle);
   renderOperacaoAtual();
@@ -4507,8 +4604,9 @@ function registerProjectVersion(){
   };
 
   if(file){
-    if(file.size > 8 * 1024 * 1024){
-      showToast('ZIP muito grande (máx. ~8MB). Registre sem anexar o arquivo, ou compacte menos coisa.');
+    if(file.size > 4 * 1024 * 1024){
+      showToast('ZIP muito grande (máx. ~4MB). Registre sem anexar o arquivo, ou compacte menos coisa.', 'error');
+      return;
     }
     const reader = new FileReader();
     reader.onload = ()=> finalize(reader.result, file.name, file.size);
@@ -4585,6 +4683,7 @@ function renderProjectCard(p){
   return `
   <div class="tool-card project-card" data-id="${p.id}" onclick="openProjectDetail('${p.id}')">
     <div class="tool-card-head">
+      <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
       <div class="project-card-name">${escapeHtml(p.nome)}</div>
       <button class="del-btn" onclick="removeProject('${p.id}', event)">✕</button>
     </div>
@@ -4861,6 +4960,125 @@ function attachSortable(containerId, onReordered){
   });
 }
 
+function attachTabSortable(){
+  const nav = document.getElementById('tabNav');
+  if(!nav) return;
+  nav.addEventListener('pointerdown', (e)=>{
+    const handle = e.target.closest('.tab-drag-handle');
+    if(!handle) return;
+    const dragging = handle.closest('[data-id]');
+    if(!dragging || dragging.parentElement !== nav) return;
+    e.preventDefault();
+
+    if(activeDragCleanup) activeDragCleanup();
+
+    const pointerId = e.pointerId;
+    const startX = e.clientX;
+    let ended = false;
+    let moved = false;
+
+    const items = [...nav.querySelectorAll('[data-id]')];
+    const startIndex = items.indexOf(dragging);
+    const rects = items.map(el => el.getBoundingClientRect());
+    const gapGuess = items.length > 1
+      ? Math.max(0, rects[1].left - (rects[0].left + rects[0].width))
+      : 6;
+    const dragW = rects[startIndex].width;
+    const shiftAmount = dragW + gapGuess;
+    let currentIndex = startIndex;
+
+    dragging.classList.add('dragging');
+    dragging.style.willChange = 'transform';
+    dragging.style.transition = 'none';
+    dragging.style.zIndex = '40';
+    try{ handle.setPointerCapture(pointerId); }catch(err){}
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'grabbing';
+
+    const applyShift = (newIndex)=>{
+      if(newIndex === currentIndex) return;
+      items.forEach((el, i)=>{
+        if(el === dragging) return;
+        let shift = 0;
+        if(i > startIndex && i <= newIndex) shift = -shiftAmount;
+        else if(i < startIndex && i >= newIndex) shift = shiftAmount;
+        el.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
+        el.style.transform = shift ? `translateX(${shift}px)` : '';
+      });
+      currentIndex = newIndex;
+    };
+    const computeTargetIndex = (draggingCenter)=>{
+      let idx = startIndex;
+      for(let i=0;i<items.length;i++){
+        if(i===startIndex) continue;
+        const center = rects[i].left + rects[i].width/2;
+        if(i < startIndex && draggingCenter < center){ idx = Math.min(idx, i); }
+        if(i > startIndex && draggingCenter > center){ idx = Math.max(idx, i); }
+      }
+      return idx;
+    };
+
+    let rafPending = false;
+    let lastX = e.clientX;
+    const applyMove = ()=>{
+      rafPending = false;
+      const deltaX = lastX - startX;
+      dragging.style.transform = `translateX(${deltaX}px)`;
+      const draggingCenter = rects[startIndex].left + rects[startIndex].width/2 + deltaX;
+      applyShift(computeTargetIndex(draggingCenter));
+    };
+    const onMove = (ev)=>{
+      if(ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
+      lastX = ev.clientX;
+      if(Math.abs(ev.clientX - startX) > 2) moved = true;
+      if(!rafPending){ rafPending = true; requestAnimationFrame(applyMove); }
+    };
+    const finish = ()=>{
+      dragging.classList.remove('dragging');
+      dragging.style.willChange = '';
+      dragging.style.zIndex = '';
+      dragging.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
+      dragging.style.transform = '';
+      items.forEach(el=>{ if(el!==dragging){ el.style.transition=''; el.style.transform=''; } });
+      setTimeout(()=>{ dragging.style.transition = ''; }, 200);
+      if(moved && currentIndex !== startIndex){
+        const withoutDragging = items.filter(el=>el!==dragging);
+        const insertAt = Math.max(0, Math.min(currentIndex, withoutDragging.length));
+        const frag = document.createDocumentFragment();
+        withoutDragging.slice(0, insertAt).forEach(el=>frag.appendChild(el));
+        frag.appendChild(dragging);
+        withoutDragging.slice(insertAt).forEach(el=>frag.appendChild(el));
+        nav.appendChild(frag);
+        state.tabOrder = Array.from(nav.querySelectorAll('[data-id]')).map(el=>el.dataset.id);
+        saveState();
+      }
+    };
+    const onEnd = (ev)=>{
+      if(ended) return;
+      if(ev && ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
+      ended = true;
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('pointercancel', onEnd);
+      window.removeEventListener('blur', onEnd);
+      document.removeEventListener('visibilitychange', onVisChange);
+      try{ handle.releasePointerCapture(pointerId); }catch(err){}
+      if(activeDragCleanup === onEnd) activeDragCleanup = null;
+      finish();
+    };
+    const onVisChange = ()=>{ if(document.visibilityState === 'hidden') onEnd(); };
+
+    window.addEventListener('pointermove', onMove, { passive:true });
+    window.addEventListener('pointerup', onEnd);
+    window.addEventListener('pointercancel', onEnd);
+    window.addEventListener('blur', onEnd);
+    document.addEventListener('visibilitychange', onVisChange);
+
+    activeDragCleanup = onEnd;
+  });
+}
 function reorderTasksGroup(ids){
   const idSet = new Set(ids);
   const groupItems = ids.map(id => state.tasks.find(t=>t.id===id)).filter(Boolean);
@@ -4881,6 +5099,9 @@ function setupDragHandlers(){
   attachSortable('miningList', ids=>reorderArray('mining', ids));
   attachSortable('videosList', ids=>reorderArray('videos', ids));
   attachSortable('toolsList', ids=>reorderArray('tools', ids));
+  attachSortable('projectsGrid', ids=>reorderArray('projects', ids));
+  attachSortable('productSelectorGrid', ids=>reorderArray('products', ids));
+  attachSortable('warmupGroupsList', ids=>reorderArray('warmupGroups', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
