@@ -997,6 +997,85 @@
   .timeline-version{font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--blue-bright);}
   .timeline-date{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
   .timeline-meta{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;font-size:11px;color:var(--muted);}
+
+  /* ---------- NOTAS ---------- */
+  .notes-layout{display:flex;gap:16px;align-items:flex-start;}
+  .notes-sidebar{
+    width:300px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .notes-sidebar-head{display:flex;flex-direction:column;gap:10px;}
+  .notes-sidebar-head h2{font-family:var(--display);font-size:14px;letter-spacing:0.1px;color:var(--text);margin:0;font-weight:700;}
+  .notes-sidebar-head h2 .sub{display:block;font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:4px;font-weight:500;}
+  .notes-sidebar-head .add-tool-btn{width:100%;justify-content:center;}
+  .notes-search{width:100%;}
+  .notes-list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:calc(100vh - 260px);min-height:120px;}
+  .note-list-item{
+    background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 12px;cursor:pointer;
+    transition:border-color .15s,background .15s;position:relative;
+  }
+  .note-list-item:hover{border-color:var(--border-strong);}
+  .note-list-item.active{border-color:var(--blue);background:var(--blue-soft);}
+  .note-list-item-title{font-family:var(--display);font-weight:700;font-size:13px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:20px;}
+  .note-list-item-snippet{font-size:11.5px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:15px;}
+  .note-list-item-date{font-family:var(--mono);font-size:9.5px;color:var(--muted2);margin-top:6px;text-transform:uppercase;letter-spacing:0.4px;}
+  .note-list-item .del-btn{position:absolute;top:9px;right:8px;opacity:0;transition:opacity .15s;}
+  .note-list-item:hover .del-btn{opacity:1;}
+  .notes-main{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);min-height:calc(100vh - 220px);display:flex;flex-direction:column;}
+  .notes-back-btn{display:none;}
+  .note-editor-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
+  .note-title-input{
+    flex:1;font-family:var(--display);font-size:20px;font-weight:800;color:var(--text);background:transparent;
+    border:1px solid transparent;border-radius:8px;padding:4px 8px;margin:-4px -8px;min-width:120px;
+  }
+  .note-title-input:hover{border-color:var(--border);}
+  .note-title-input:focus{outline:none;border-color:var(--blue);background:var(--surface2);}
+  .note-meta-date{font-family:var(--mono);font-size:10.5px;color:var(--muted2);margin-bottom:14px;text-transform:uppercase;letter-spacing:0.4px;}
+  .note-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--border);}
+  .note-tb-sep{width:1px;background:var(--border);margin:2px 4px;flex-shrink:0;}
+  .note-tb-btn{
+    background:var(--surface3);border:1px solid var(--border);color:var(--muted);border-radius:7px;
+    padding:6px 10px;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;
+    transition:border-color .15s,color .15s,background .15s;line-height:1;
+  }
+  .note-tb-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .note-content-editor{
+    flex:1;font-family:var(--sans);font-size:14px;line-height:1.7;color:var(--text);outline:none;min-height:320px;
+  }
+  .note-content-editor:empty:before{content:attr(data-placeholder);color:var(--muted2);}
+  .note-content-editor h1{font-family:var(--display);font-size:22px;font-weight:800;margin:18px 0 8px;}
+  .note-content-editor h1:first-child{margin-top:0;}
+  .note-content-editor h2{font-family:var(--display);font-size:17px;font-weight:700;color:var(--blue-bright);margin:16px 0 6px;}
+  .note-content-editor h2:first-child{margin-top:0;}
+  .note-content-editor p{margin:0 0 10px;}
+  .note-content-editor ul, .note-content-editor ol{margin:0 0 10px;padding-left:22px;}
+  .note-content-editor li{margin-bottom:4px;}
+  .note-content-editor a{color:var(--blue-bright);}
+  .note-content-editor hr{border:none;border-top:1px solid var(--border-strong);margin:16px 0;}
+  .note-content-editor mark{background:rgba(242,169,60,0.35);color:var(--text);border-radius:3px;padding:0 2px;}
+  .note-check-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;}
+  .note-check-box{
+    width:16px;height:16px;border-radius:5px;border:1.5px solid var(--border-strong);flex-shrink:0;margin-top:2px;
+    cursor:pointer;position:relative;transition:background .15s,border-color .15s;
+  }
+  .note-check-box:hover{border-color:var(--blue);}
+  .note-check-box.checked{background:var(--green);border-color:var(--green);}
+  .note-check-box.checked:after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#06080c;font-weight:800;}
+  .note-check-text.checked{color:var(--muted2);text-decoration:line-through;}
+  @media(max-width:900px){
+    .notes-layout{display:block;}
+    .notes-sidebar{width:100%;}
+    .notes-main{margin-top:16px;min-height:auto;}
+    .notes-layout.note-open .notes-sidebar{display:none;}
+    .notes-layout:not(.note-open) .notes-main{display:none;}
+    .notes-back-btn{
+      display:inline-block;background:none;border:1px solid var(--border);color:var(--muted);border-radius:9px;
+      padding:8px 14px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;margin-bottom:16px;
+    }
+    .notes-back-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  }
+
   /* ---------- LOGIN SCREEN ---------- */
   .login-screen{
     position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;
@@ -1724,7 +1803,7 @@
           <div class="panel-head"><h2><span class="sub">arquivo, versão e resumo do estado atual do projeto</span>📎 Versão Atual</h2></div>
           <div id="projCurrentVersion"></div>
           <div class="add-row" style="margin-top:12px;">
-            <button class="add-tool-btn" id="newProjVersionToggleBtn" onclick="toggleNewProjectVersionForm(true)">+ Anexar novo ZIP / registrar atualização</button>
+            <button class="add-tool-btn" id="newProjVersionToggleBtn" onclick="toggleNewProjectVersionForm(true)">Registrar atualização</button>
           </div>
           <div class="add-form" id="newProjVersionRow">
             <div class="add-row" style="flex-direction:column;">
@@ -1784,6 +1863,20 @@
           </div>
           <div id="projResourcesGrid" class="tools-grid"></div>
         </div>
+      </div>
+    </div>
+
+    <div class="tab-view" id="notesView">
+      <div class="notes-layout" id="notesLayout">
+        <div class="notes-sidebar">
+          <div class="notes-sidebar-head">
+            <h2><span class="sub">ideias, planejamentos e informações importantes</span>Notas</h2>
+            <button class="add-tool-btn" onclick="createNote()">+ Nova nota</button>
+          </div>
+          <input type="text" id="notesSearchInput" class="notes-search" placeholder="🔎 buscar notas..." oninput="renderNotesList()">
+          <div class="notes-list" id="notesList"></div>
+        </div>
+        <div class="notes-main" id="notesMain"></div>
       </div>
     </div>
 
@@ -1871,7 +1964,9 @@ const defaultState = {
   customProductStatuses: [],
   projects: [],
   currentProjectId: null,
-  tabOrder: ['finance','processos','products','mining','projects','tools','content','warmup'],
+  notes: [],
+  currentNoteId: null,
+  tabOrder: ['finance','processos','products','mining','projects','tools','content','warmup','notes'],
   checklist: {
     template: [
       {id:'ck1', text:'Subir criativo novo'},
@@ -1889,7 +1984,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -2188,7 +2283,7 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -2200,9 +2295,12 @@ async function loadState(){
       if(!state.warmupGroups) state.warmupGroups = [];
       if(!state.customGateways) state.customGateways = [];
       if(!state.customProductStatuses) state.customProductStatuses = [];
-      if(!state.tabOrder || !Array.isArray(state.tabOrder)) state.tabOrder = ['finance','processos','products','mining','projects','tools','content','warmup'];
+      if(!state.tabOrder || !Array.isArray(state.tabOrder)) state.tabOrder = ['finance','processos','products','mining','projects','tools','content','warmup','notes'];
+      if(!state.tabOrder.includes('notes')) state.tabOrder.push('notes');
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
+      if(!state.notes) state.notes = [];
+      if(state.currentNoteId===undefined) state.currentNoteId = null;
       if(!state.processos){
         state.processos = (state.tasks||[]).filter(t=>t.priority==='estrutural').map(t=>({
           id: uid(), titulo: t.text || '', concluido: t.status==='done', collapsed:false, topicos:[]
@@ -3993,10 +4091,11 @@ function applyHideValuesPreference(){
   document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
   document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
-const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup'];
+const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup','notes'];
 const TAB_LABELS = {
   home:'Início', finance:'Financeiro mensal', processos:'Processos', products:'Produtos',
-  mining:'Mineração', projects:'Projetos', tools:'Ferramentas', content:'Biblioteca de Conteúdo', warmup:'Aquecimento de Chip'
+  mining:'Mineração', projects:'Projetos', tools:'Ferramentas', content:'Biblioteca de Conteúdo', warmup:'Aquecimento de Chip',
+  notes:'Notas'
 };
 function renderTabNav(){
   const nav = document.getElementById('tabNav');
@@ -4471,6 +4570,7 @@ function render(){
   renderWarmupGroups();
   renderVideos();
   renderProjects();
+  renderNotes();
   renderPlanner();
   renderResumoMes();
   renderTodayPanel();
@@ -4798,6 +4898,185 @@ function renderProjects(){
   }
 }
 
+
+/* ---------- NOTAS ---------- */
+function currentNote(){ return state.notes.find(n=>n.id===state.currentNoteId); }
+function noteSnippet(html){
+  const d = document.createElement('div');
+  d.innerHTML = html || '';
+  const txt = (d.textContent || d.innerText || '').replace(/\s+/g,' ').trim();
+  return txt;
+}
+function createNote(){
+  const now = new Date().toISOString();
+  const n = { id: uid(), titulo: 'Nova nota', conteudo: '', criadoEm: now, atualizadoEm: now };
+  state.notes.unshift(n);
+  state.currentNoteId = n.id;
+  saveState();
+  renderNotes();
+  setTimeout(()=>{
+    const titleEl = document.getElementById('noteTitleInput');
+    if(titleEl){ titleEl.focus(); titleEl.select(); }
+  }, 0);
+}
+function openNote(id){
+  state.currentNoteId = id;
+  saveState();
+  renderNotes();
+}
+function closeNoteDetail(){
+  state.currentNoteId = null;
+  saveState();
+  renderNotes();
+}
+function removeNote(id, ev){
+  if(ev) ev.stopPropagation();
+  const n = state.notes.find(n=>n.id===id);
+  if(!n) return;
+  openConfirmModal(`Tem certeza que quer excluir a nota "${n.titulo || 'sem título'}"? Essa ação não pode ser desfeita.`, ()=>{
+    state.notes = state.notes.filter(n=>n.id!==id);
+    if(state.currentNoteId===id) state.currentNoteId = null;
+    saveState();
+    renderNotes();
+    showToast('Nota excluída.');
+  });
+}
+function updateNoteTitle(value){
+  const n = currentNote();
+  if(!n) return;
+  n.titulo = value;
+  n.atualizadoEm = new Date().toISOString();
+  saveState();
+  renderNotesList();
+}
+function onNoteContentInput(){
+  const n = currentNote();
+  const editor = document.getElementById('noteContentEditor');
+  if(!n || !editor) return;
+  n.conteudo = editor.innerHTML;
+  n.atualizadoEm = new Date().toISOString();
+  saveState();
+  renderNotesList();
+  const dateEl = document.getElementById('noteMetaDate');
+  if(dateEl) dateEl.innerText = 'editado ' + fmtDateTime(n.atualizadoEm);
+}
+function noteFocusEditor(){
+  const editor = document.getElementById('noteContentEditor');
+  if(editor) editor.focus();
+}
+function noteCmd(cmd, value){
+  noteFocusEditor();
+  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
+  document.execCommand(cmd, false, value || null);
+  onNoteContentInput();
+}
+function noteInsertLink(){
+  noteFocusEditor();
+  const url = window.prompt('Cole o link (URL):');
+  if(!url) return;
+  const sel = window.getSelection();
+  if(sel && !sel.isCollapsed && sel.rangeCount){
+    document.execCommand('createLink', false, url);
+  } else {
+    const text = window.prompt('Texto do link:', url) || url;
+    document.execCommand('insertHTML', false, `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(text)}</a>`);
+  }
+  onNoteContentInput();
+}
+function noteInsertChecklist(){
+  noteFocusEditor();
+  const spanId = 'ncx-' + uid();
+  document.execCommand('insertHTML', false,
+    `<div class="note-check-item"><span class="note-check-box" contenteditable="false" onclick="toggleNoteCheck(this)"></span><span class="note-check-text" id="${spanId}">&nbsp;</span></div><p><br></p>`);
+  onNoteContentInput();
+  setTimeout(()=>{
+    const span = document.getElementById(spanId);
+    if(span){
+      const range = document.createRange();
+      range.selectNodeContents(span);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      span.focus && span.focus();
+    }
+  }, 0);
+}
+function toggleNoteCheck(el){
+  el.classList.toggle('checked');
+  const text = el.nextElementSibling;
+  if(text && text.classList) text.classList.toggle('checked', el.classList.contains('checked'));
+  onNoteContentInput();
+}
+function noteHighlight(){
+  noteCmd('hiliteColor', 'rgba(242,169,60,0.35)');
+}
+function renderNotesList(){
+  const list = document.getElementById('notesList');
+  if(!list) return;
+  const q = (document.getElementById('notesSearchInput')?.value || '').toLowerCase().trim();
+  const sorted = [...state.notes].sort((a,b)=> new Date(b.atualizadoEm||b.criadoEm) - new Date(a.atualizadoEm||a.criadoEm));
+  const filtered = q ? sorted.filter(n=>{
+    return (n.titulo||'').toLowerCase().includes(q) || noteSnippet(n.conteudo).toLowerCase().includes(q);
+  }) : sorted;
+  if(state.notes.length===0){
+    list.innerHTML = '<div class="empty-block"><div class="empty-block-icon">📝</div><div class="empty-block-title">Nenhuma nota ainda</div><div class="empty-block-sub">Use o + Nova nota acima pra criar seu bloco de anotações.</div></div>';
+    return;
+  }
+  if(filtered.length===0){
+    list.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🔎</div><div class="empty-block-title">Nada encontrado</div><div class="empty-block-sub">Tenta buscar por outro termo.</div></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(n=>`
+    <div class="note-list-item ${n.id===state.currentNoteId?'active':''}" data-id="${n.id}" onclick="openNote('${n.id}')">
+      <button class="del-btn" onclick="removeNote('${n.id}', event)">✕</button>
+      <div class="note-list-item-title">${escapeHtml(n.titulo || 'sem título')}</div>
+      <div class="note-list-item-snippet">${escapeHtml(noteSnippet(n.conteudo)) || '<span style="opacity:.5;">sem conteúdo</span>'}</div>
+      <div class="note-list-item-date">${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
+    </div>`).join('');
+}
+function renderNoteEditor(){
+  const main = document.getElementById('notesMain');
+  if(!main) return;
+  const n = currentNote();
+  if(!n){
+    main.innerHTML = '<div class="empty-block" style="margin:auto;"><div class="empty-block-icon">📝</div><div class="empty-block-title">Selecione uma nota</div><div class="empty-block-sub">Ou crie uma nova pra começar a escrever.</div></div>';
+    return;
+  }
+  main.innerHTML = `
+    <button class="notes-back-btn" onclick="closeNoteDetail()">← voltar às notas</button>
+    <div class="note-editor-head">
+      <input type="text" id="noteTitleInput" class="note-title-input" value="${escapeHtml(n.titulo||'')}" placeholder="título da nota" oninput="updateNoteTitle(this.value)">
+      <button class="del-btn" onclick="removeNote('${n.id}', event)" title="excluir nota" style="font-size:16px;">✕</button>
+    </div>
+    <div class="note-meta-date" id="noteMetaDate">editado ${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
+    <div class="note-toolbar">
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H1')">Título</button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H2')">Subtítulo</button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','P')">Normal</button>
+      <div class="note-tb-sep"></div>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('bold')"><b>N</b></button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('italic')"><i>I</i></button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('underline')"><u>S</u></button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteHighlight()" title="destacar">🖍 destacar</button>
+      <div class="note-tb-sep"></div>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertUnorderedList')">• lista</button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertOrderedList')">1. lista</button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteInsertChecklist()">☑ checklist</button>
+      <div class="note-tb-sep"></div>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteInsertLink()">🔗 link</button>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertHorizontalRule')">― divisor</button>
+    </div>
+    <div class="note-content-editor" id="noteContentEditor" contenteditable="true" data-placeholder="Escreva aqui..." oninput="onNoteContentInput()">${n.conteudo || ''}</div>
+  `;
+}
+function renderNotes(){
+  const layout = document.getElementById('notesLayout');
+  if(!layout) return;
+  layout.classList.toggle('note-open', !!state.currentNoteId);
+  renderNotesList();
+  renderNoteEditor();
+}
 
 /* ---------- DRAG & DROP (fluid, Trello/Notion-style, FLIP animated) ---------- */
 // ---------- MOTOR DE ARRASTAR-E-SOLTAR (v2 — fluido) ----------
