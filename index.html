@@ -987,6 +987,12 @@
   .project-card-name{font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px;}
   .status-badge{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.5px;border-radius:6px;padding:3px 8px;display:inline-block;font-weight:700;}
   .status-badge-select{appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer;padding:3px 22px 3px 8px;background-repeat:no-repeat;background-position:right 6px center;background-size:8px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");}
+  .project-status-editor{display:inline-flex;align-items:center;gap:4px;}
+  .project-status-edit-btn{
+    background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;
+    width:20px;height:20px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .project-status-edit-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
   .status-badge-select:hover{filter:brightness(1.15);}
   .status-badge-select:focus{outline:1px solid var(--blue-bright);}
   .status-badge.desenvolvimento{color:var(--blue-bright);background:var(--blue-soft);border:1px solid rgba(59,130,246,.3);}
@@ -5113,9 +5119,12 @@ function renderProjectCard(p){
     </div>
     <div class="project-card-meta">
       <span class="tool-cat" style="background:var(--blue-soft);color:var(--blue-bright);">💻 ${escapeHtml(p.ferramenta)}</span>
-      <select class="status-badge status-badge-select ${statusKey}" onclick="event.stopPropagation()" onchange="updateProjectStatusFromCard('${p.id}', this.value, event)">
-        ${Object.keys(PROJECT_STATUS_LABELS).map(k=>`<option value="${k}" ${statusKey===k?'selected':''}>${PROJECT_STATUS_LABELS[k]}</option>`).join('')}
-      </select>
+      <div class="project-status-editor" onclick="event.stopPropagation()">
+        <select id="statusSelect-${p.id}" class="status-badge status-badge-select ${statusKey}" onchange="updateProjectStatusFromCard('${p.id}', this.value, event)">
+          ${Object.keys(PROJECT_STATUS_LABELS).map(k=>`<option value="${k}" ${statusKey===k?'selected':''}>${PROJECT_STATUS_LABELS[k]}</option>`).join('')}
+        </select>
+        <button class="project-status-edit-btn" onclick="openProjectStatusSelect('${p.id}', event)" title="editar estágio do projeto">✎</button>
+      </div>
     </div>
     <div class="tool-field-label">versão atual</div>
     <div class="tool-field-value">${p.currentVersion ? escapeHtml(p.currentVersion.versao) : 'nenhuma versão registrada'}</div>
@@ -5130,6 +5139,16 @@ function updateProjectStatusFromCard(id, value, ev){
   p.status = value;
   saveState(); renderProjects();
   showToast('Status atualizado.');
+}
+function openProjectStatusSelect(id, ev){
+  if(ev) ev.stopPropagation();
+  const sel = document.getElementById('statusSelect-'+id);
+  if(!sel) return;
+  sel.focus();
+  if(typeof sel.showPicker === 'function'){
+    try{ sel.showPicker(); return; }catch(e){}
+  }
+  sel.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, cancelable:true, view:window}));
 }
 function renderProjectDetail(p){
   document.getElementById('projDetailTitle').innerText = p.nome;
@@ -6060,16 +6079,16 @@ function reorderArray(key, ids){
 }
 function setupDragHandlers(){
   attachSortable('urgentList', reorderTasksGroup);
-  attachSortable('processosList', ids=>reorderArray('processos', ids));
+  attachSortableGrid('processosList', ids=>reorderArray('processos', ids));
   attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
   attachSortable('miningList', ids=>reorderArray('mining', ids));
-  attachSortable('videosList', ids=>reorderArray('videos', ids));
-  attachSortable('toolsList', ids=>reorderArray('tools', ids));
-  attachSortable('projectsGrid', ids=>reorderArray('projects', ids));
-  attachSortable('productSelectorGrid', ids=>reorderArray('products', ids));
-  attachSortable('warmupGroupsList', ids=>reorderArray('warmupGroups', ids));
+  attachSortableGrid('videosList', ids=>reorderArray('videos', ids));
+  attachSortableGrid('toolsList', ids=>reorderArray('tools', ids));
+  attachSortableGrid('projectsGrid', ids=>reorderArray('projects', ids));
+  attachSortableGrid('productSelectorGrid', ids=>reorderArray('products', ids));
+  attachSortableGrid('warmupGroupsList', ids=>reorderArray('warmupGroups', ids));
   attachSortableGrid('notesList', ids=>reorderArray('notes', ids));
   attachSortable('assetsList', ids=>reorderArray('assets', ids));
   attachSortable('managersList', ids=>reorderArray('managers', ids));
@@ -6077,7 +6096,7 @@ function setupDragHandlers(){
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
   attachSortable('funnelLinksList', ids=>{ reorderFunnelLinks(ids); renderProducts(); });
-  attachSortable('projResourcesGrid', ids=>reorderProjectResources(ids));
+  attachSortableGrid('projResourcesGrid', ids=>reorderProjectResources(ids));
   attachSortable('phonesList', ids=>reorderArray('phones', ids));
 }
 
