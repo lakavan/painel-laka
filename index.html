@@ -662,21 +662,48 @@
   .mining-history-entry{display:flex;gap:8px;font-size:11.5px;color:var(--muted);padding:3px 0;font-family:var(--mono);}
   .mining-history-entry .hd{color:var(--muted2);min-width:80px;}
   .mining-history-entry .hv{color:var(--green);}
-  .mining-stats-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .mining-stats-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+  .mining-chart-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;}
+  .mining-trend-badge{font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:20px;border:1px solid transparent;}
+  .mining-trend-badge.trend-escalando, .mining-trend-badge.trend-forte{color:var(--ok);background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.3);}
+  .mining-trend-badge.trend-estavel, .mining-trend-badge.trend-oscilando{color:var(--warn);background:rgba(242,169,60,0.12);border-color:rgba(242,169,60,0.3);}
+  .mining-trend-badge.trend-correcao{color:#f2a93c;background:rgba(242,169,60,0.14);border-color:rgba(242,169,60,0.35);}
+  .mining-trend-badge.trend-perdendo, .mining-trend-badge.trend-saturando{color:var(--urgent);background:rgba(240,69,92,0.12);border-color:rgba(240,69,92,0.3);}
+  .mining-trend-badge.trend-neutro{color:var(--muted2);background:var(--surface3);}
+  .mining-health-badge{font-size:11px;font-weight:600;padding:4px 9px;border-radius:20px;color:var(--muted);background:var(--surface3);border:1px solid var(--border);}
+  .mining-health-badge.health-good{color:var(--ok);border-color:rgba(34,197,94,0.3);}
+  .mining-health-badge.health-mid{color:var(--warn);border-color:rgba(242,169,60,0.3);}
+  .mining-health-badge.health-warn{color:#f2a93c;border-color:rgba(242,169,60,0.35);}
+  .mining-health-badge.health-bad{color:var(--urgent);border-color:rgba(240,69,92,0.3);}
+  /* gráfico principal (estilo dashboard: grade leve, área suave, eixo com só min/máx) */
+  .mining-chart{display:block;margin-bottom:6px;}
+  .mining-chart .chart-grid{stroke:var(--border);stroke-width:1;}
+  .mining-chart .chart-axis-label{font-family:var(--mono);font-size:9px;fill:var(--muted2);}
+  .mining-chart .chart-area{fill:currentColor;opacity:0.10;stroke:none;}
+  .mining-chart .chart-line{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .mining-chart .chart-dot{fill:var(--surface);stroke:currentColor;stroke-width:2;}
+  .mining-chart.chart-up{color:var(--ok);}
+  .mining-chart.chart-down{color:var(--urgent);}
+  .mining-chart.chart-flat{color:var(--warn);}
+  .mining-tooltip{position:fixed;z-index:200;pointer-events:none;background:var(--surface2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 10px;font-size:11px;box-shadow:var(--shadow-md,0 8px 20px rgba(0,0,0,.4));opacity:0;transform:translateY(4px);transition:opacity .1s,transform .1s;white-space:nowrap;}
+  .mining-tooltip.show{opacity:1;transform:translateY(0);}
+  .mining-tooltip .mt-date{font-family:var(--mono);font-size:9.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;}
+  .mining-tooltip .mt-val{font-weight:700;color:var(--text);margin:2px 0;}
+  .mining-tooltip .mt-diff{font-size:10px;color:var(--muted);}
+  .mining-tooltip .mt-diff.pos{color:var(--ok);}
+  .mining-tooltip .mt-diff.neg{color:var(--urgent);}
   .mining-sparkline{width:100%;height:44px;display:block;margin-bottom:8px;}
   .mining-sparkline .spark-area{fill:currentColor;opacity:0.14;stroke:none;}
   .mining-sparkline .spark-line{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
   .mining-sparkline .spark-dot{fill:currentColor;}
-  .mining-sparkline.spark-alta{color:var(--ok);}
-  .mining-sparkline.spark-queda{color:var(--urgent);}
-  .mining-sparkline.spark-estavel{color:var(--muted);}
+  .mining-sparkline.spark-escalando, .mining-sparkline.spark-forte{color:var(--ok);}
+  .mining-sparkline.spark-estavel, .mining-sparkline.spark-oscilando{color:var(--warn);}
+  .mining-sparkline.spark-correcao, .mining-sparkline.spark-perdendo, .mining-sparkline.spark-saturando{color:var(--urgent);}
+  .mining-sparkline.spark-neutro{color:var(--muted);}
   .mining-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;}
   .mining-stat{display:flex;flex-direction:column;gap:2px;}
   .ms-label{font-family:var(--mono);font-size:8.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.4px;}
   .ms-value{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);}
-  .ms-value.trend-alta{color:var(--ok);}
-  .ms-value.trend-queda{color:var(--urgent);}
-  .ms-value.trend-estavel{color:var(--muted);}
   .ms-value.pos{color:var(--ok);}
   .ms-value.neg{color:var(--urgent);}
 
@@ -975,6 +1002,7 @@
   .proj-info-row .val{color:var(--text);text-align:right;font-weight:600;}
   .proj-info-row input{background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;text-align:right;width:60%;}
   .proj-version-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .proj-version-label{font-family:var(--mono);font-size:9.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px;}
   .proj-version-name{font-family:var(--display);font-weight:800;font-size:16px;color:var(--blue-bright);}
   .proj-stage-badge{
     font-family:var(--mono);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:5px;
@@ -994,6 +1022,7 @@
   .timeline-item:last-child{padding-bottom:0;}
   .timeline-dot{position:absolute;left:-20px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--blue);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--blue);}
   .timeline-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .timeline-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
   .timeline-version{font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--blue-bright);}
   .timeline-date{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
   .timeline-meta{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;font-size:11px;color:var(--muted);}
@@ -1022,6 +1051,19 @@
   .note-list-item-date{font-family:var(--mono);font-size:9.5px;color:var(--muted2);margin-top:6px;text-transform:uppercase;letter-spacing:0.4px;}
   .note-list-item .del-btn{position:absolute;top:9px;right:8px;opacity:0;transition:opacity .15s;}
   .note-list-item:hover .del-btn{opacity:1;}
+  .note-card-date{font-family:var(--mono);font-size:9.5px;color:var(--muted2);margin-top:8px;text-transform:uppercase;letter-spacing:0.4px;}
+  .note-color-wrap{position:relative;display:inline-block;}
+  .note-color-menu{
+    display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:20;
+    background:var(--surface2);border:1px solid var(--border-strong);border-radius:10px;
+    padding:8px;box-shadow:var(--shadow-md);gap:7px;align-items:center;
+  }
+  .note-color-menu.open{display:flex;}
+  .note-color-swatch{width:20px;height:20px;border-radius:50%;border:1px solid var(--border-strong);cursor:pointer;padding:0;flex-shrink:0;}
+  .note-color-swatch:hover{transform:scale(1.15);}
+  .note-color-custom{width:22px;height:22px;padding:0;border:1px solid var(--border-strong);border-radius:50%;overflow:hidden;background:none;cursor:pointer;flex-shrink:0;}
+  .note-color-custom::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;}
+  .note-color-custom::-webkit-color-swatch{border:none;border-radius:50%;}
   .notes-main{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);min-height:calc(100vh - 220px);display:flex;flex-direction:column;}
   .notes-back-btn{display:none;}
   .note-editor-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
@@ -1807,8 +1849,7 @@
           </div>
           <div class="add-form" id="newProjVersionRow">
             <div class="add-row" style="flex-direction:column;">
-              <input type="text" id="pvVersao" placeholder="versão (ex: Painel LAKA V30)">
-              <input type="file" id="pvZip" accept=".zip">
+              <input type="text" id="pvVersao" placeholder="versão (ex: V30, v2.1.0)">
               <input type="text" id="pvArquivoLink" placeholder="🔗 link do Google Drive (pasta ou arquivo dessa versão)">
               <div class="add-row" style="margin-top:0;">
                 <select id="pvIa">
@@ -1867,15 +1908,16 @@
     </div>
 
     <div class="tab-view" id="notesView">
-      <div class="notes-layout" id="notesLayout">
-        <div class="notes-sidebar">
-          <div class="notes-sidebar-head">
+      <div id="notesGridWrap">
+        <div class="panel full">
+          <div class="panel-head">
             <h2><span class="sub">ideias, planejamentos e informações importantes</span>Notas</h2>
             <button class="add-tool-btn" onclick="createNote()">+ Nova nota</button>
           </div>
-          <input type="text" id="notesSearchInput" class="notes-search" placeholder="🔎 buscar notas..." oninput="renderNotesList()">
-          <div class="notes-list" id="notesList"></div>
+          <div class="tools-grid" id="notesList"></div>
         </div>
+      </div>
+      <div id="noteDetailWrap" style="display:none;">
         <div class="notes-main" id="notesMain"></div>
       </div>
     </div>
@@ -1897,6 +1939,8 @@
     </div>
   </div>
 </div>
+
+<div class="mining-tooltip" id="miningTooltip"></div>
 
 <div class="modal-overlay" id="confirmModal" onclick="if(event.target===this) closeConfirmModal()">
   <div class="modal-box" style="max-width:360px;">
@@ -2936,25 +2980,83 @@ function renderManagers(){
   const el = document.getElementById('managersList');
   if(state.managers.length===0){ el.innerHTML='<div class="empty">nenhum gerente cadastrado.</div>'; return; }
   el.innerHTML = state.managers.map(m=>{
+    if(managerEditingId === m.id){
+      return `
+      <div class="asset-row editing" data-id="${m.id}" style="flex-direction:column;align-items:stretch;">
+        <div class="tool-edit-row">
+          <input type="text" value="${escapeHtml(m.nome)}" placeholder="nome do gerente" onchange="updateManagerField('${m.id}','nome',this.value)">
+          <input type="text" value="${escapeHtml(m.numero||'')}" placeholder="número/contato" onchange="updateManagerField('${m.id}','numero',this.value)">
+          <input type="text" value="${escapeHtml(m.gateway||'')}" placeholder="gateway/dashboard (ex: Kirvano)" onchange="updateManagerField('${m.id}','gateway',this.value)">
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeManager('${m.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleManagerEdit('${m.id}')"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
     const link = waLink(m.numero);
     return `
     <div class="asset-row" data-id="${m.id}">
+      <span class="drag-handle">⠿</span>
       <span class="asset-tipo">${escapeHtml(m.gateway||'—')}</span>
       <div class="asset-name">${escapeHtml(m.nome)} ${m.numero? (link ? `<a href="${link}" target="_blank" rel="noopener" style="color:#25D366;font-size:11.5px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">· <span class="manager-wa-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.79 14.13c-.24.68-1.4 1.3-1.93 1.35-.5.05-1.02.24-3.42-.71-2.9-1.15-4.76-4.12-4.9-4.31-.14-.19-1.17-1.56-1.17-2.98s.74-2.11 1-2.4c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.14.07.14.12.31.02.5-.1.19-.14.3-.29.47-.14.16-.3.36-.43.48-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.29 2.33 1.44.29.14.46.12.62-.07.17-.19.71-.83.9-1.11.19-.29.38-.24.63-.14.26.1 1.65.78 1.94.92.29.14.48.21.55.33.07.12.07.67-.17 1.36z"/></svg></span> ${escapeHtml(m.numero)}</a>` : `<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(m.numero)}</span>`) : ''}</div>
+      <button class="mining-edit-btn" onclick="toggleManagerEdit('${m.id}')">✎ editar</button>
       <button class="del-btn" onclick="removeManager('${m.id}')">✕</button>
     </div>`;
   }).join('');
 }
+let managerEditingId = null;
+function toggleManagerEdit(id){
+  managerEditingId = (managerEditingId===id) ? null : id;
+  renderManagers();
+}
+function updateManagerField(id, field, value){
+  const m = state.managers.find(m=>m.id===id);
+  if(!m) return;
+  m[field] = value;
+  saveState();
+}
 function renderAssets(){
   const el = document.getElementById('assetsList');
   if(state.assets.length===0){ el.innerHTML='<div class="empty">nenhum ativo cadastrado.</div>'; return; }
-  el.innerHTML = state.assets.map(a=>`
+  const ASSET_TYPES = ['Perfil Facebook','BM','Página','Conta de anúncio','Domínio','Outro'];
+  el.innerHTML = state.assets.map(a=>{
+    if(assetEditingId === a.id){
+      return `
+      <div class="asset-row editing" data-id="${a.id}" style="flex-direction:column;align-items:stretch;">
+        <div class="tool-edit-row">
+          <select onchange="updateAssetField('${a.id}','tipo',this.value)">
+            ${ASSET_TYPES.map(t=>`<option value="${t}" ${a.tipo===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+          <input type="text" value="${escapeHtml(a.nome)}" placeholder="nome/identificador" onchange="updateAssetField('${a.id}','nome',this.value)">
+          <input type="text" value="${escapeHtml(a.nota||'')}" placeholder="nota (opcional)" onchange="updateAssetField('${a.id}','nota',this.value)">
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeAsset('${a.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleAssetEdit('${a.id}')"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
     <div class="asset-row" data-id="${a.id}">
+      <span class="drag-handle">⠿</span>
       <span class="asset-tipo">${escapeHtml(a.tipo)}</span>
       <div class="asset-name">${escapeHtml(a.nome)} ${a.nota?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(a.nota)}</span>`:''}</div>
+      <button class="mining-edit-btn" onclick="toggleAssetEdit('${a.id}')">✎ editar</button>
       <button class="del-btn" onclick="removeAsset('${a.id}')">✕</button>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
+}
+let assetEditingId = null;
+function toggleAssetEdit(id){
+  assetEditingId = (assetEditingId===id) ? null : id;
+  renderAssets();
+}
+function updateAssetField(id, field, value){
+  const a = state.assets.find(a=>a.id===id);
+  if(!a) return;
+  a[field] = value;
+  saveState();
 }
 function toggleNewManagerForm(show){
   document.getElementById('newManagerRow').classList.toggle('open', show);
@@ -3112,12 +3214,29 @@ function renderProductSelect(){
     const hasRecovery = (p.recovery||[]).some(s=>(s.variations||[]).some(v=>v.texto && v.texto.trim()));
     const hasDelivery = (p.delivery||[]).some(s=>(s.variations||[]).some(v=>v.texto && v.texto.trim()));
     const st = findProductStatus(p.status);
+    if(productEditingId === p.id){
+      return `
+      <div class="product-card editing" data-id="${p.id}" onclick="event.stopPropagation()">
+        <div class="tool-edit-row">
+          <input type="text" value="${escapeHtml(p.nome)}" placeholder="nome do produto" onchange="updateProductField('${p.id}','nome',this.value)">
+          <select onchange="updateProductField('${p.id}','status',this.value)">
+            <option value="">sem status definido</option>
+            ${allProductStatuses().map(s=>`<option value="${s.id}" ${p.status===s.id?'selected':''}>${s.emoji} ${escapeHtml(s.label)}</option>`).join('')}
+          </select>
+          <div class="mining-actions">
+            <button class="del-btn" onclick="deleteProductById('${p.id}', event)">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleProductEdit('${p.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
     return `
     <div class="product-card ${selected?'selected':''}" data-id="${p.id}" onclick="selectProduct('${p.id}')">
       <div class="product-card-head">
         <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
         <span class="product-card-ico">🧩</span>
-        <div class="product-card-name">${escapeHtml(p.nome)}</div>
+        <div class="product-card-name" style="flex:1;">${escapeHtml(p.nome)}</div>
+        <button class="mining-edit-btn" onclick="toggleProductEdit('${p.id}', event)">✎ editar</button>
       </div>
       ${st ? `<span class="product-status-badge">${st.emoji} ${escapeHtml(st.label)}</span>` : ''}
       <div class="product-card-checklist">
@@ -3127,6 +3246,32 @@ function renderProductSelect(){
       </div>
     </div>`;
   }).join('');
+}
+let productEditingId = null;
+function toggleProductEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  productEditingId = (productEditingId===id) ? null : id;
+  renderProductSelect();
+}
+function updateProductField(id, field, value){
+  const p = state.products.find(p=>p.id===id);
+  if(!p) return;
+  p[field] = value;
+  saveState();
+  if(field==='nome' || field==='status') renderProductSelect();
+  if(state.currentProductId===id) renderProducts();
+}
+function deleteProductById(id, ev){
+  if(ev) ev.stopPropagation();
+  const p = state.products.find(p=>p.id===id);
+  if(!p) return;
+  openConfirmModal(`Tem certeza que deseja excluir o produto "${p.nome}" e todo o funil de mensagens dele? Esta ação não poderá ser desfeita.`, ()=>{
+    state.products = state.products.filter(x=>x.id!==id);
+    if(state.currentProductId===id) state.currentProductId = null;
+    if(productEditingId===id) productEditingId = null;
+    saveState(); renderProducts();
+    showToast('Produto excluído.');
+  });
 }
 function toggleNewProductRow(show){
   document.getElementById('newProductRow').classList.toggle('open', show);
@@ -3874,13 +4019,85 @@ function stepMiningAnuncios(id, delta){
   const newVal = Math.max(0, (Number(item.anuncios)||0) + delta);
   updateMiningField(id, 'anuncios', newVal);
 }
-function miningTrend(history){
-  if(!history || history.length<2) return 'estavel';
-  const last = history[history.length-1].anuncios;
-  const prev = history[history.length-2].anuncios;
-  if(last>prev) return 'alta';
-  if(last<prev) return 'queda';
-  return 'estavel';
+// ---------- MINERAÇÃO: análise de tendência, saúde da oferta e gráfico ----------
+// Toda a lógica abaixo trabalha só em cima do que já existe (item.history), sem mudar
+// nada na estrutura de dados nem no banco — é só uma leitura mais inteligente do mesmo
+// histórico que já era salvo.
+
+// Estatísticas descritivas simples do histórico (min/máx/média/desvio padrão)
+function miningDescribe(history){
+  const vals = history.map(h=>h.anuncios);
+  const n = vals.length;
+  const max = Math.max(...vals), min = Math.min(...vals);
+  const avg = vals.reduce((a,b)=>a+b,0)/n;
+  const variance = vals.reduce((a,v)=>a+Math.pow(v-avg,2),0)/n;
+  const stdev = Math.sqrt(variance);
+  const cv = avg>0 ? stdev/avg : 0; // coeficiente de variação — o quão "instável" é a oferta
+  return {vals, n, max, min, avg, stdev, cv};
+}
+// Compara a "janela recente" com a "janela anterior" pra saber a direção real da oferta,
+// em vez de olhar só o último ponto contra o penúltimo (que é o que causava classificações
+// como "Em queda" pra uma oferta que só oscilou um pouco depois de semanas fortes).
+function miningTrendPct(history){
+  const vals = history.map(h=>h.anuncios);
+  const n = vals.length;
+  if(n<2) return 0;
+  const windowSize = Math.max(1, Math.min(7, Math.floor(n/2)));
+  const recent = vals.slice(-windowSize);
+  const earlier = vals.slice(0, n-windowSize);
+  const recentAvg = recent.reduce((a,b)=>a+b,0)/recent.length;
+  const earlierAvg = earlier.length ? earlier.reduce((a,b)=>a+b,0)/earlier.length : recentAvg;
+  if(earlierAvg===0) return recentAvg>0 ? 100 : 0;
+  return ((recentAvg-earlierAvg)/earlierAvg)*100;
+}
+// Classificação de tendência com mais nuance que "alta/queda/estável" — considera direção,
+// velocidade e o quanto a oferta está oscilando, não só o último ponto isoladamente.
+function miningClassify(history){
+  if(!history || history.length<2) return {emoji:'⚪', label:'Sem dados suficientes', key:'neutro'};
+  const d = miningDescribe(history);
+  const trendPct = miningTrendPct(history);
+  const lastVsMax = d.max>0 ? d.vals[d.vals.length-1]/d.max : 1;
+  const volatile = d.cv > 0.30;
+  if(trendPct >= 15) return {emoji:'🟢', label:'Escalando', key:'escalando'};
+  if(trendPct >= 5)  return {emoji:'🟢', label:'Forte', key:'forte'};
+  if(volatile && Math.abs(trendPct) < 15) return {emoji:'🟡', label:'Oscilando', key:'oscilando'};
+  if(trendPct > -5) return {emoji:'🟡', label:'Estável', key:'estavel'};
+  if(trendPct > -15) return {emoji:'🟠', label:'Correção', key:'correcao'};
+  if(lastVsMax < 0.5) return {emoji:'🔴', label:'Saturando', key:'saturando'};
+  return {emoji:'🔴', label:'Perdendo força', key:'perdendo'};
+}
+// Índice de Saúde da Oferta (0-100): combina tendência recente, estabilidade, proximidade
+// do pico histórico, força do momentum de curtíssimo prazo e quantidade de histórico
+// acumulado — dá uma visão muito mais útil do que um rótulo único, principalmente quando
+// há muitas ofertas pra acompanhar de uma vez.
+function miningHealthScore(history){
+  if(!history || history.length<2) return null;
+  const d = miningDescribe(history);
+  const trendPct = miningTrendPct(history);
+  const lastVsMax = d.max>0 ? d.vals[d.vals.length-1]/d.max : 1;
+  // momentum: variação entre os últimos 3 pontos (mais sensível que a janela de tendência)
+  const shortVals = d.vals.slice(-3);
+  const momentumPct = shortVals.length>=2
+    ? ((shortVals[shortVals.length-1]-shortVals[0])/(shortVals[0]||1))*100
+    : trendPct;
+
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const trendScore    = clamp(50 + trendPct*1.8, 0, 100);
+  const stabilityScore= clamp(100 - d.cv*130, 0, 100);
+  const peakScore     = clamp(lastVsMax*100, 0, 100);
+  const momentumScore = clamp(50 + momentumPct*1.5, 0, 100);
+  const longevityScore= clamp((d.n/10)*100, 0, 100);
+
+  const score = (trendScore*0.35) + (stabilityScore*0.20) + (peakScore*0.20) + (momentumScore*0.15) + (longevityScore*0.10);
+  return Math.round(clamp(score,0,100));
+}
+function miningHealthLabel(score){
+  if(score===null) return {emoji:'⚪', label:'Sem dados suficientes'};
+  if(score>=85) return {emoji:'🟢', label:'Muito saudável'};
+  if(score>=70) return {emoji:'🟢', label:'Forte'};
+  if(score>=55) return {emoji:'🟡', label:'Estável'};
+  if(score>=40) return {emoji:'🟠', label:'Atenção'};
+  return {emoji:'🔴', label:'Em declínio'};
 }
 function miningStats(history){
   if(!history || history.length===0) return null;
@@ -3892,7 +4109,79 @@ function miningStats(history){
   const prev = vals.length>1 ? vals[vals.length-2] : null;
   const diff = prev!==null ? last-prev : null;
   const pct = (prev!==null && prev!==0) ? ((last-prev)/prev*100) : null;
-  return { max, min, avg, diff, pct, trend: miningTrend(history) };
+  return { max, min, avg, diff, pct, classify: miningClassify(history), health: miningHealthScore(history) };
+}
+// Gráfico de linha com escala própria por oferta (nunca fixa): o eixo Y começa alguns
+// pontos abaixo do menor valor do histórico e termina alguns pontos acima do maior, então
+// pequenas oscilações ficam visíveis mesmo em ofertas com números muito diferentes entre si
+// (ex: uma oferta que varia entre 8-22 anúncios e outra entre 700-1100 no mesmo painel).
+function miningChartSVG(m, w, h){
+  const history = m.history || [];
+  w = w || 560; h = h || 120;
+  const padL = 34, padR = 10, padT = 14, padB = 20;
+  const plotW = w - padL - padR, plotH = h - padT - padB;
+  const vals = history.map(x=>x.anuncios);
+  const rawMax = Math.max(...vals), rawMin = Math.min(...vals);
+  const range = rawMax - rawMin;
+  // padding do eixo Y: 10% da variação real; se a oferta ficou praticamente parada
+  // (range ~0), usa um piso mínimo pra não colapsar tudo numa linha reta sem contexto
+  const pad = range > 0 ? range*0.10 : Math.max(rawMax*0.1, 2);
+  const yMax = rawMax + pad, yMin = Math.max(0, rawMin - pad);
+  const yRange = (yMax - yMin) || 1;
+  const stepX = vals.length>1 ? plotW/(vals.length-1) : 0;
+  const xy = vals.map((v,i)=>{
+    const x = padL + i*stepX;
+    const y = padT + plotH - ((v-yMin)/yRange)*plotH;
+    return {x, y, v, i};
+  });
+  const linePts = xy.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const areaPts = `${padL},${padT+plotH} ${linePts} ${padL+plotW},${padT+plotH}`;
+  const trend = miningClassify(history).key;
+  const trendColorClass = ['escalando','forte'].includes(trend) ? 'chart-up'
+    : ['correcao','perdendo','saturando'].includes(trend) ? 'chart-down' : 'chart-flat';
+  // grade horizontal leve (estilo dashboard) — 3 linhas de referência
+  const gridLines = [0.25, 0.5, 0.75].map(f=>{
+    const gy = padT + plotH*f;
+    return `<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${padL+plotW}" y2="${gy.toFixed(1)}" class="chart-grid"/>`;
+  }).join('');
+  const dots = xy.map(p=>`
+    <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="9" fill="transparent"
+      onmouseenter="miningShowTooltip(event,'${m.id}',${p.i})" onmousemove="miningMoveTooltip(event)" onmouseleave="miningHideTooltip()" style="cursor:pointer;"/>
+    <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" class="chart-dot"/>
+  `).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" class="mining-chart ${trendColorClass}" preserveAspectRatio="none" style="width:100%;height:${h}px;">
+    ${gridLines}
+    <text x="${padL-6}" y="${padT+4}" class="chart-axis-label" text-anchor="end">${Math.round(yMax)}</text>
+    <text x="${padL-6}" y="${padT+plotH}" class="chart-axis-label" text-anchor="end">${Math.round(yMin)}</text>
+    <polygon points="${areaPts}" class="chart-area"></polygon>
+    <polyline points="${linePts}" class="chart-line"></polyline>
+    ${dots}
+  </svg>`;
+}
+function miningShowTooltip(ev, id, idx){
+  const m = state.mining.find(x=>x.id===id);
+  if(!m) return;
+  const history = m.history || [];
+  const point = history[idx];
+  if(!point) return;
+  const prev = idx>0 ? history[idx-1] : null;
+  const diff = prev ? point.anuncios - prev.anuncios : null;
+  const diffTxt = diff===null ? 'primeiro registro' : (diff>=0 ? `+${diff} vs. dia anterior` : `${diff} vs. dia anterior`);
+  const tip = document.getElementById('miningTooltip');
+  if(!tip) return;
+  tip.innerHTML = `<div class="mt-date">${escapeHtml(point.date)}</div><div class="mt-val">${point.anuncios} anúncios ativos</div><div class="mt-diff ${diff>0?'pos':diff<0?'neg':''}">${diffTxt}</div>`;
+  tip.classList.add('show');
+  miningMoveTooltip(ev);
+}
+function miningMoveTooltip(ev){
+  const tip = document.getElementById('miningTooltip');
+  if(!tip) return;
+  tip.style.left = (ev.clientX + 14) + 'px';
+  tip.style.top = (ev.clientY + 14) + 'px';
+}
+function miningHideTooltip(){
+  const tip = document.getElementById('miningTooltip');
+  if(tip) tip.classList.remove('show');
 }
 function miningSparklineSVG(history, w, h){
   w = w || 260; h = h || 44;
@@ -3907,7 +4196,7 @@ function miningSparklineSVG(history, w, h){
   });
   const line = pts.join(' ');
   const area = `0,${h} ${line} ${w},${h}`;
-  const trend = miningTrend(history);
+  const trend = miningClassify(history).key;
   const lastPt = pts[pts.length-1].split(',');
   return `<svg viewBox="0 0 ${w} ${h}" class="mining-sparkline spark-${trend}" preserveAspectRatio="none">
     <polyline points="${area}" class="spark-area"></polyline>
@@ -3928,12 +4217,16 @@ function renderMining(){
     const historyHtml = history.length===0 ? '<div class="empty" style="padding:4px 0;">sem histórico ainda.</div>' :
       [...history].reverse().map(h=>`<div class="mining-history-entry"><span class="hd">${h.date}</span><span class="hv">${h.anuncios} anúncios ativos</span></div>`).join('');
     const stats = miningStats(history);
-    const trendLabels = {alta:'📈 Em alta', queda:'📉 Em queda', estavel:'➡️ Estável'};
+    const healthInfo = stats && stats.health!==null ? miningHealthLabel(stats.health) : null;
+    const healthClass = healthInfo ? (healthInfo.emoji==='🟢'?'good':healthInfo.emoji==='🟡'?'mid':healthInfo.emoji==='🟠'?'warn':'bad') : '';
     const statsBlock = (stats && history.length>=2) ? `
       <div class="mining-stats-panel">
-        ${miningSparklineSVG(history)}
+        <div class="mining-chart-head">
+          <span class="mining-trend-badge trend-${stats.classify.key}">${stats.classify.emoji} ${stats.classify.label}</span>
+          ${healthInfo ? `<span class="mining-health-badge health-${healthClass}">Índice de Saúde ${healthInfo.emoji} ${stats.health}/100 — ${healthInfo.label}</span>` : ''}
+        </div>
+        ${miningChartSVG(m)}
         <div class="mining-stats-grid">
-          <div class="mining-stat"><span class="ms-label">tendência</span><span class="ms-value trend-${stats.trend}">${trendLabels[stats.trend]}</span></div>
           <div class="mining-stat"><span class="ms-label">máximo</span><span class="ms-value">${stats.max}</span></div>
           <div class="mining-stat"><span class="ms-label">mínimo</span><span class="ms-value">${stats.min}</span></div>
           <div class="mining-stat"><span class="ms-label">média</span><span class="ms-value">${stats.avg.toFixed(1)}</span></div>
@@ -4666,7 +4959,6 @@ function toggleNewProjectVersionForm(show){
     document.getElementById('pvVersao').focus();
   } else {
     document.getElementById('pvVersao').value='';
-    document.getElementById('pvZip').value='';
     document.getElementById('pvConta').value='';
     document.getElementById('pvConversa').value='';
     document.getElementById('pvArquivoLink').value='';
@@ -4686,38 +4978,18 @@ function registerProjectVersion(){
   const estagio = document.getElementById('pvEstagio').value;
   const resumo = document.getElementById('pvResumo').value.trim();
   const observacoes = document.getElementById('pvObservacoes').value.trim();
-  const fileInput = document.getElementById('pvZip');
-  const file = fileInput.files && fileInput.files[0];
   if(!versao){ return; }
 
-  const finalize = (zipData, zipName, zipSize)=>{
-    const now = new Date().toISOString();
-    const entry = {
-      id: uid(), versao, data: now, ia, conta, conversa, arquivoLink, estagio, resumo, observacoes,
-      zipName: zipName || null, zipData: zipData || null, zipSize: zipSize || null
-    };
-    p.versions.unshift(entry);
-    p.currentVersion = { versao, resumo, observacoes, estagio, arquivoLink, zipName: entry.zipName, zipData: entry.zipData, zipSize: entry.zipSize };
-    p.ultimaAtualizacao = { conta, data: now, versao };
-    if(estagio) p.status = estagio;
-    p.status = p.status || 'desenvolvimento';
-    saveState(); renderProjects();
-    toggleNewProjectVersionForm(false);
-    showToast('Atualização registrada.');
-  };
-
-  if(file){
-    if(file.size > 4 * 1024 * 1024){
-      showToast('ZIP muito grande (máx. ~4MB). Registre sem anexar o arquivo, ou compacte menos coisa.', 'error');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = ()=> finalize(reader.result, file.name, file.size);
-    reader.onerror = ()=> finalize(null, null, null);
-    reader.readAsDataURL(file);
-  } else {
-    finalize(p.currentVersion ? p.currentVersion.zipData : null, p.currentVersion ? p.currentVersion.zipName : null, p.currentVersion ? p.currentVersion.zipSize : null);
-  }
+  const now = new Date().toISOString();
+  const entry = { id: uid(), versao, data: now, ia, conta, conversa, arquivoLink, estagio, resumo, observacoes, zipName: null, zipData: null, zipSize: null };
+  p.versions.unshift(entry);
+  p.currentVersion = { versao, resumo, observacoes, estagio, arquivoLink, zipName: null, zipData: null, zipSize: null };
+  p.ultimaAtualizacao = { conta, data: now, versao };
+  if(estagio) p.status = estagio;
+  p.status = p.status || 'desenvolvimento';
+  saveState(); renderProjects();
+  toggleNewProjectVersionForm(false);
+  showToast('Atualização registrada.');
 }
 function downloadZip(zipData, zipName){
   if(!zipData) return;
@@ -4739,6 +5011,39 @@ function downloadVersionZip(versionId){
   const v = p.versions.find(v=>v.id===versionId);
   if(!v || !v.zipData) return;
   downloadZip(v.zipData, v.zipName);
+}
+let versionEditingId = null;
+function toggleVersionEdit(id){
+  versionEditingId = (versionEditingId===id) ? null : id;
+  renderProjects();
+}
+function updateVersionField(versionId, field, value){
+  const p = currentProject();
+  if(!p) return;
+  const v = p.versions.find(v=>v.id===versionId);
+  if(!v) return;
+  v[field] = value;
+  if(p.versions[0] && p.versions[0].id === versionId && p.currentVersion){
+    p.currentVersion[field] = value;
+  }
+  saveState(); renderProjects();
+}
+function removeProjectVersion(versionId){
+  const p = currentProject();
+  if(!p) return;
+  const v = p.versions.find(v=>v.id===versionId);
+  if(!v) return;
+  openConfirmModal(`Tem certeza que deseja excluir o registro da versão "${v.versao}"? Esta ação não poderá ser desfeita.`, ()=>{
+    const wasCurrent = p.versions[0] && p.versions[0].id===versionId;
+    p.versions = p.versions.filter(x=>x.id!==versionId);
+    if(wasCurrent){
+      const next = p.versions[0];
+      p.currentVersion = next ? { versao: next.versao, resumo: next.resumo, observacoes: next.observacoes, estagio: next.estagio, arquivoLink: next.arquivoLink, zipName: next.zipName, zipData: next.zipData, zipSize: next.zipSize } : null;
+    }
+    if(versionEditingId===versionId) versionEditingId = null;
+    saveState(); renderProjects();
+    showToast('Versão excluída.');
+  });
 }
 function fmtBytes(bytes){
   if(!bytes) return '';
@@ -4833,23 +5138,51 @@ function renderProjectDetail(p){
   const cv = p.currentVersion;
   document.getElementById('projCurrentVersion').innerHTML = cv ? `
     <div class="proj-version-box">
+      <div class="proj-version-label">versão atual</div>
       <div class="proj-version-name">${escapeHtml(cv.versao)} ${cv.estagio?`<span class="proj-stage-badge stage-${cv.estagio}">${PROJECT_STATUS_LABELS[cv.estagio]||cv.estagio}</span>`:''}</div>
-      ${cv.zipName ? `<div class="proj-version-file">📎 ${escapeHtml(cv.zipName)} ${cv.zipSize?`· ${fmtBytes(cv.zipSize)}`:''}</div>` : `<div class="proj-version-file">nenhum arquivo anexado</div>`}
+      ${cv.zipName ? `<div class="proj-version-file">📎 ${escapeHtml(cv.zipName)} ${cv.zipSize?`· ${fmtBytes(cv.zipSize)}`:''}</div>` : ''}
       ${cv.resumo ? `<div class="proj-version-resumo">${escapeHtml(cv.resumo)}</div>` : ''}
       ${cv.observacoes ? `<div class="proj-version-resumo" style="opacity:.75;margin-top:6px;">📝 ${escapeHtml(cv.observacoes)}</div>` : ''}
       <div class="proj-version-actions">
         ${cv.zipData ? `<button class="proj-dl-btn" onclick="downloadCurrentVersionZip()">⬇ baixar ZIP atual</button>` : ''}
         ${cv.arquivoLink ? `<a class="proj-dl-btn" href="${escapeHtml(cv.arquivoLink)}" target="_blank" rel="noopener">🗂️ abrir no Google Drive</a>` : ''}
+        <button class="mining-edit-btn" onclick="toggleVersionEdit('${p.versions[0].id}')">✎ editar versão</button>
       </div>
     </div>
-  ` : `<div class="empty">nenhuma versão registrada ainda — use o botão abaixo pra anexar o primeiro ZIP.</div>`;
+  ` : '';
 
   const tlEl = document.getElementById('projTimeline');
-  tlEl.innerHTML = p.versions.length===0 ? '<div class="empty">nenhuma atualização no histórico ainda.</div>' : p.versions.map(v=>`
+  tlEl.innerHTML = p.versions.length===0 ? '<div class="empty">nenhuma atualização no histórico ainda.</div>' : p.versions.map(v=>{
+    if(versionEditingId === v.id){
+      return `
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <div class="tool-edit-row">
+            <input type="text" value="${escapeHtml(v.versao)}" placeholder="versão (ex: V30, v2.1.0)" onchange="updateVersionField('${v.id}','versao',this.value)">
+            <select onchange="updateVersionField('${v.id}','estagio',this.value)">
+              <option value="">estágio (opcional)</option>
+              ${Object.keys(PROJECT_STATUS_LABELS).map(k=>`<option value="${k}" ${v.estagio===k?'selected':''}>${PROJECT_STATUS_LABELS[k]}</option>`).join('')}
+            </select>
+            <input type="text" value="${escapeHtml(v.arquivoLink||'')}" placeholder="🔗 link do Google Drive" onchange="updateVersionField('${v.id}','arquivoLink',this.value)">
+            <textarea placeholder="resumo da atualização" onchange="updateVersionField('${v.id}','resumo',this.value)">${escapeHtml(v.resumo||'')}</textarea>
+            <textarea placeholder="observações (opcional)" onchange="updateVersionField('${v.id}','observacoes',this.value)">${escapeHtml(v.observacoes||'')}</textarea>
+            <div class="mining-actions">
+              <button class="del-btn" onclick="removeProjectVersion('${v.id}')">✕ excluir</button>
+              <button class="mining-save-btn" onclick="toggleVersionEdit('${v.id}')"><span class="ico">✓</span> Concluir edição</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
     <div class="timeline-item">
       <div class="timeline-dot"></div>
       <div class="timeline-card">
-        <div class="timeline-version">${escapeHtml(v.versao)} ${v.estagio?`<span class="proj-stage-badge stage-${v.estagio}">${PROJECT_STATUS_LABELS[v.estagio]||v.estagio}</span>`:''}</div>
+        <div class="timeline-card-head">
+          <div class="timeline-version">${escapeHtml(v.versao)} ${v.estagio?`<span class="proj-stage-badge stage-${v.estagio}">${PROJECT_STATUS_LABELS[v.estagio]||v.estagio}</span>`:''}</div>
+          <button class="mining-edit-btn" onclick="toggleVersionEdit('${v.id}')">✎ editar</button>
+        </div>
         <div class="timeline-date">${fmtDateTime(v.data)}</div>
         <div class="timeline-meta">
           ${v.conta?`<span>👤 ${escapeHtml(v.conta)}</span>`:''}
@@ -4861,10 +5194,12 @@ function renderProjectDetail(p){
         <div class="proj-version-actions">
           ${v.zipData?`<button class="proj-dl-btn" onclick="downloadVersionZip('${v.id}')">⬇ ${escapeHtml(v.zipName||'baixar ZIP')}</button>`:''}
           ${v.arquivoLink?`<a class="proj-dl-btn" href="${escapeHtml(v.arquivoLink)}" target="_blank" rel="noopener">🗂️ abrir no Drive</a>`:''}
+          <button class="del-btn" onclick="removeProjectVersion('${v.id}')">✕ excluir</button>
         </div>
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 
   const resEl = document.getElementById('projResourcesGrid');
   resEl.innerHTML = p.resources.length===0 ? '<div class="empty">nenhum recurso cadastrado ainda.</div>' : p.resources.map(r=>`
@@ -5011,29 +5346,47 @@ function toggleNoteCheck(el){
 function noteHighlight(){
   noteCmd('hiliteColor', 'rgba(242,169,60,0.35)');
 }
+function toggleNoteColorMenu(ev){
+  if(ev) ev.stopPropagation();
+  const menu = document.getElementById('noteColorMenu');
+  if(!menu) return;
+  menu.classList.toggle('open');
+}
+function applyNoteColor(color){
+  noteCmd('foreColor', color);
+  const menu = document.getElementById('noteColorMenu');
+  if(menu) menu.classList.remove('open');
+}
+document.addEventListener('click', (e)=>{
+  const menu = document.getElementById('noteColorMenu');
+  if(menu && menu.classList.contains('open') && !e.target.closest('.note-color-wrap')){
+    menu.classList.remove('open');
+  }
+});
+function renderNoteCard(n){
+  const snippet = escapeHtml(noteSnippet(n.conteudo));
+  return `
+    <div class="tool-card note-card" data-id="${n.id}">
+      <div class="tool-card-head">
+        <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
+        <div class="tool-name" style="flex:1;cursor:pointer;" onclick="openNote('${n.id}')">${escapeHtml(n.titulo || 'sem título')}</div>
+        <button class="mining-edit-btn" onclick="openNote('${n.id}')">✎ editar</button>
+      </div>
+      <div class="tool-field-value" style="cursor:pointer;min-height:32px;" onclick="openNote('${n.id}')">${snippet || '<span style="opacity:.5;">sem conteúdo</span>'}</div>
+      <div class="note-card-date">editado ${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
+      <div class="mining-actions" style="margin-top:8px;">
+        <button class="del-btn" onclick="removeNote('${n.id}', event)">✕ excluir</button>
+      </div>
+    </div>`;
+}
 function renderNotesList(){
   const list = document.getElementById('notesList');
   if(!list) return;
-  const q = (document.getElementById('notesSearchInput')?.value || '').toLowerCase().trim();
-  const sorted = [...state.notes].sort((a,b)=> new Date(b.atualizadoEm||b.criadoEm) - new Date(a.atualizadoEm||a.criadoEm));
-  const filtered = q ? sorted.filter(n=>{
-    return (n.titulo||'').toLowerCase().includes(q) || noteSnippet(n.conteudo).toLowerCase().includes(q);
-  }) : sorted;
   if(state.notes.length===0){
     list.innerHTML = '<div class="empty-block"><div class="empty-block-icon">📝</div><div class="empty-block-title">Nenhuma nota ainda</div><div class="empty-block-sub">Use o + Nova nota acima pra criar seu bloco de anotações.</div></div>';
     return;
   }
-  if(filtered.length===0){
-    list.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🔎</div><div class="empty-block-title">Nada encontrado</div><div class="empty-block-sub">Tenta buscar por outro termo.</div></div>';
-    return;
-  }
-  list.innerHTML = filtered.map(n=>`
-    <div class="note-list-item ${n.id===state.currentNoteId?'active':''}" data-id="${n.id}" onclick="openNote('${n.id}')">
-      <button class="del-btn" onclick="removeNote('${n.id}', event)">✕</button>
-      <div class="note-list-item-title">${escapeHtml(n.titulo || 'sem título')}</div>
-      <div class="note-list-item-snippet">${escapeHtml(noteSnippet(n.conteudo)) || '<span style="opacity:.5;">sem conteúdo</span>'}</div>
-      <div class="note-list-item-date">${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
-    </div>`).join('');
+  list.innerHTML = state.notes.map(renderNoteCard).join('');
 }
 function renderNoteEditor(){
   const main = document.getElementById('notesMain');
@@ -5059,6 +5412,17 @@ function renderNoteEditor(){
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('italic')"><i>I</i></button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('underline')"><u>S</u></button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteHighlight()" title="destacar">🖍 destacar</button>
+      <div class="note-color-wrap">
+        <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="toggleNoteColorMenu(event)" title="cor da fonte">🎨 cor</button>
+        <div class="note-color-menu" id="noteColorMenu">
+          <button type="button" class="note-color-swatch" style="background:#eef1f6;" title="Padrão" onmousedown="event.preventDefault()" onclick="applyNoteColor('#eef1f6')"></button>
+          <button type="button" class="note-color-swatch" style="background:var(--blue-bright);" title="Azul" onmousedown="event.preventDefault()" onclick="applyNoteColor('#5b9dff')"></button>
+          <button type="button" class="note-color-swatch" style="background:var(--green);" title="Verde" onmousedown="event.preventDefault()" onclick="applyNoteColor('#22c55e')"></button>
+          <button type="button" class="note-color-swatch" style="background:var(--urgent);" title="Vermelho" onmousedown="event.preventDefault()" onclick="applyNoteColor('#f0455c')"></button>
+          <button type="button" class="note-color-swatch" style="background:var(--warn);" title="Amarelo" onmousedown="event.preventDefault()" onclick="applyNoteColor('#f2a93c')"></button>
+          <input type="color" id="noteColorCustom" class="note-color-custom" title="outras cores" onmousedown="event.preventDefault()" oninput="applyNoteColor(this.value)">
+        </div>
+      </div>
       <div class="note-tb-sep"></div>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertUnorderedList')">• lista</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertOrderedList')">1. lista</button>
@@ -5071,11 +5435,19 @@ function renderNoteEditor(){
   `;
 }
 function renderNotes(){
-  const layout = document.getElementById('notesLayout');
-  if(!layout) return;
-  layout.classList.toggle('note-open', !!state.currentNoteId);
-  renderNotesList();
-  renderNoteEditor();
+  const gridWrap = document.getElementById('notesGridWrap');
+  const detailWrap = document.getElementById('noteDetailWrap');
+  if(!gridWrap || !detailWrap) return;
+  const n = currentNote();
+  if(n){
+    gridWrap.style.display = 'none';
+    detailWrap.style.display = 'block';
+    renderNoteEditor();
+  } else {
+    gridWrap.style.display = 'block';
+    detailWrap.style.display = 'none';
+    renderNotesList();
+  }
 }
 
 /* ---------- DRAG & DROP (fluid, Trello/Notion-style, FLIP animated) ---------- */
@@ -5405,6 +5777,9 @@ function setupDragHandlers(){
   attachSortable('projectsGrid', ids=>reorderArray('projects', ids));
   attachSortable('productSelectorGrid', ids=>reorderArray('products', ids));
   attachSortable('warmupGroupsList', ids=>reorderArray('warmupGroups', ids));
+  attachSortable('notesList', ids=>reorderArray('notes', ids));
+  attachSortable('assetsList', ids=>reorderArray('assets', ids));
+  attachSortable('managersList', ids=>reorderArray('managers', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
