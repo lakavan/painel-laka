@@ -1031,6 +1031,19 @@
   .note-card{cursor:pointer;}
   .note-card-title{margin-bottom:2px;}
   .note-card-snippet{font-size:12px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;min-height:60px;margin-top:2px;}
+  .note-card-snippet h1{font-family:var(--display);font-size:14px;font-weight:800;color:var(--text);margin:0 0 3px;}
+  .note-card-snippet h2{font-family:var(--display);font-size:12.5px;font-weight:700;color:var(--blue-bright);margin:0 0 3px;}
+  .note-card-snippet p{margin:0 0 4px;}
+  .note-card-snippet ul, .note-card-snippet ol{margin:0 0 4px;padding-left:16px;}
+  .note-card-snippet li{margin-bottom:1px;}
+  .note-card-snippet a{color:var(--blue-bright);pointer-events:none;}
+  .note-card-snippet hr{border:none;border-top:1px solid var(--border-strong);margin:5px 0;}
+  .note-card-snippet mark{background:rgba(242,169,60,0.35);color:var(--text);border-radius:2px;padding:0 2px;}
+  .note-card-snippet .note-check-item{display:flex;align-items:flex-start;gap:5px;margin-bottom:1px;}
+  .note-card-snippet .note-check-box{width:11px;height:11px;border-radius:3px;border:1.3px solid var(--border-strong);flex-shrink:0;margin-top:2px;pointer-events:none;}
+  .note-card-snippet .note-check-box.checked{background:var(--green);border-color:var(--green);}
+  .note-card-snippet .note-check-box.checked:after{font-size:8px;}
+  .note-card-snippet .note-check-text.checked{color:var(--muted2);text-decoration:line-through;}
   .note-card-date{font-family:var(--mono);font-size:9.5px;color:var(--muted2);margin-top:10px;text-transform:uppercase;letter-spacing:0.4px;}
   .note-card-menu-wrap{position:relative;flex-shrink:0;}
   .note-card-kebab{
@@ -1066,7 +1079,6 @@
   .note-color-custom::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;}
   .note-color-custom::-webkit-color-swatch{border:none;border-radius:50%;}
   .notes-main{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);min-height:calc(100vh - 220px);display:flex;flex-direction:column;}
-  .notes-back-btn{display:none;}
   .note-editor-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
   .note-title-input{
     flex:1;font-family:var(--display);font-size:20px;font-weight:800;color:var(--text);background:transparent;
@@ -1112,11 +1124,6 @@
     .notes-main{margin-top:16px;min-height:auto;}
     .notes-layout.note-open .notes-sidebar{display:none;}
     .notes-layout:not(.note-open) .notes-main{display:none;}
-    .notes-back-btn{
-      display:inline-block;background:none;border:1px solid var(--border);color:var(--muted);border-radius:9px;
-      padding:8px 14px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;margin-bottom:16px;
-    }
-    .notes-back-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
   }
 
   /* ---------- LOGIN SCREEN ---------- */
@@ -5243,6 +5250,35 @@ function noteSnippet(html){
   const txt = (d.textContent || d.innerText || '').replace(/\s+/g,' ').trim();
   return txt;
 }
+// Corta o HTML de uma nota mantendo a formatação (cor, negrito, itálico, sublinhado,
+// títulos, listas...) até um limite de caracteres — assim o preview do card é uma
+// "miniatura" fiel do começo da nota, e não um texto puro sem estilo nenhum.
+function noteTruncateNode(node, budget){
+  if(budget.remaining <= 0){ node.remove(); return; }
+  if(node.nodeType === Node.TEXT_NODE){
+    const text = node.textContent;
+    if(text.length <= budget.remaining){
+      budget.remaining -= text.length;
+    } else {
+      node.textContent = text.slice(0, Math.max(0,budget.remaining)) + '…';
+      budget.remaining = 0;
+    }
+    return;
+  }
+  const children = Array.from(node.childNodes);
+  for(const child of children){
+    if(budget.remaining <= 0){ child.remove(); continue; }
+    noteTruncateNode(child, budget);
+  }
+}
+function noteRichPreview(html, maxChars){
+  const container = document.createElement('div');
+  container.innerHTML = html || '';
+  // checkboxes de checklist viram só visuais no preview (sem clique)
+  container.querySelectorAll('.note-check-box').forEach(cb=>cb.removeAttribute('onclick'));
+  noteTruncateNode(container, { remaining: maxChars || 220 });
+  return container.innerHTML;
+}
 function createNote(){
   const now = new Date().toISOString();
   const n = { id: uid(), titulo: 'Nova nota', conteudo: '', criadoEm: now, atualizadoEm: now };
@@ -5392,12 +5428,13 @@ function duplicateNote(id, ev){
   showToast('Nota duplicada.');
 }
 function renderNoteCard(n){
-  const snippet = escapeHtml(noteSnippet(n.conteudo));
+  const preview = noteRichPreview(n.conteudo, 220);
+  const isEmpty = noteSnippet(n.conteudo).length === 0;
   return `
     <div class="tool-card note-card" data-id="${n.id}" onclick="openNote('${n.id}')">
       <div class="tool-card-head">
         <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
-        <div class="tool-name note-card-title">📝 ${escapeHtml(n.titulo || 'Sem título')}</div>
+        <div class="tool-name note-card-title">${escapeHtml(n.titulo || 'Sem título')}</div>
         <div class="note-card-menu-wrap">
           <button class="note-card-kebab" onclick="toggleNoteCardMenu('${n.id}', event)" title="mais opções">⋯</button>
           <div class="note-card-menu" id="noteCardMenu-${n.id}">
@@ -5407,7 +5444,7 @@ function renderNoteCard(n){
           </div>
         </div>
       </div>
-      <div class="note-card-snippet">${snippet || '<span style="opacity:.5;">sem conteúdo</span>'}</div>
+      <div class="note-card-snippet">${isEmpty ? '<span style="opacity:.5;">sem conteúdo</span>' : preview}</div>
       <div class="note-card-date">editado ${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
     </div>`;
 }
@@ -5429,7 +5466,7 @@ function renderNoteEditor(){
     return;
   }
   main.innerHTML = `
-    <button class="notes-back-btn" onclick="closeNoteDetail()">← voltar às notas</button>
+    <button class="back-btn" onclick="closeNoteDetail()">← voltar às notas</button>
     <div class="note-editor-head">
       <input type="text" id="noteTitleInput" class="note-title-input" value="${escapeHtml(n.titulo||'')}" placeholder="título da nota" oninput="updateNoteTitle(this.value)">
       <button class="del-btn" onclick="removeNote('${n.id}', event)" title="excluir nota" style="font-size:16px;">✕</button>
