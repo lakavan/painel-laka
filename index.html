@@ -5687,6 +5687,161 @@ function attachSortable(containerId, onReordered){
   });
 }
 
+// ---------- MOTOR DE ARRASTAR — VERSÃO GRID (2D) ----------
+// A versão acima (attachSortable) só entende posição vertical, então numa grade com várias
+// colunas (como os cards de Notas) ela só reordenava certo arrastando pra cima/baixo — pra
+// os lados não fazia sentido porque ela ignorava a coluna, só olhava a linha (Y).
+// Esta versão mede linhas E colunas uma vez no início do arraste, e o alvo do arraste é
+// calculado como "em cima de qual célula da grade o cursor está agora" (linha + coluna),
+// então mover na diagonal ou pros lados também reordena corretamente — igual arrastar
+// cards no Trello ou no Pinterest.
+function attachSortableGrid(containerId, onReordered){
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  container.addEventListener('pointerdown', (e)=>{
+    const handle = e.target.closest('.drag-handle');
+    if(!handle) return;
+    const dragging = handle.closest('[data-id]');
+    if(!dragging || dragging.parentElement !== container) return;
+    e.preventDefault();
+
+    if(activeDragCleanup) activeDragCleanup();
+
+    const pointerId = e.pointerId;
+    const startX = e.clientX, startY = e.clientY;
+    let ended = false;
+    let moved = false;
+
+    // 1) medição única: posição de cada card + quantas colunas a grade tem agora
+    const items = [...container.querySelectorAll(':scope > [data-id]')];
+    const startIndex = items.indexOf(dragging);
+    const rects = items.map(el => el.getBoundingClientRect());
+    let cols = 1;
+    for(let i=1;i<rects.length;i++){
+      if(Math.abs(rects[i].top - rects[0].top) < 2) cols++;
+      else break;
+    }
+    const cellW = cols>1 ? (rects[cols-1].left - rects[0].left) : (rects[0].width + 16);
+    const cellH = rects.length>cols ? (rects[cols].top - rects[0].top) : (rects[0].height + 16);
+    const originX = rects[0].left, originY = rects[0].top;
+    let currentIndex = startIndex;
+
+    dragging.classList.add('dragging');
+    dragging.style.willChange = 'transform';
+    dragging.style.transition = 'none';
+    dragging.style.zIndex = '40';
+    try{ handle.setPointerCapture(pointerId); }catch(err){}
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'grabbing';
+
+    const slotOf = (idx)=>({ row: Math.floor(idx/cols), col: idx%cols });
+
+    // 2) só re-transforma os cards que precisam trocar de célula quando o alvo muda
+    const applyShift = (newIndex)=>{
+      if(newIndex === currentIndex) return;
+      items.forEach((el, i)=>{
+        if(el === dragging) return;
+        let newI = i;
+        if(i > startIndex && i <= newIndex) newI = i-1;
+        else if(i < startIndex && i >= newIndex) newI = i+1;
+        const from = slotOf(i), to = slotOf(newI);
+        const dx = (to.col-from.col)*cellW, dy = (to.row-from.row)*cellH;
+        el.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
+        el.style.transform = (dx||dy) ? `translate(${dx}px, ${dy}px)` : '';
+      });
+      currentIndex = newIndex;
+    };
+
+    const computeTargetIndex = (cx, cy)=>{
+      const col = Math.max(0, Math.min(cols-1, Math.round((cx - originX - cellW/2) / cellW)));
+      const maxRow = Math.floor((items.length-1)/cols);
+      const row = Math.max(0, Math.min(maxRow, Math.round((cy - originY - cellH/2) / cellH)));
+      return Math.max(0, Math.min(items.length-1, row*cols + col));
+    };
+
+    // auto-scroll da página quando o arraste chega perto da borda vertical da tela
+    let autoScrollRaf = null;
+    let pointerClientY = e.clientY;
+    const AUTOSCROLL_EDGE = 90, AUTOSCROLL_MAX = 18;
+    const autoScrollTick = ()=>{
+      const vh = window.innerHeight;
+      let dy = 0;
+      if(pointerClientY < AUTOSCROLL_EDGE) dy = -AUTOSCROLL_MAX * (1 - pointerClientY/AUTOSCROLL_EDGE);
+      else if(pointerClientY > vh - AUTOSCROLL_EDGE) dy = AUTOSCROLL_MAX * (1 - (vh - pointerClientY)/AUTOSCROLL_EDGE);
+      if(dy) window.scrollBy(0, dy);
+      autoScrollRaf = requestAnimationFrame(autoScrollTick);
+    };
+    autoScrollRaf = requestAnimationFrame(autoScrollTick);
+
+    let rafPending = false;
+    let lastX = e.clientX, lastY = e.clientY;
+    const startScrollY = window.scrollY;
+    const applyMove = ()=>{
+      rafPending = false;
+      const scrollDelta = window.scrollY - startScrollY;
+      const deltaX = lastX - startX;
+      const deltaY = (lastY - startY) + scrollDelta;
+      dragging.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.03)`;
+      const draggingCenterX = rects[startIndex].left + rects[startIndex].width/2 + deltaX;
+      const draggingCenterY = rects[startIndex].top + rects[startIndex].height/2 + deltaY;
+      applyShift(computeTargetIndex(draggingCenterX, draggingCenterY));
+    };
+    const onMove = (ev)=>{
+      if(ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
+      lastX = ev.clientX; lastY = ev.clientY;
+      pointerClientY = ev.clientY;
+      if(Math.abs(ev.clientX - startX) > 2 || Math.abs(ev.clientY - startY) > 2) moved = true;
+      if(!rafPending){ rafPending = true; requestAnimationFrame(applyMove); }
+    };
+    const finish = ()=>{
+      dragging.classList.remove('dragging');
+      dragging.style.willChange = '';
+      dragging.style.zIndex = '';
+      dragging.style.transition = 'transform .18s cubic-bezier(.22,.85,.32,1)';
+      dragging.style.transform = '';
+      items.forEach(el=>{ if(el!==dragging){ el.style.transition = ''; el.style.transform = ''; } });
+      setTimeout(()=>{ dragging.style.transition = ''; }, 200);
+
+      if(moved && currentIndex !== startIndex){
+        const withoutDragging = items.filter(el=>el!==dragging);
+        const insertAt = Math.max(0, Math.min(currentIndex, withoutDragging.length));
+        const frag = document.createDocumentFragment();
+        withoutDragging.slice(0, insertAt).forEach(el=>frag.appendChild(el));
+        frag.appendChild(dragging);
+        withoutDragging.slice(insertAt).forEach(el=>frag.appendChild(el));
+        container.appendChild(frag);
+        const ids = Array.from(container.querySelectorAll(':scope > [data-id]')).map(el=>el.dataset.id);
+        onReordered(ids);
+      }
+    };
+    const onEnd = (ev)=>{
+      if(ended) return;
+      if(ev && ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
+      ended = true;
+      if(autoScrollRaf) cancelAnimationFrame(autoScrollRaf);
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('pointercancel', onEnd);
+      window.removeEventListener('blur', onEnd);
+      document.removeEventListener('visibilitychange', onVisChange);
+      try{ handle.releasePointerCapture(pointerId); }catch(err){}
+      if(activeDragCleanup === onEnd) activeDragCleanup = null;
+      finish();
+    };
+    const onVisChange = ()=>{ if(document.visibilityState === 'hidden') onEnd(); };
+
+    window.addEventListener('pointermove', onMove, { passive:true });
+    window.addEventListener('pointerup', onEnd);
+    window.addEventListener('pointercancel', onEnd);
+    window.addEventListener('blur', onEnd);
+    document.addEventListener('visibilitychange', onVisChange);
+
+    activeDragCleanup = onEnd;
+  });
+}
+
 function attachTabSortable(){
   const nav = document.getElementById('tabNav');
   if(!nav) return;
@@ -5846,7 +6001,7 @@ function setupDragHandlers(){
   attachSortable('projectsGrid', ids=>reorderArray('projects', ids));
   attachSortable('productSelectorGrid', ids=>reorderArray('products', ids));
   attachSortable('warmupGroupsList', ids=>reorderArray('warmupGroups', ids));
-  attachSortable('notesList', ids=>reorderArray('notes', ids));
+  attachSortableGrid('notesList', ids=>reorderArray('notes', ids));
   attachSortable('assetsList', ids=>reorderArray('assets', ids));
   attachSortable('managersList', ids=>reorderArray('managers', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
