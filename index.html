@@ -986,6 +986,9 @@
   .project-card{cursor:pointer;}
   .project-card-name{font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px;}
   .status-badge{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.5px;border-radius:6px;padding:3px 8px;display:inline-block;font-weight:700;}
+  .status-badge-select{appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer;padding:3px 22px 3px 8px;background-repeat:no-repeat;background-position:right 6px center;background-size:8px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");}
+  .status-badge-select:hover{filter:brightness(1.15);}
+  .status-badge-select:focus{outline:1px solid var(--blue-bright);}
   .status-badge.desenvolvimento{color:var(--blue-bright);background:var(--blue-soft);border:1px solid rgba(59,130,246,.3);}
   .status-badge.pausado{color:var(--warn);background:rgba(242,169,60,.12);border:1px solid rgba(242,169,60,.3);}
   .status-badge.finalizado{color:var(--green);background:var(--green-soft);border:1px solid rgba(34,197,94,.3);}
@@ -1012,7 +1015,7 @@
   .proj-stage-badge.stage-pausado{background:var(--warn-soft,rgba(242,169,60,0.15));color:var(--warn);}
   .proj-stage-badge.stage-finalizado{background:var(--green-soft);color:var(--green);}
   .proj-version-file{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:2px;}
-  .proj-version-resumo{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5;}
+  .proj-version-resumo{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.65;white-space:pre-wrap;}
   .proj-version-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
   .proj-dl-btn{background:var(--green-soft);color:var(--green);border:1px solid rgba(34,197,94,.35);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
   .proj-dl-btn:hover{background:rgba(34,197,94,.22);}
@@ -1026,6 +1029,10 @@
   .timeline-version{font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--blue-bright);}
   .timeline-date{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:1px;}
   .timeline-meta{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;font-size:11px;color:var(--muted);}
+  .timeline-resumo{font-size:13px;color:var(--muted);line-height:1.65;white-space:pre-wrap;margin-top:6px;}
+  /* textareas de texto longo (versão atual / linha do tempo): crescem com o conteúdo em vez de
+     rolar por dentro, e têm mais espaçamento entre linhas pra ficar confortável de ler/editar */
+  .proj-textarea{width:100%;resize:none;overflow:hidden;min-height:76px;line-height:1.7;font-size:13.5px;padding:11px 13px;}
 
   /* ---------- NOTAS ---------- */
   .note-card{cursor:pointer;}
@@ -1873,8 +1880,8 @@
                 <option value="pausado">Pausado</option>
                 <option value="finalizado">Finalizado</option>
               </select>
-              <textarea id="pvResumo" placeholder="resumo da atualização..."></textarea>
-              <textarea id="pvObservacoes" placeholder="observações (opcional)..."></textarea>
+              <textarea id="pvResumo" class="proj-textarea" placeholder="resumo da atualização..." oninput="autoGrow(this)"></textarea>
+              <textarea id="pvObservacoes" class="proj-textarea" placeholder="observações (opcional)..." oninput="autoGrow(this)"></textarea>
               <div class="add-row" style="margin-top:0;">
                 <button class="add" style="flex:1;" onclick="registerProjectVersion()">registrar atualização</button>
                 <button class="add-cost-cancel-btn" onclick="toggleNewProjectVersionForm(false)">cancelar</button>
@@ -3185,6 +3192,7 @@ function renderPhones(){
   if(state.phones.length===0){ el.innerHTML='<div class="empty">nenhum número cadastrado.</div>'; return; }
   el.innerHTML = state.phones.map(p=>`
     <div class="asset-row" data-id="${p.id}">
+      <span class="drag-handle">⠿</span>
       <span class="asset-tipo" style="background:${p.status==='ativo'?'rgba(58,220,140,.12)':p.status==='queimado'?'rgba(255,77,109,.12)':'rgba(245,166,35,.12)'};color:${p.status==='ativo'?'var(--ok)':p.status==='queimado'?'var(--urgent)':'var(--warn)'};">${p.status}</span>
       <div class="asset-name">${escapeHtml(p.numero)} ${p.produto?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(p.produto)}</span>`:''}</div>
       <button class="del-btn" onclick="removePhone('${p.id}')">✕</button>
@@ -4970,8 +4978,8 @@ function toggleNewProjectVersionForm(show){
     document.getElementById('pvConta').value='';
     document.getElementById('pvConversa').value='';
     document.getElementById('pvArquivoLink').value='';
-    document.getElementById('pvResumo').value='';
-    document.getElementById('pvObservacoes').value='';
+    document.getElementById('pvResumo').value=''; document.getElementById('pvResumo').style.height='';
+    document.getElementById('pvObservacoes').value=''; document.getElementById('pvObservacoes').style.height='';
   }
 }
 function registerProjectVersion(){
@@ -5105,13 +5113,23 @@ function renderProjectCard(p){
     </div>
     <div class="project-card-meta">
       <span class="tool-cat" style="background:var(--blue-soft);color:var(--blue-bright);">💻 ${escapeHtml(p.ferramenta)}</span>
-      <span class="status-badge ${statusKey}">${PROJECT_STATUS_LABELS[statusKey]||statusKey}</span>
+      <select class="status-badge status-badge-select ${statusKey}" onclick="event.stopPropagation()" onchange="updateProjectStatusFromCard('${p.id}', this.value, event)">
+        ${Object.keys(PROJECT_STATUS_LABELS).map(k=>`<option value="${k}" ${statusKey===k?'selected':''}>${PROJECT_STATUS_LABELS[k]}</option>`).join('')}
+      </select>
     </div>
     <div class="tool-field-label">versão atual</div>
     <div class="tool-field-value">${p.currentVersion ? escapeHtml(p.currentVersion.versao) : 'nenhuma versão registrada'}</div>
     <div class="tool-field-label">última atualização</div>
     <div class="tool-field-value">${p.ultimaAtualizacao ? fmtDate(p.ultimaAtualizacao.data) : fmtDate(p.criadoEm)}</div>
   </div>`;
+}
+function updateProjectStatusFromCard(id, value, ev){
+  if(ev) ev.stopPropagation();
+  const p = state.projects.find(p=>p.id===id);
+  if(!p) return;
+  p.status = value;
+  saveState(); renderProjects();
+  showToast('Status atualizado.');
 }
 function renderProjectDetail(p){
   document.getElementById('projDetailTitle').innerText = p.nome;
@@ -5173,8 +5191,8 @@ function renderProjectDetail(p){
               ${Object.keys(PROJECT_STATUS_LABELS).map(k=>`<option value="${k}" ${v.estagio===k?'selected':''}>${PROJECT_STATUS_LABELS[k]}</option>`).join('')}
             </select>
             <input type="text" value="${escapeHtml(v.arquivoLink||'')}" placeholder="🔗 link do Google Drive" onchange="updateVersionField('${v.id}','arquivoLink',this.value)">
-            <textarea placeholder="resumo da atualização" onchange="updateVersionField('${v.id}','resumo',this.value)">${escapeHtml(v.resumo||'')}</textarea>
-            <textarea placeholder="observações (opcional)" onchange="updateVersionField('${v.id}','observacoes',this.value)">${escapeHtml(v.observacoes||'')}</textarea>
+            <textarea class="proj-textarea" placeholder="resumo da atualização" oninput="autoGrow(this)" onchange="updateVersionField('${v.id}','resumo',this.value)">${escapeHtml(v.resumo||'')}</textarea>
+            <textarea class="proj-textarea" placeholder="observações (opcional)" oninput="autoGrow(this)" onchange="updateVersionField('${v.id}','observacoes',this.value)">${escapeHtml(v.observacoes||'')}</textarea>
             <div class="mining-actions">
               <button class="del-btn" onclick="removeProjectVersion('${v.id}')">✕ excluir</button>
               <button class="mining-save-btn" onclick="toggleVersionEdit('${v.id}')"><span class="ico">✓</span> Concluir edição</button>
@@ -5208,19 +5226,59 @@ function renderProjectDetail(p){
     </div>
     `;
   }).join('');
+  document.querySelectorAll('#projCurrentVersion textarea, #projTimeline textarea').forEach(autoGrow);
 
   const resEl = document.getElementById('projResourcesGrid');
-  resEl.innerHTML = p.resources.length===0 ? '<div class="empty">nenhum recurso cadastrado ainda.</div>' : p.resources.map(r=>`
-    <div class="tool-card">
+  resEl.innerHTML = p.resources.length===0 ? '<div class="empty">nenhum recurso cadastrado ainda.</div>' : p.resources.map(r=>{
+    if(projResourceEditingId === r.id){
+      return `
+      <div class="tool-card" data-id="${r.id}">
+        <div class="tool-edit-row">
+          <select onchange="updateProjectResourceField('${r.id}','tipo',this.value)">
+            ${Object.keys(PROJECT_RESOURCE_ICONS).map(t=>`<option value="${t}" ${r.tipo===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+          <input type="text" value="${escapeHtml(r.conta||'')}" placeholder="conta utilizada (e-mail)" onchange="updateProjectResourceField('${r.id}','conta',this.value)">
+          <input type="text" value="${escapeHtml(r.nome||'')}" placeholder="nome do projeto/repositório/site" onchange="updateProjectResourceField('${r.id}','nome',this.value)">
+          <input type="text" value="${escapeHtml(r.link||'')}" placeholder="link para abrir diretamente" onchange="updateProjectResourceField('${r.id}','link',this.value)">
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeProjectResource('${r.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleProjectResourceEdit('${r.id}')"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="tool-card" data-id="${r.id}">
       <div class="tool-card-head">
-        <div class="tool-name">${PROJECT_RESOURCE_ICONS[r.tipo]||'🔗'} ${escapeHtml(r.tipo)}</div>
-        <button class="del-btn" onclick="removeProjectResource('${r.id}')">✕</button>
+        <span class="drag-handle">⠿</span>
+        <div class="tool-name" style="flex:1;">${PROJECT_RESOURCE_ICONS[r.tipo]||'🔗'} ${escapeHtml(r.tipo)}</div>
+        <button class="mining-edit-btn" onclick="toggleProjectResourceEdit('${r.id}')">✎ editar</button>
       </div>
       ${r.conta ? `<div class="tool-field-label">conta</div><div class="tool-field-value">${escapeHtml(r.conta)}</div>` : ''}
       ${r.nome ? `<div class="tool-field-label">projeto/repositório/site</div><div class="tool-field-value">${escapeHtml(r.nome)}</div>` : ''}
       ${r.link ? `<a class="tool-open-btn" href="${escapeHtml(r.link)}" target="_blank" rel="noopener">Abrir →</a>` : ''}
     </div>
-  `).join('');
+  `;}).join('');
+}
+let projResourceEditingId = null;
+function toggleProjectResourceEdit(id){
+  projResourceEditingId = (projResourceEditingId===id) ? null : id;
+  const p = currentProject();
+  if(p) renderProjectDetail(p);
+}
+function updateProjectResourceField(id, field, value){
+  const p = currentProject();
+  if(!p) return;
+  const r = p.resources.find(r=>r.id===id);
+  if(!r) return;
+  r[field] = value;
+  saveState();
+}
+function reorderProjectResources(ids){
+  const p = currentProject();
+  if(!p) return;
+  p.resources = ids.map(id => p.resources.find(r=>r.id===id)).filter(Boolean);
+  saveState();
 }
 function renderProjects(){
   const listWrap = document.getElementById('projectsListWrap');
@@ -5539,6 +5597,13 @@ let activeDragCleanup = null;
 function attachSortable(containerId, onReordered){
   const container = document.getElementById(containerId);
   if(!container) return;
+  // idempotência: se esse container já tem o motor de arrastar ligado nele, não liga de novo.
+  // Sem isso, qualquer chamada repetida (ex: re-render que reaproveita o mesmo elemento em vez
+  // de recriá-lo) ia empilhar um segundo listener por cima do primeiro — cada pointerdown
+  // dispararia dois arrastes ao mesmo tempo, o que dá exatamente a sensação de "travado" /
+  // "difícil de iniciar" / "perde o card no meio do arraste" que gera regressão percebida.
+  if(container.dataset.sortableBound === '1') return;
+  container.dataset.sortableBound = '1';
   container.addEventListener('pointerdown', (e)=>{
     const handle = e.target.closest('.drag-handle');
     if(!handle) return;
@@ -5698,6 +5763,8 @@ function attachSortable(containerId, onReordered){
 function attachSortableGrid(containerId, onReordered){
   const container = document.getElementById(containerId);
   if(!container) return;
+  if(container.dataset.sortableBound === '1') return;
+  container.dataset.sortableBound = '1';
   container.addEventListener('pointerdown', (e)=>{
     const handle = e.target.closest('.drag-handle');
     if(!handle) return;
@@ -5845,6 +5912,8 @@ function attachSortableGrid(containerId, onReordered){
 function attachTabSortable(){
   const nav = document.getElementById('tabNav');
   if(!nav) return;
+  if(nav.dataset.sortableBound === '1') return;
+  nav.dataset.sortableBound = '1';
   nav.addEventListener('pointerdown', (e)=>{
     const handle = e.target.closest('.tab-drag-handle');
     if(!handle) return;
@@ -6008,6 +6077,8 @@ function setupDragHandlers(){
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
   attachSortable('funnelLinksList', ids=>{ reorderFunnelLinks(ids); renderProducts(); });
+  attachSortable('projResourcesGrid', ids=>reorderProjectResources(ids));
+  attachSortable('phonesList', ids=>reorderArray('phones', ids));
 }
 
 // inicialização controlada por sb.auth.onAuthStateChange (ver acima)
