@@ -531,6 +531,11 @@
   html, body{ overflow-x:hidden; max-width:100vw; }
   .wrap{ width:100%; }
   @media(max-width:600px){
+    /* iOS dá zoom automático na página inteira ao focar em qualquer campo com fonte
+       menor que 16px — e esse zoom não retorna sozinho, ficando "grudado" na tela.
+       Forçamos 16px em todo campo editável só no mobile pra eliminar esse comportamento,
+       sem alterar o tamanho de fonte usado no desktop. */
+    input, select, textarea, [contenteditable="true"]{ font-size:16px !important; }
     body{ padding:12px; }
     .hero{ gap:12px; }
     .hero h1{ font-size:19px; }
