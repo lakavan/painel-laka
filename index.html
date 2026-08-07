@@ -488,6 +488,12 @@
 
   /* ---------- FORM ---------- */
   .add-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  /* Todo .add-row empilhado na vertical (flex-direction:column, usado nos formulários de
+     "adicionar" de quase toda aba) NUNCA pode ter flex-wrap:wrap — coluna + wrap faz o
+     flexbox criar novas "colunas" pra direita assim que a altura fica menor que o conteúdo
+     (exatamente o que acontece durante a animação de abrir o formulário), empurrando os
+     campos pra fora da tela no mobile. */
+  .add-row[style*="column"]{flex-wrap:nowrap;}
   input[type=text], input[type=number], input[type=date], select, textarea{
     background:var(--surface3);border:1px solid var(--border);color:var(--text);
     border-radius:var(--radius-sm);padding:9px 11px;font-family:var(--sans);font-size:13px;
