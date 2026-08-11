@@ -296,6 +296,7 @@
 
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
+  .aviso-ico{flex-shrink:0;font-size:14px;line-height:1.5;}
   .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
   .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging, .tool-card.dragging{
     opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;
@@ -878,7 +879,14 @@
   .funnel-link-stage{display:flex;align-items:center;gap:10px;}
   .funnel-link-name{font-family:var(--display);font-weight:700;font-size:13.5px;}
   .funnel-link-url{font-size:11.5px;color:var(--blue);word-break:break-all;}
-  .funnel-link-open{margin-left:auto;background:var(--blue);color:#070A10;border:none;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;}
+  .funnel-link-open{background:var(--blue);color:#070A10;border:none;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;}
+  .funnel-link-actions{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;}
+  .funnel-icon-btn{
+    background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;
+    width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:border-color .15s, color .15s;
+  }
+  .funnel-icon-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
 
   /* whatsapp message stage */
   .wa-stage-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
@@ -1365,6 +1373,23 @@
         <div class="rstat"><div class="v" id="resumoRoi">—</div><div class="l">roi</div></div>
       </div>
       <button class="goto-btn" onclick="switchTab('finance')">ver financeiro →</button>
+    </div>
+
+    <div class="panel" id="avisosPanel">
+      <div class="panel-head">
+        <h2>📢 Avisos</h2>
+        <button class="add-tool-btn" id="addAvisoToggleBtn" onclick="toggleNewAvisoForm(true)">+ Adicionar aviso</button>
+      </div>
+      <div id="avisosList"></div>
+      <div class="add-form collapsible-form" id="newAvisoRow">
+        <div class="add-row" style="flex-direction:column;">
+          <input type="text" id="avisoInput" placeholder="escreva o aviso...">
+          <div class="add-row" style="margin-top:0;">
+            <button class="add" style="flex:1;" onclick="addAviso()">+ adicionar aviso</button>
+            <button class="add-cost-cancel-btn" onclick="toggleNewAvisoForm(false)">cancelar</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="row-two" id="urgentPanel">
@@ -2068,7 +2093,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -2367,7 +2392,8 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,avisos:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      if(!state.avisos) state.avisos = [];
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -2865,6 +2891,70 @@ function addTask(priority){
   if(!input.value.trim()) return;
   state.tasks.push({id:uid(), text:input.value.trim(), status:'pending', priority, tag:'none'});
   input.value=''; saveState(); render();
+}
+
+/* --- avisos (tela inicial) --- */
+function renderAvisos(){
+  const el = document.getElementById('avisosList');
+  if(!el) return;
+  if(state.avisos.length===0){ el.innerHTML = '<div class="empty">nenhum aviso no momento.</div>'; return; }
+  el.innerHTML = state.avisos.map(a=>{
+    if(avisoEditingId === a.id){
+      return `
+      <div class="item editing" data-id="${a.id}">
+        <div class="tool-edit-row" style="width:100%;">
+          <input type="text" value="${escapeHtml(a.texto)}" placeholder="escreva o aviso..." onchange="updateAvisoField('${a.id}', this.value)">
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeAviso('${a.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleAvisoEdit('${a.id}')"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="item" data-id="${a.id}">
+      <span class="aviso-ico">📢</span>
+      <div class="item-body">
+        <div class="item-text">${escapeHtml(a.texto)}</div>
+      </div>
+      <button class="funnel-icon-btn" onclick="toggleAvisoEdit('${a.id}')" title="editar">✏️</button>
+      <button class="del-btn" onclick="removeAviso('${a.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+function toggleNewAvisoForm(show){
+  document.getElementById('newAvisoRow').classList.toggle('open', show);
+  document.getElementById('addAvisoToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('avisosPanel').classList.toggle('panel-editing', show);
+  if(show) document.getElementById('avisoInput').focus();
+  else document.getElementById('avisoInput').value = '';
+}
+function addAviso(){
+  const input = document.getElementById('avisoInput');
+  if(!input.value.trim()) return;
+  state.avisos.unshift({id:uid(), texto:input.value.trim()});
+  input.value = '';
+  saveState(); renderAvisos();
+  toggleNewAvisoForm(false);
+}
+let avisoEditingId = null;
+function toggleAvisoEdit(id){
+  avisoEditingId = (avisoEditingId===id) ? null : id;
+  renderAvisos();
+}
+function updateAvisoField(id, value){
+  const a = state.avisos.find(a=>a.id===id);
+  if(!a) return;
+  a.texto = value;
+  saveState(); renderAvisos();
+}
+function removeAviso(id){
+  openConfirmModal('Tem certeza que deseja excluir este aviso? Esta ação não poderá ser desfeita.', ()=>{
+    state.avisos = state.avisos.filter(a=>a.id!==id);
+    if(avisoEditingId===id) avisoEditingId = null;
+    saveState(); renderAvisos();
+    showToast('Aviso excluído.');
+  });
 }
 
 function renderSimpleList(containerId, arr, cycle){
@@ -3445,6 +3535,7 @@ function removeFunnelLink(id){
     const product = currentProduct();
     if(!product) return;
     product.funnelLinks = product.funnelLinks.filter(l=>l.id!==id);
+    if(funnelLinkEditingId===id) funnelLinkEditingId = null;
     saveState(); renderProducts();
     showToast('Link excluído.');
   });
@@ -3455,19 +3546,69 @@ function reorderFunnelLinks(ids){
   product.funnelLinks = ids.map(id=>product.funnelLinks.find(l=>l.id===id)).filter(Boolean);
   saveState();
 }
+let funnelLinkEditingId = null;
+function toggleFunnelLinkEdit(id, ev){
+  if(ev) ev.stopPropagation();
+  funnelLinkEditingId = (funnelLinkEditingId===id) ? null : id;
+  renderProducts();
+}
+function updateFunnelLinkField(id, field, value){
+  const product = currentProduct();
+  if(!product) return;
+  const l = product.funnelLinks.find(l=>l.id===id);
+  if(!l) return;
+  l[field] = value;
+  saveState(); renderProducts();
+}
+function copyFunnelLink(id, ev){
+  if(ev) ev.stopPropagation();
+  const product = currentProduct();
+  const l = product && product.funnelLinks.find(l=>l.id===id);
+  if(!l || !l.url) return;
+  const finish = (ok)=> showToast(ok ? 'Link copiado!' : 'Não deu pra copiar — copia manualmente.', ok?undefined:'error');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(l.url).then(()=>finish(true)).catch(()=>finish(false));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = l.url; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    finish(ok);
+  }
+}
 function funnelLinksHtml(links){
   if(links.length===0) return '<div class="empty">nenhum link ainda.</div>';
   return links.map((l,idx)=>{
     const w = funnelWidth(idx, links.length);
-    const stage = `<div class="funnel-stage funnel-link-stage" data-id="${l.id}" style="width:${w}%;">
-      <span class="drag-handle">⠿</span>
-      <div>
-        <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
-        <div class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</div>
-      </div>
-      ${l.url ? `<button class="funnel-link-open" onclick="window.open('${escapeHtml(l.url)}','_blank')">abrir ↗</button>` : ''}
-      <button class="del-btn" onclick="removeFunnelLink('${l.id}')">✕</button>
-    </div>`;
+    let stage;
+    if(funnelLinkEditingId === l.id){
+      stage = `<div class="funnel-stage funnel-link-stage editing" data-id="${l.id}" style="width:${w}%;" onclick="event.stopPropagation()">
+        <div class="tool-edit-row" style="width:100%;">
+          <input type="text" value="${escapeHtml(l.nome)}" placeholder="nome da página" onchange="updateFunnelLinkField('${l.id}','nome',this.value)">
+          <input type="text" value="${escapeHtml(l.url||'')}" placeholder="link da página" onchange="updateFunnelLinkField('${l.id}','url',this.value)">
+          <div class="mining-actions">
+            <button class="del-btn" onclick="removeFunnelLink('${l.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+          </div>
+        </div>
+      </div>`;
+    } else {
+      stage = `<div class="funnel-stage funnel-link-stage" data-id="${l.id}" style="width:${w}%;">
+        <span class="drag-handle">⠿</span>
+        <div style="flex:1;min-width:0;">
+          <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
+          <div class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</div>
+        </div>
+        <div class="funnel-link-actions">
+          ${l.url ? `<button class="funnel-icon-btn" onclick="copyFunnelLink('${l.id}', event)" title="copiar link">📋</button>` : ''}
+          <button class="funnel-icon-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)" title="editar">✏️</button>
+          ${l.url ? `<button class="funnel-link-open" onclick="window.open('${escapeHtml(l.url)}','_blank')">abrir ↗</button>` : ''}
+          <button class="del-btn" onclick="removeFunnelLink('${l.id}')">✕</button>
+        </div>
+      </div>`;
+    }
     const connector = idx < links.length-1 ? '<div class="funnel-connector"></div>' : '';
     return stage + connector;
   }).join('');
@@ -4869,6 +5010,7 @@ function render(){
   if(typeof activeDragCleanup !== 'undefined' && activeDragCleanup) activeDragCleanup();
   renderTabNav();
   renderTasks();
+  renderAvisos();
   renderSimpleList('infraList', state.infra, infraCycle);
   renderOperacaoAtual();
   renderCosts();
