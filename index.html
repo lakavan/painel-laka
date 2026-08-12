@@ -991,6 +991,15 @@
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
   .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;}
   .tool-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .contact-filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .contact-filter-chip{
+    background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+    border-radius:20px;padding:5px 12px;font-size:11px;font-family:var(--mono);cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .contact-filter-chip:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .contact-filter-chip.active{background:var(--blue);border-color:var(--blue);color:#070A10;font-weight:700;}
+  .contact-actions-row{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;}
   .tool-type-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:0.3px;border-radius:5px;padding:2px 8px;display:inline-block;}
   .tool-type-extensao{color:var(--blue-bright);background:var(--blue-soft);}
   .tool-type-aplicativo{color:#c084fc;background:rgba(192,132,252,0.13);}
@@ -1453,62 +1462,31 @@
       </div>
     </div>
 
-    <div class="row-two">
-      <div class="panel" id="assetsPanel">
-        <div class="panel-head">
-          <h2>Meus ativos</h2>
-          <button class="add-tool-btn" id="newAssetToggleBtn" onclick="toggleNewAssetForm(true)">+ Adicionar Ativo</button>
+    <div class="panel full" id="assetsPanel">
+      <div class="panel-head">
+        <h2>Meus ativos</h2>
+        <button class="add-tool-btn" id="newAssetToggleBtn" onclick="toggleNewAssetForm(true)">+ Adicionar Ativo</button>
+      </div>
+      <div id="assetsList"></div>
+      <div class="add-form" id="newAssetRow">
+      <div class="add-row" style="flex-direction:column;">
+        <div class="add-row" style="margin-top:0;">
+          <select id="assetTipo">
+            <option value="Perfil Facebook">Perfil Facebook</option>
+            <option value="BM">BM</option>
+            <option value="Página">Página</option>
+            <option value="Conta de anúncio">Conta de anúncio</option>
+            <option value="Domínio">Domínio</option>
+            <option value="Outro">Outro</option>
+          </select>
+          <input type="text" id="assetNome" placeholder="nome/identificador">
         </div>
-        <div id="assetsList"></div>
-        <div class="add-form" id="newAssetRow">
-        <div class="add-row" style="flex-direction:column;">
-          <div class="add-row" style="margin-top:0;">
-            <select id="assetTipo">
-              <option value="Perfil Facebook">Perfil Facebook</option>
-              <option value="BM">BM</option>
-              <option value="Página">Página</option>
-              <option value="Conta de anúncio">Conta de anúncio</option>
-              <option value="Domínio">Domínio</option>
-              <option value="Outro">Outro</option>
-            </select>
-            <input type="text" id="assetNome" placeholder="nome/identificador">
-          </div>
-          <input type="text" id="assetNota" placeholder="nota (opcional)">
-          <div class="add-row" style="margin-top:0;">
-            <button class="add" style="flex:1;" onclick="addAsset()">+ adicionar ativo</button>
-            <button class="add-cost-cancel-btn" onclick="toggleNewAssetForm(false)">cancelar</button>
-          </div>
-        </div>
+        <input type="text" id="assetNota" placeholder="nota (opcional)">
+        <div class="add-row" style="margin-top:0;">
+          <button class="add" style="flex:1;" onclick="addAsset()">+ adicionar ativo</button>
+          <button class="add-cost-cancel-btn" onclick="toggleNewAssetForm(false)">cancelar</button>
         </div>
       </div>
-
-      <div class="panel" id="managersPanel">
-        <div class="panel-head">
-          <h2 style="display:flex;align-items:center;">
-            <span class="panel-head-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </span>
-            Gerentes de conta
-          </h2>
-          <button class="add-tool-btn" id="newManagerToggleBtn" onclick="toggleNewManagerForm(true)">+ Adicionar Gerente</button>
-        </div>
-        <div id="managersList"></div>
-        <div class="add-form" id="newManagerRow">
-        <div class="add-row" style="flex-direction:column;">
-          <input type="text" id="managerNome" placeholder="nome do gerente">
-          <div class="add-row" style="margin-top:0;">
-            <input type="text" id="managerNumero" placeholder="número/contato">
-            <input type="text" id="managerGateway" placeholder="gateway/dashboard (ex: Kirvano)">
-          </div>
-          <div class="add-row" style="margin-top:0;">
-            <button class="add" style="flex:1;" onclick="addManager()">+ adicionar gerente</button>
-            <button class="add-cost-cancel-btn" onclick="toggleNewManagerForm(false)">cancelar</button>
-          </div>
-        </div>
-        </div>
       </div>
     </div>
 
@@ -1987,6 +1965,46 @@
       </div>
     </div>
 
+    <div class="tab-view" id="contactsView">
+      <div class="panel full" id="contactsPanel">
+        <div class="panel-head">
+          <h2><span class="sub">gerentes, fornecedores, contingência e qualquer pessoa importante pra operação</span>Contatos</h2>
+          <button class="add-tool-btn" id="newContactToggleBtn" onclick="toggleNewContactForm(true)">+ Adicionar contato</button>
+        </div>
+        <div class="contact-filter-row" id="contactFilterRow"></div>
+        <div id="contactsList" class="tools-grid"></div>
+        <div class="add-form" id="newContactRow">
+          <div class="add-row" style="flex-direction:column;">
+            <div class="add-row" style="margin-top:0;">
+              <input type="text" id="contactNome" placeholder="nome">
+              <select id="contactTipo">
+                <option value="gerente">👤 Gerente de conta</option>
+                <option value="fornecedor">🏢 Fornecedor de perfil/BM</option>
+                <option value="contingencia">🛟 Contato de contingência</option>
+                <option value="editor">🎬 Editor de vídeo</option>
+                <option value="gestor">📈 Gestor de tráfego</option>
+                <option value="suporte">🎧 Suporte</option>
+                <option value="desenvolvedor">💻 Desenvolvedor</option>
+                <option value="parceiro">🤝 Afiliado/parceiro</option>
+                <option value="outro">📇 Outro</option>
+              </select>
+            </div>
+            <input type="text" id="contactEmpresa" placeholder="empresa ou serviço relacionado (opcional)">
+            <div class="add-row" style="margin-top:0;">
+              <input type="text" id="contactWhatsapp" placeholder="WhatsApp/telefone (opcional)">
+              <input type="text" id="contactEmail" placeholder="e-mail (opcional)">
+            </div>
+            <input type="text" id="contactLink" placeholder="link de contato ou perfil (opcional)">
+            <textarea id="contactObservacoes" placeholder="observações (opcional)"></textarea>
+            <div class="add-row" style="margin-top:0;">
+              <button class="add" style="flex:1;" onclick="addContact()">+ adicionar contato</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewContactForm(false)">cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2093,7 +2111,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], contacts:[], contactsMigratedFromManagers:false, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes','contacts'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -2392,8 +2410,21 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,avisos:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,avisos:[],contacts:[],contactsMigratedFromManagers:false,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.avisos) state.avisos = [];
+      if(!state.contacts) state.contacts = [];
+      if(!state.contactsMigratedFromManagers){
+        // Migração da antiga aba "Gerentes de conta" (tela inicial) para a nova aba Contatos,
+        // preservando todos os dados já cadastrados. Só roda uma vez.
+        (state.managers||[]).forEach(m=>{
+          state.contacts.push({
+            id: uid(), nome: m.nome||'', tipo:'gerente', empresa: m.gateway||'',
+            whatsapp: m.numero||'', email:'', link:'', observacoes:''
+          });
+        });
+        state.managers = [];
+        state.contactsMigratedFromManagers = true;
+      }
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
@@ -2407,6 +2438,7 @@ async function loadState(){
       if(!state.customProductStatuses) state.customProductStatuses = [];
       if(!state.tabOrder || !Array.isArray(state.tabOrder)) state.tabOrder = ['finance','processos','products','mining','projects','tools','content','warmup','notes'];
       if(!state.tabOrder.includes('notes')) state.tabOrder.push('notes');
+      if(!state.tabOrder.includes('contacts')) state.tabOrder.push('contacts');
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
       if(!state.notes) state.notes = [];
@@ -3106,47 +3138,151 @@ function waLink(numero){
   const digits = (numero||'').replace(/\D/g,'');
   return digits ? `https://wa.me/${digits}` : '';
 }
-function renderManagers(){
-  const el = document.getElementById('managersList');
-  if(state.managers.length===0){ el.innerHTML='<div class="empty">nenhum gerente cadastrado.</div>'; return; }
-  el.innerHTML = state.managers.map(m=>{
-    if(managerEditingId === m.id){
+const CONTACT_TYPES = {
+  gerente: '👤 Gerente de conta',
+  fornecedor: '🏢 Fornecedor de perfil/BM',
+  contingencia: '🛟 Contato de contingência',
+  editor: '🎬 Editor de vídeo',
+  gestor: '📈 Gestor de tráfego',
+  suporte: '🎧 Suporte',
+  desenvolvedor: '💻 Desenvolvedor',
+  parceiro: '🤝 Afiliado/parceiro',
+  outro: '📇 Outro'
+};
+// Grupos do filtro rápido — agrupa tipos correlatos pra não virar uma fileira enorme de botões
+const CONTACT_FILTER_GROUPS = {
+  todos: { label: 'Todos', tipos: null },
+  gerente: { label: 'Gerentes', tipos: ['gerente'] },
+  contingencia: { label: 'Contingência', tipos: ['contingencia'] },
+  fornecedor: { label: 'Fornecedores', tipos: ['fornecedor'] },
+  suporte: { label: 'Suportes', tipos: ['suporte'] },
+  profissional: { label: 'Profissionais', tipos: ['editor','gestor','desenvolvedor','parceiro'] },
+  outro: { label: 'Outros', tipos: ['outro'] }
+};
+let contactFilter = 'todos';
+let contactEditingId = null;
+function setContactFilter(key){
+  contactFilter = key;
+  renderContacts();
+}
+function renderContactFilters(){
+  const el = document.getElementById('contactFilterRow');
+  if(!el) return;
+  el.innerHTML = Object.keys(CONTACT_FILTER_GROUPS).map(key=>{
+    const g = CONTACT_FILTER_GROUPS[key];
+    return `<button class="contact-filter-chip ${contactFilter===key?'active':''}" onclick="setContactFilter('${key}')">${g.label}</button>`;
+  }).join('');
+}
+function renderContacts(){
+  renderContactFilters();
+  const el = document.getElementById('contactsList');
+  if(!el) return;
+  const group = CONTACT_FILTER_GROUPS[contactFilter];
+  const list = (!group || !group.tipos) ? state.contacts : state.contacts.filter(c=>group.tipos.includes(c.tipo||'outro'));
+  if(list.length===0){
+    el.innerHTML = state.contacts.length===0
+      ? '<div class="empty-block"><div class="empty-block-icon">📇</div><div class="empty-block-title">Nenhum contato cadastrado ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar contato" acima pra começar sua agenda operacional.</div></div>'
+      : '<div class="empty">nenhum contato nesse filtro.</div>';
+    return;
+  }
+  el.innerHTML = list.map(c=>{
+    if(contactEditingId === c.id){
       return `
-      <div class="asset-row editing" data-id="${m.id}" style="flex-direction:column;align-items:stretch;">
+      <div class="tool-card" data-id="${c.id}">
         <div class="tool-edit-row">
-          <input type="text" value="${escapeHtml(m.nome)}" placeholder="nome do gerente" onchange="updateManagerField('${m.id}','nome',this.value)">
-          <input type="text" value="${escapeHtml(m.numero||'')}" placeholder="número/contato" onchange="updateManagerField('${m.id}','numero',this.value)">
-          <input type="text" value="${escapeHtml(m.gateway||'')}" placeholder="gateway/dashboard (ex: Kirvano)" onchange="updateManagerField('${m.id}','gateway',this.value)">
+          <input type="text" value="${escapeHtml(c.nome)}" placeholder="nome" onchange="updateContactField('${c.id}','nome',this.value)">
+          <select onchange="updateContactField('${c.id}','tipo',this.value)">
+            ${Object.keys(CONTACT_TYPES).map(k=>`<option value="${k}" ${c.tipo===k?'selected':''}>${CONTACT_TYPES[k]}</option>`).join('')}
+          </select>
+          <input type="text" value="${escapeHtml(c.empresa||'')}" placeholder="empresa ou serviço relacionado" onchange="updateContactField('${c.id}','empresa',this.value)">
+          <input type="text" value="${escapeHtml(c.whatsapp||'')}" placeholder="WhatsApp/telefone" onchange="updateContactField('${c.id}','whatsapp',this.value)">
+          <input type="text" value="${escapeHtml(c.email||'')}" placeholder="e-mail" onchange="updateContactField('${c.id}','email',this.value)">
+          <input type="text" value="${escapeHtml(c.link||'')}" placeholder="link de contato ou perfil" onchange="updateContactField('${c.id}','link',this.value)">
+          <textarea placeholder="observações" onchange="updateContactField('${c.id}','observacoes',this.value)">${escapeHtml(c.observacoes||'')}</textarea>
           <div class="mining-actions">
-            <button class="del-btn" onclick="removeManager('${m.id}')">✕ excluir</button>
-            <button class="mining-save-btn" onclick="toggleManagerEdit('${m.id}')"><span class="ico">✓</span> Concluir edição</button>
+            <button class="del-btn" onclick="removeContact('${c.id}')">✕ excluir</button>
+            <button class="mining-save-btn" onclick="toggleContactEdit('${c.id}')"><span class="ico">✓</span> Concluir edição</button>
           </div>
         </div>
       </div>`;
     }
-    const link = waLink(m.numero);
+    const waHref = waLink(c.whatsapp);
     return `
-    <div class="asset-row" data-id="${m.id}">
-      <span class="drag-handle">⠿</span>
-      <span class="asset-tipo">${escapeHtml(m.gateway||'—')}</span>
-      <div class="asset-name">${escapeHtml(m.nome)} ${m.numero? (link ? `<a href="${link}" target="_blank" rel="noopener" style="color:#25D366;font-size:11.5px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">· <span class="manager-wa-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.79 14.13c-.24.68-1.4 1.3-1.93 1.35-.5.05-1.02.24-3.42-.71-2.9-1.15-4.76-4.12-4.9-4.31-.14-.19-1.17-1.56-1.17-2.98s.74-2.11 1-2.4c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.14.07.14.12.31.02.5-.1.19-.14.3-.29.47-.14.16-.3.36-.43.48-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.29 2.33 1.44.29.14.46.12.62-.07.17-.19.71-.83.9-1.11.19-.29.38-.24.63-.14.26.1 1.65.78 1.94.92.29.14.48.21.55.33.07.12.07.67-.17 1.36z"/></svg></span> ${escapeHtml(m.numero)}</a>` : `<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(m.numero)}</span>`) : ''}</div>
-      <button class="mining-edit-btn" onclick="toggleManagerEdit('${m.id}')">✎ editar</button>
-      <button class="del-btn" onclick="removeManager('${m.id}')">✕</button>
+    <div class="tool-card" data-id="${c.id}">
+      <div class="tool-card-head">
+        <span class="drag-handle">⠿</span>
+        <div class="tool-name" style="flex:1;">${escapeHtml(c.nome||'sem nome')}</div>
+        <button class="mining-edit-btn" onclick="toggleContactEdit('${c.id}')">✎ editar</button>
+      </div>
+      <div class="tool-tags-row">
+        <span class="tool-cat">${CONTACT_TYPES[c.tipo] || CONTACT_TYPES.outro}</span>
+      </div>
+      ${c.empresa ? `<div class="tool-field-label">empresa / serviço</div><div class="tool-field-value">${escapeHtml(c.empresa)}</div>` : ''}
+      ${c.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(c.observacoes)}</div>` : ''}
+      ${(c.whatsapp || c.email || c.link) ? `
+      <div class="contact-actions-row">
+        ${c.whatsapp ? (waHref
+          ? `<a class="funnel-icon-btn" href="${waHref}" target="_blank" rel="noopener" title="abrir WhatsApp" style="color:#25D366;">💬</a>`
+          : `<span class="tool-field-value" style="margin:0;">${escapeHtml(c.whatsapp)}</span>`) : ''}
+        ${c.email ? `<a class="funnel-icon-btn" href="mailto:${escapeHtml(c.email)}" title="enviar e-mail">✉️</a>` : ''}
+        ${c.link ? `<a class="funnel-icon-btn" href="${escapeHtml(c.link)}" target="_blank" rel="noopener" title="abrir link">🔗</a>` : ''}
+      </div>` : ''}
     </div>`;
   }).join('');
 }
-let managerEditingId = null;
-function toggleManagerEdit(id){
-  managerEditingId = (managerEditingId===id) ? null : id;
-  renderManagers();
+function toggleContactEdit(id){
+  contactEditingId = (contactEditingId===id) ? null : id;
+  renderContacts();
 }
-function updateManagerField(id, field, value){
-  const m = state.managers.find(m=>m.id===id);
-  if(!m) return;
-  m[field] = value;
+function updateContactField(id, field, value){
+  const c = state.contacts.find(c=>c.id===id);
+  if(!c) return;
+  c[field] = value;
   saveState();
+  if(field==='tipo' || field==='nome') renderContacts();
+}
+function toggleNewContactForm(show){
+  document.getElementById('newContactRow').classList.toggle('open', show);
+  document.getElementById('newContactToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('contactsPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('contactNome').focus(); }
+  else{
+    document.getElementById('contactNome').value = '';
+    document.getElementById('contactTipo').value = 'gerente';
+    document.getElementById('contactEmpresa').value = '';
+    document.getElementById('contactWhatsapp').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactLink').value = '';
+    document.getElementById('contactObservacoes').value = '';
+  }
+}
+function addContact(){
+  const nome = document.getElementById('contactNome');
+  if(!nome.value.trim()) return;
+  state.contacts.push({
+    id: uid(),
+    nome: nome.value.trim(),
+    tipo: document.getElementById('contactTipo').value,
+    empresa: document.getElementById('contactEmpresa').value.trim(),
+    whatsapp: document.getElementById('contactWhatsapp').value.trim(),
+    email: document.getElementById('contactEmail').value.trim(),
+    link: document.getElementById('contactLink').value.trim(),
+    observacoes: document.getElementById('contactObservacoes').value.trim()
+  });
+  saveState(); renderContacts();
+  toggleNewContactForm(false);
+  showToast('Contato adicionado.');
+}
+function removeContact(id){
+  openConfirmModal('Tem certeza que deseja excluir este contato? Esta ação não poderá ser desfeita.', ()=>{
+    state.contacts = state.contacts.filter(c=>c.id!==id);
+    if(contactEditingId===id) contactEditingId = null;
+    saveState(); renderContacts();
+    showToast('Contato excluído.');
+  });
 }
 function renderAssets(){
+
   const el = document.getElementById('assetsList');
   if(state.assets.length===0){ el.innerHTML='<div class="empty">nenhum ativo cadastrado.</div>'; return; }
   const ASSET_TYPES = ['Perfil Facebook','BM','Página','Conta de anúncio','Domínio','Outro'];
@@ -3187,32 +3323,6 @@ function updateAssetField(id, field, value){
   if(!a) return;
   a[field] = value;
   saveState();
-}
-function toggleNewManagerForm(show){
-  document.getElementById('newManagerRow').classList.toggle('open', show);
-  document.getElementById('newManagerToggleBtn').style.display = show ? 'none' : 'inline-flex';
-  document.getElementById('managersPanel').classList.toggle('panel-editing', show);
-  if(show){ document.getElementById('managerNome').focus(); }
-  else{
-    document.getElementById('managerNome').value='';
-    document.getElementById('managerNumero').value=''; document.getElementById('managerGateway').value='';
-  }
-}
-function addManager(){
-  const nome = document.getElementById('managerNome');
-  const numero = document.getElementById('managerNumero').value;
-  const gateway = document.getElementById('managerGateway').value;
-  if(!nome.value.trim()) return;
-  state.managers.push({id:uid(), nome:nome.value.trim(), numero, gateway});
-  saveState(); renderManagers();
-  toggleNewManagerForm(false);
-  showToast('Gerente adicionado.');
-}
-function removeManager(id){
-  openConfirmModal('Tem certeza que deseja excluir este gerente de conta? Esta ação não poderá ser desfeita.', ()=>{
-    state.managers = state.managers.filter(m=>m.id!==id); saveState(); renderManagers();
-    showToast('Gerente excluído.');
-  });
 }
 
 /* ---------- ATIVOS ---------- */
@@ -4545,11 +4655,11 @@ function applyHideValuesPreference(){
   document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
   document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
-const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup','notes'];
+const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup','notes','contacts'];
 const TAB_LABELS = {
   home:'Início', finance:'Financeiro mensal', processos:'Processos', products:'Produtos',
   mining:'Mineração', projects:'Projetos', tools:'Ferramentas', content:'Biblioteca de Conteúdo', warmup:'Aquecimento de Chip',
-  notes:'Notas'
+  notes:'Notas', contacts:'Contatos'
 };
 function renderTabNav(){
   const nav = document.getElementById('tabNav');
@@ -5016,7 +5126,7 @@ function render(){
   renderCosts();
   renderFinanceTable();
   renderLogs();
-  renderManagers();
+  renderContacts();
   renderAssets();
   renderPhones();
   renderProducts();
@@ -6252,7 +6362,7 @@ function setupDragHandlers(){
   attachSortableGrid('warmupGroupsList', ids=>reorderArray('warmupGroups', ids));
   attachSortableGrid('notesList', ids=>reorderArray('notes', ids));
   attachSortable('assetsList', ids=>reorderArray('assets', ids));
-  attachSortable('managersList', ids=>reorderArray('managers', ids));
+  attachSortableGrid('contactsList', ids=>reorderArray('contacts', ids));
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
