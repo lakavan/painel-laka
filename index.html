@@ -297,6 +297,12 @@
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
   .aviso-ico{flex-shrink:0;font-size:14px;line-height:1.5;}
+  .aviso-icon-btn{
+    background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer;
+    width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+    border-radius:6px;flex-shrink:0;opacity:0.7;transition:opacity .15s, background .15s;
+  }
+  .aviso-icon-btn:hover{opacity:1;background:var(--surface3);}
   .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
   .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging, .tool-card.dragging{
     opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;
@@ -555,7 +561,7 @@
     .tab-btn{ white-space:nowrap; flex-shrink:0; font-size:13px; }
     .funnel-stage{ width:100% !important; padding:10px 12px; }
     .funnel-link-stage{ flex-wrap:wrap; }
-    .funnel-link-open{ margin-left:0; }
+    
     .gateway-row, .variation-row, .mov-row, .cost-row, .asset-row, .step-item{ flex-wrap:wrap; }
     .gateway-row input, .gateway-row select{ flex:1 1 100px; min-width:0; }
     .cost-row select, .cost-row input[type=text]{ min-width:80px; }
@@ -840,6 +846,8 @@
   .planner-item.done{opacity:0.4;text-decoration:line-through;}
   .planner-item .p-status{width:9px;height:9px;border-radius:50%;background:var(--warn);margin-top:3px;flex-shrink:0;cursor:pointer;}
   .planner-item.done .p-status{background:var(--ok);}
+  .planner-item .check-box{width:14px;height:14px;border-radius:4px;margin-top:1px;}
+  .planner-item .check-box.checked::after{font-size:9px;}
   .planner-item .p-text{flex:1;word-break:break-word;}
   .planner-item .del-btn{font-size:11px;padding:0;}
   .planner-add{display:flex;gap:4px;margin-top:6px;}
@@ -879,7 +887,7 @@
   .funnel-link-stage{display:flex;align-items:center;gap:10px;}
   .funnel-link-name{font-family:var(--display);font-weight:700;font-size:13.5px;}
   .funnel-link-url{font-size:11.5px;color:var(--blue);word-break:break-all;}
-  .funnel-link-open{background:var(--blue);color:#070A10;border:none;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;}
+  
   .funnel-link-actions{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;}
   .funnel-icon-btn{
     background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;
@@ -1422,7 +1430,7 @@
         <div id="urgentList"></div>
         <div class="add-row">
           <input type="text" id="urgentInput" placeholder="nova tarefa urgente...">
-          <button class="add" onclick="addTask('urgente')">+ add</button>
+          <button class="add-tool-btn" onclick="addTask('urgente')">+ Adicionar</button>
         </div>
       </div>
       <div class="panel" id="offersPanel">
@@ -1695,28 +1703,46 @@
           <div id="customStatusManageList" style="margin-top:10px;"></div>
         </div>
 
-        <div class="panel full">
-          <div class="panel-head"><h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2></div>
-          <div id="funnelLinksList" class="funnel-wrap"></div>
-          <div class="add-row">
-            <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
-            <input type="text" id="funnelLinkUrl" placeholder="link/URL">
-            <button class="add" onclick="addFunnelLink()">+ add</button>
+        <div class="panel full" id="phonesPanel">
+          <div class="panel-head">
+            <h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
+            <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
+          </div>
+          <div id="phonesList"></div>
+          <div class="add-form" id="newPhoneRow">
+            <div class="add-row" style="flex-direction:column;">
+              <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
+              <div class="add-row" style="margin-top:0;">
+                <input type="text" id="phoneProduto" placeholder="produto/uso">
+                <select id="phoneStatus" style="flex:1;">
+                  <option value="ativo">ativo</option>
+                  <option value="atencao">atenção</option>
+                  <option value="queimado">queimado</option>
+                </select>
+              </div>
+              <div class="add-row" style="margin-top:0;">
+                <button class="add" style="flex:1;" onclick="addPhone()">+ adicionar número</button>
+                <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="panel full">
-          <div class="panel-head"><h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2></div>
-          <div id="phonesList"></div>
-          <div class="add-row">
-            <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
-            <input type="text" id="phoneProduto" placeholder="produto/uso">
-            <select id="phoneStatus">
-              <option value="ativo">ativo</option>
-              <option value="atencao">atenção</option>
-              <option value="queimado">queimado</option>
-            </select>
-            <button class="add" onclick="addPhone()">+ add</button>
+        <div class="panel full" id="funnelLinksPanel">
+          <div class="panel-head">
+            <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
+            <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
+          </div>
+          <div id="funnelLinksList" class="funnel-wrap"></div>
+          <div class="add-form" id="newFunnelLinkRow">
+            <div class="add-row" style="flex-direction:column;">
+              <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
+              <input type="text" id="funnelLinkUrl" placeholder="link/URL">
+              <div class="add-row" style="margin-top:0;">
+                <button class="add" style="flex:1;" onclick="addFunnelLink()">+ adicionar página</button>
+                <button class="add-cost-cancel-btn" onclick="toggleNewFunnelLinkForm(false)">cancelar</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2978,8 +3004,8 @@ function renderAvisos(){
       <div class="item-body">
         <div class="item-text">${escapeHtml(a.texto)}</div>
       </div>
-      <button class="funnel-icon-btn" onclick="toggleAvisoEdit('${a.id}')" title="editar">✏️</button>
-      <button class="funnel-icon-btn" onclick="removeAviso('${a.id}')" title="excluir">🗑️</button>
+      <button class="aviso-icon-btn" onclick="toggleAvisoEdit('${a.id}')" title="editar">✏️</button>
+      <button class="aviso-icon-btn" onclick="removeAviso('${a.id}')" title="excluir">🗑️</button>
     </div>`;
   }).join('');
 }
@@ -3389,7 +3415,7 @@ function renderPlanner(){
       <h4>${d.label}${d.key===tKey?' · hoje':''}</h4>
       <div>${items.length===0?'<div class="empty" style="padding:0;">vazio</div>':items.map(it=>`
         <div class="planner-item ${it.done?'done':''}">
-          <span class="p-status" onclick="togglePlannerItem('${d.key}','${it.id}')"></span>
+          <div class="check-box ${it.done?'checked':''}" onclick="togglePlannerItem('${d.key}','${it.id}')" title="marcar como feito"></div>
           <span class="p-text">${escapeHtml(it.text)}</span>
           <button class="del-btn" onclick="removePlannerItem('${d.key}','${it.id}')">✕</button>
         </div>
@@ -3436,6 +3462,17 @@ function renderPhones(){
     </div>
   `).join('');
 }
+function toggleNewPhoneForm(show){
+  document.getElementById('newPhoneRow').classList.toggle('open', show);
+  document.getElementById('newPhoneToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('phonesPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('phoneNumero').focus(); }
+  else{
+    document.getElementById('phoneNumero').value='';
+    document.getElementById('phoneProduto').value='';
+    document.getElementById('phoneStatus').value='ativo';
+  }
+}
 function addPhone(){
   const numero = document.getElementById('phoneNumero');
   const produto = document.getElementById('phoneProduto').value;
@@ -3444,6 +3481,7 @@ function addPhone(){
   state.phones.push({id:uid(), numero:numero.value.trim(), produto, status});
   numero.value=''; document.getElementById('phoneProduto').value='';
   saveState(); renderPhones();
+  toggleNewPhoneForm(false);
 }
 function removePhone(id){
   openConfirmModal('Tem certeza que deseja excluir este número? Esta ação não poderá ser desfeita.', ()=>{
@@ -3642,6 +3680,16 @@ function funnelWidth(idx, total){
 }
 
 /* --- links do funil --- */
+function toggleNewFunnelLinkForm(show){
+  document.getElementById('newFunnelLinkRow').classList.toggle('open', show);
+  document.getElementById('newFunnelLinkToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('funnelLinksPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('funnelLinkNome').focus(); }
+  else{
+    document.getElementById('funnelLinkNome').value='';
+    document.getElementById('funnelLinkUrl').value='';
+  }
+}
 function addFunnelLink(){
   const product = currentProduct();
   if(!product) return;
@@ -3651,6 +3699,7 @@ function addFunnelLink(){
   product.funnelLinks.push({id:uid(), nome:nome.value.trim(), url:url.value.trim()});
   nome.value=''; url.value='';
   saveState(); renderProducts();
+  toggleNewFunnelLinkForm(false);
 }
 function removeFunnelLink(id){
   openConfirmModal('Tem certeza que deseja excluir este link? Esta ação não poderá ser desfeita.', ()=>{
@@ -3726,8 +3775,8 @@ function funnelLinksHtml(links){
         <div class="funnel-link-actions">
           ${l.url ? `<button class="funnel-icon-btn" onclick="copyFunnelLink('${l.id}', event)" title="copiar link">📋</button>` : ''}
           <button class="funnel-icon-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)" title="editar">✏️</button>
-          ${l.url ? `<button class="funnel-link-open" onclick="window.open('${escapeHtml(l.url)}','_blank')">abrir ↗</button>` : ''}
-          <button class="del-btn" onclick="removeFunnelLink('${l.id}')">✕</button>
+          ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
+          <button class="funnel-icon-btn" onclick="removeFunnelLink('${l.id}')" title="excluir">🗑️</button>
         </div>
       </div>`;
     }
