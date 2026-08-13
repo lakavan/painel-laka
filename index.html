@@ -991,14 +991,8 @@
   .tool-name{font-family:var(--display);font-weight:800;font-size:15px;}
   .tool-cat{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);background:var(--green-soft);border-radius:5px;padding:2px 8px;display:inline-block;}
   .tool-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
-  .contact-filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-  .contact-filter-chip{
-    background:var(--surface2);border:1px solid var(--border);color:var(--muted);
-    border-radius:20px;padding:5px 12px;font-size:11px;font-family:var(--mono);cursor:pointer;
-    transition:border-color .15s, color .15s, background .15s;
-  }
-  .contact-filter-chip:hover{border-color:var(--blue);color:var(--blue-bright);}
-  .contact-filter-chip.active{background:var(--blue);border-color:var(--blue);color:#070A10;font-weight:700;}
+  .contact-wa-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+  .contact-wa-number{font-family:var(--mono);font-size:12.5px;color:var(--text);}
   .contact-actions-row{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;}
   .tool-type-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:0.3px;border-radius:5px;padding:2px 8px;display:inline-block;}
   .tool-type-extensao{color:var(--blue-bright);background:var(--blue-soft);}
@@ -1968,10 +1962,9 @@
     <div class="tab-view" id="contactsView">
       <div class="panel full" id="contactsPanel">
         <div class="panel-head">
-          <h2><span class="sub">gerentes, fornecedores, contingência e qualquer pessoa importante pra operação</span>Contatos</h2>
+          <h2>Rede de contatos</h2>
           <button class="add-tool-btn" id="newContactToggleBtn" onclick="toggleNewContactForm(true)">+ Adicionar contato</button>
         </div>
-        <div class="contact-filter-row" id="contactFilterRow"></div>
         <div id="contactsList" class="tools-grid"></div>
         <div class="add-form" id="newContactRow">
           <div class="add-row" style="flex-direction:column;">
@@ -3149,40 +3142,13 @@ const CONTACT_TYPES = {
   parceiro: '🤝 Afiliado/parceiro',
   outro: '📇 Outro'
 };
-// Grupos do filtro rápido — agrupa tipos correlatos pra não virar uma fileira enorme de botões
-const CONTACT_FILTER_GROUPS = {
-  todos: { label: 'Todos', tipos: null },
-  gerente: { label: 'Gerentes', tipos: ['gerente'] },
-  contingencia: { label: 'Contingência', tipos: ['contingencia'] },
-  fornecedor: { label: 'Fornecedores', tipos: ['fornecedor'] },
-  suporte: { label: 'Suportes', tipos: ['suporte'] },
-  profissional: { label: 'Profissionais', tipos: ['editor','gestor','desenvolvedor','parceiro'] },
-  outro: { label: 'Outros', tipos: ['outro'] }
-};
-let contactFilter = 'todos';
 let contactEditingId = null;
-function setContactFilter(key){
-  contactFilter = key;
-  renderContacts();
-}
-function renderContactFilters(){
-  const el = document.getElementById('contactFilterRow');
-  if(!el) return;
-  el.innerHTML = Object.keys(CONTACT_FILTER_GROUPS).map(key=>{
-    const g = CONTACT_FILTER_GROUPS[key];
-    return `<button class="contact-filter-chip ${contactFilter===key?'active':''}" onclick="setContactFilter('${key}')">${g.label}</button>`;
-  }).join('');
-}
 function renderContacts(){
-  renderContactFilters();
   const el = document.getElementById('contactsList');
   if(!el) return;
-  const group = CONTACT_FILTER_GROUPS[contactFilter];
-  const list = (!group || !group.tipos) ? state.contacts : state.contacts.filter(c=>group.tipos.includes(c.tipo||'outro'));
+  const list = state.contacts;
   if(list.length===0){
-    el.innerHTML = state.contacts.length===0
-      ? '<div class="empty-block"><div class="empty-block-icon">📇</div><div class="empty-block-title">Nenhum contato cadastrado ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar contato" acima pra começar sua agenda operacional.</div></div>'
-      : '<div class="empty">nenhum contato nesse filtro.</div>';
+    el.innerHTML = '<div class="empty-block"><div class="empty-block-icon">📇</div><div class="empty-block-title">Nenhum contato cadastrado ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar contato" acima pra começar sua rede de contatos.</div></div>';
     return;
   }
   el.innerHTML = list.map(c=>{
@@ -3191,10 +3157,10 @@ function renderContacts(){
       <div class="tool-card" data-id="${c.id}">
         <div class="tool-edit-row">
           <input type="text" value="${escapeHtml(c.nome)}" placeholder="nome" onchange="updateContactField('${c.id}','nome',this.value)">
+          <input type="text" value="${escapeHtml(c.empresa||'')}" placeholder="empresa ou serviço relacionado" onchange="updateContactField('${c.id}','empresa',this.value)">
           <select onchange="updateContactField('${c.id}','tipo',this.value)">
             ${Object.keys(CONTACT_TYPES).map(k=>`<option value="${k}" ${c.tipo===k?'selected':''}>${CONTACT_TYPES[k]}</option>`).join('')}
           </select>
-          <input type="text" value="${escapeHtml(c.empresa||'')}" placeholder="empresa ou serviço relacionado" onchange="updateContactField('${c.id}','empresa',this.value)">
           <input type="text" value="${escapeHtml(c.whatsapp||'')}" placeholder="WhatsApp/telefone" onchange="updateContactField('${c.id}','whatsapp',this.value)">
           <input type="text" value="${escapeHtml(c.email||'')}" placeholder="e-mail" onchange="updateContactField('${c.id}','email',this.value)">
           <input type="text" value="${escapeHtml(c.link||'')}" placeholder="link de contato ou perfil" onchange="updateContactField('${c.id}','link',this.value)">
@@ -3214,16 +3180,18 @@ function renderContacts(){
         <div class="tool-name" style="flex:1;">${escapeHtml(c.nome||'sem nome')}</div>
         <button class="mining-edit-btn" onclick="toggleContactEdit('${c.id}')">✎ editar</button>
       </div>
-      <div class="tool-tags-row">
+      ${c.empresa ? `<div class="tool-field-value" style="margin-top:2px;">${escapeHtml(c.empresa)}</div>` : ''}
+      <div class="tool-tags-row" style="margin-top:7px;">
         <span class="tool-cat">${CONTACT_TYPES[c.tipo] || CONTACT_TYPES.outro}</span>
       </div>
-      ${c.empresa ? `<div class="tool-field-label">empresa / serviço</div><div class="tool-field-value">${escapeHtml(c.empresa)}</div>` : ''}
+      ${c.whatsapp ? `
+      <div class="contact-wa-row">
+        <span class="contact-wa-number">${escapeHtml(c.whatsapp)}</span>
+        ${waHref ? `<a class="funnel-icon-btn" href="${waHref}" target="_blank" rel="noopener" title="abrir WhatsApp">💬</a>` : ''}
+      </div>` : ''}
       ${c.observacoes ? `<div class="tool-field-label">observações</div><div class="tool-field-value">${escapeHtml(c.observacoes)}</div>` : ''}
-      ${(c.whatsapp || c.email || c.link) ? `
+      ${(c.email || c.link) ? `
       <div class="contact-actions-row">
-        ${c.whatsapp ? (waHref
-          ? `<a class="funnel-icon-btn" href="${waHref}" target="_blank" rel="noopener" title="abrir WhatsApp" style="color:#25D366;">💬</a>`
-          : `<span class="tool-field-value" style="margin:0;">${escapeHtml(c.whatsapp)}</span>`) : ''}
         ${c.email ? `<a class="funnel-icon-btn" href="mailto:${escapeHtml(c.email)}" title="enviar e-mail">✉️</a>` : ''}
         ${c.link ? `<a class="funnel-icon-btn" href="${escapeHtml(c.link)}" target="_blank" rel="noopener" title="abrir link">🔗</a>` : ''}
       </div>` : ''}
