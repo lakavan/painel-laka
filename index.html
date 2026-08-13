@@ -886,7 +886,9 @@
   /* funnel link card */
   .funnel-link-stage{display:flex;align-items:center;gap:10px;}
   .funnel-link-name{font-family:var(--display);font-weight:700;font-size:13.5px;}
+  .funnel-link-url-row{display:flex;align-items:center;gap:6px;margin-top:2px;}
   .funnel-link-url{font-size:11.5px;color:var(--blue);word-break:break-all;}
+  .funnel-link-url-row .funnel-icon-btn{width:22px;height:22px;flex-shrink:0;}
   
   .funnel-link-actions{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;}
   .funnel-icon-btn{
@@ -1425,12 +1427,17 @@
     </div>
 
     <div class="row-two" id="urgentPanel">
-      <div class="panel urgent-panel">
-        <div class="panel-head"><h2><span class="urgent-panel-icon" aria-hidden="true">⚠</span>Urgências</h2></div>
+      <div class="panel urgent-panel" id="urgentTaskPanel">
+        <div class="panel-head">
+          <h2><span class="urgent-panel-icon" aria-hidden="true">⚠</span>Urgências</h2>
+          <button class="add-tool-btn" id="newUrgentToggleBtn" onclick="toggleNewUrgentForm(true)">+ Adicionar</button>
+        </div>
         <div id="urgentList"></div>
-        <div class="add-row">
-          <input type="text" id="urgentInput" placeholder="nova tarefa urgente...">
-          <button class="add-tool-btn" onclick="addTask('urgente')">+ Adicionar</button>
+        <div class="add-form" id="newUrgentRow">
+          <div class="add-row">
+            <input type="text" id="urgentInput" placeholder="nova tarefa urgente...">
+            <button class="add" onclick="addTask('urgente')">+ adicionar</button>
+          </div>
         </div>
       </div>
       <div class="panel" id="offersPanel">
@@ -2971,12 +2978,20 @@ function removeTask(id){
     showToast('Tarefa excluída.');
   });
 }
+function toggleNewUrgentForm(show){
+  document.getElementById('newUrgentRow').classList.toggle('open', show);
+  document.getElementById('newUrgentToggleBtn').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('urgentTaskPanel').classList.toggle('panel-editing', show);
+  if(show){ document.getElementById('urgentInput').focus(); }
+  else{ document.getElementById('urgentInput').value = ''; }
+}
 function addTask(priority){
   const inputId = priority==='urgente' ? 'urgentInput' : 'structuralInput';
   const input = document.getElementById(inputId);
   if(!input.value.trim()) return;
   state.tasks.push({id:uid(), text:input.value.trim(), status:'pending', priority, tag:'none'});
   input.value=''; saveState(); render();
+  if(priority==='urgente') toggleNewUrgentForm(false);
 }
 
 /* --- avisos (tela inicial) --- */
@@ -3770,12 +3785,14 @@ function funnelLinksHtml(links){
         <span class="drag-handle">⠿</span>
         <div style="flex:1;min-width:0;">
           <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
-          <div class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</div>
+          <div class="funnel-link-url-row">
+            <span class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</span>
+            ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
+          </div>
         </div>
         <div class="funnel-link-actions">
           ${l.url ? `<button class="funnel-icon-btn" onclick="copyFunnelLink('${l.id}', event)" title="copiar link">📋</button>` : ''}
           <button class="funnel-icon-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)" title="editar">✏️</button>
-          ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
           <button class="funnel-icon-btn" onclick="removeFunnelLink('${l.id}')" title="excluir">🗑️</button>
         </div>
       </div>`;
