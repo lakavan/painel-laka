@@ -523,10 +523,8 @@
   .empty{color:var(--muted2);font-size:12.5px;font-style:italic;padding:6px 0;}
 
   /* ---------- LOG ---------- */
-  .log-entry{position:relative;border-left:2px solid var(--border);padding:8px 62px 8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;transition:background .15s;}
+  .log-entry{position:relative;border-left:2px solid var(--blue);padding:8px 62px 8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;transition:background .15s;}
   .log-entry:hover{background:var(--surface2);}
-  .log-entry.win{border-left-color:var(--ok);}
-  .log-entry.problem{border-left-color:var(--urgent);}
   .log-meta{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:3px;}
   .log-edited-tag{color:var(--blue);}
   .log-text{font-size:13px;line-height:1.5;}
@@ -843,6 +841,9 @@
   .planner-day h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin:0 0 8px 0;}
   .planner-day.today h4{color:var(--blue);}
   .planner-item{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;font-size:12.5px;}
+  .planner-items{min-height:22px;}
+  .planner-item .planner-drag-handle{font-size:10px;padding:0 2px;margin-top:2px;}
+  .planner-empty-hint{pointer-events:none;}
   .planner-item.done{opacity:0.4;text-decoration:line-through;}
   .planner-item .p-status{width:9px;height:9px;border-radius:50%;background:var(--warn);margin-top:3px;flex-shrink:0;cursor:pointer;}
   .planner-item.done .p-status{background:var(--ok);}
@@ -1430,7 +1431,7 @@
       <div class="panel urgent-panel" id="urgentTaskPanel">
         <div class="panel-head">
           <h2><span class="urgent-panel-icon" aria-hidden="true">⚠</span>Urgências</h2>
-          <button class="add-tool-btn" id="newUrgentToggleBtn" onclick="toggleNewUrgentForm(true)">+ Adicionar</button>
+          <button class="add-tool-btn" id="newUrgentToggleBtn" onclick="toggleNewUrgentForm(true)">+ Adicionar urgência</button>
         </div>
         <div id="urgentList"></div>
         <div class="add-form" id="newUrgentRow">
@@ -1485,12 +1486,8 @@
       <div id="logList"></div>
       <div class="add-form" id="newLogRow">
         <div class="add-row" style="flex-direction:column;">
-          <textarea id="logInput" placeholder="o que funcionou ou o que travou hoje..."></textarea>
+          <textarea id="logInput" placeholder="o que aconteceu hoje..."></textarea>
           <div class="add-row" style="margin-top:0;">
-            <select id="logType" style="flex:1;">
-              <option value="win">funcionou</option>
-              <option value="problem">travou / problema</option>
-            </select>
             <button class="add" style="flex:1;" onclick="addLog()">+ registrar</button>
             <button class="add-cost-cancel-btn" onclick="toggleNewLogForm(false)">cancelar</button>
           </div>
@@ -3428,13 +3425,14 @@ function renderPlanner(){
     const items = state.planner.days[d.key] || [];
     return `<div class="planner-day ${d.key===tKey?'today':''}">
       <h4>${d.label}${d.key===tKey?' · hoje':''}</h4>
-      <div>${items.length===0?'<div class="empty" style="padding:0;">vazio</div>':items.map(it=>`
-        <div class="planner-item ${it.done?'done':''}">
+      <div class="planner-items" id="plannerItems-${d.key}" data-day="${d.key}">${items.length===0?'':items.map(it=>`
+        <div class="planner-item ${it.done?'done':''}" data-id="${it.id}">
+          <span class="drag-handle planner-drag-handle">⠿</span>
           <div class="check-box ${it.done?'checked':''}" onclick="togglePlannerItem('${d.key}','${it.id}')" title="marcar como feito"></div>
           <span class="p-text">${escapeHtml(it.text)}</span>
           <button class="del-btn" onclick="removePlannerItem('${d.key}','${it.id}')">✕</button>
         </div>
-      `).join('')}</div>
+      `).join('')}${items.length===0?'<div class="empty planner-empty-hint" style="padding:0;">vazio</div>':''}</div>
       <div class="planner-add">
         <input type="text" id="plannerInput-${d.key}" placeholder="+ tarefa">
         <button onclick="addPlannerItem('${d.key}')">+</button>
@@ -5065,8 +5063,8 @@ function renderLogs(){
   el.innerHTML = state.logs.slice(0,25).map(l=>{
     if(logEditingId===l.id){
       return `
-      <div class="log-entry ${l.type} log-editing">
-        <div class="log-meta">${l.date} · ${l.type==='win'?'funcionou':'travou'}</div>
+      <div class="log-entry log-editing">
+        <div class="log-meta">${l.date}</div>
         <textarea class="log-edit-textarea" id="logEdit-${l.id}">${escapeHtml(l.text)}</textarea>
         <div class="mining-actions">
           <button class="mining-edit-btn" onclick="toggleLogEdit('${l.id}')">cancelar</button>
@@ -5075,8 +5073,8 @@ function renderLogs(){
       </div>`;
     }
     return `
-    <div class="log-entry ${l.type}">
-      <div class="log-meta">${l.date} · ${l.type==='win'?'funcionou':'travou'}${l.edited ? ' · <span class="log-edited-tag">editado</span>' : ''}</div>
+    <div class="log-entry">
+      <div class="log-meta">${l.date}${l.edited ? ' · <span class="log-edited-tag">editado</span>' : ''}</div>
       <div class="log-text">${escapeHtml(l.text)}</div>
       <div class="log-actions">
         <button class="mining-edit-btn log-edit-btn" onclick="toggleLogEdit('${l.id}')">✎ editar</button>
@@ -5099,13 +5097,12 @@ function toggleNewLogForm(show){
   document.getElementById('newLogToggleBtn').style.display = show ? 'none' : 'inline-flex';
   document.getElementById('logPanel').classList.toggle('panel-editing', show);
   if(show){ document.getElementById('logInput').focus(); }
-  else{ document.getElementById('logInput').value=''; document.getElementById('logType').value='win'; }
+  else{ document.getElementById('logInput').value=''; }
 }
 function addLog(){
   const input = document.getElementById('logInput');
-  const type = document.getElementById('logType').value;
   if(!input.value.trim()) return;
-  state.logs.unshift({id:uid(), text:input.value.trim(), type, date:new Date().toLocaleDateString('pt-BR')});
+  state.logs.unshift({id:uid(), text:input.value.trim(), date:new Date().toLocaleDateString('pt-BR')});
   input.value=''; saveState(); render();
   toggleNewLogForm(false);
 }
@@ -6284,6 +6281,185 @@ function attachSortableGrid(containerId, onReordered){
   });
 }
 
+// Igual ao attachSortableGrid, mas pensado pra 7 colunas (dias da semana) em vez de uma
+// grade só — permite soltar o item em QUALQUER dia, não só reordenar dentro do mesmo.
+function attachPlannerDrag(wrapperId, dayKeys, onDropped){
+  const wrapper = document.getElementById(wrapperId);
+  if(!wrapper) return;
+  if(wrapper.dataset.sortableBound === '1') return;
+  wrapper.dataset.sortableBound = '1';
+  wrapper.addEventListener('pointerdown', (e)=>{
+    const handle = e.target.closest('.planner-drag-handle');
+    if(!handle) return;
+    const dragging = handle.closest('[data-id]');
+    if(!dragging) return;
+    const sourceContainer = dragging.parentElement;
+    if(!sourceContainer || !sourceContainer.classList.contains('planner-items')) return;
+    e.preventDefault();
+
+    if(activeDragCleanup) activeDragCleanup();
+
+    const pointerId = e.pointerId;
+    const startRect = dragging.getBoundingClientRect();
+    const startX = e.clientX, startY = e.clientY;
+    const offsetX = startX - startRect.left, offsetY = startY - startRect.top;
+    let ended = false;
+    let moved = false;
+
+    const getContainers = ()=> dayKeys.map(k=>document.getElementById('plannerItems-'+k)).filter(Boolean);
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'drag-placeholder';
+    placeholder.style.width = startRect.width + 'px';
+    placeholder.style.height = startRect.height + 'px';
+    sourceContainer.insertBefore(placeholder, dragging);
+
+    dragging.classList.add('dragging-floating');
+    dragging.style.position = 'fixed';
+    dragging.style.width = startRect.width + 'px';
+    dragging.style.height = startRect.height + 'px';
+    dragging.style.left = startRect.left + 'px';
+    dragging.style.top = startRect.top + 'px';
+    dragging.style.margin = '0';
+    document.body.appendChild(dragging);
+
+    try{ handle.setPointerCapture(pointerId); }catch(err){}
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'grabbing';
+
+    let autoScrollRaf = null;
+    let pointerClientY = e.clientY;
+    const AUTOSCROLL_EDGE = 90, AUTOSCROLL_MAX = 18;
+    const autoScrollTick = ()=>{
+      const vh = window.innerHeight;
+      let dy = 0;
+      if(pointerClientY < AUTOSCROLL_EDGE) dy = -AUTOSCROLL_MAX * (1 - pointerClientY/AUTOSCROLL_EDGE);
+      else if(pointerClientY > vh - AUTOSCROLL_EDGE) dy = AUTOSCROLL_MAX * (1 - (vh - pointerClientY)/AUTOSCROLL_EDGE);
+      if(dy) window.scrollBy(0, dy);
+      autoScrollRaf = requestAnimationFrame(autoScrollTick);
+    };
+    autoScrollRaf = requestAnimationFrame(autoScrollTick);
+
+    const movePlaceholderIfNeeded = (cx, cy)=>{
+      const containers = getContainers();
+      // 1) acha a coluna (dia) mais próxima do cursor — por distância até a borda do contêiner
+      let bestContainer = null, bestContainerDist = Infinity;
+      containers.forEach(c=>{
+        const r = c.getBoundingClientRect();
+        const dx = Math.max(r.left - cx, 0, cx - r.right);
+        const dy = Math.max(r.top - cy, 0, cy - r.bottom);
+        const d = Math.hypot(dx, dy);
+        if(d < bestContainerDist){ bestContainerDist = d; bestContainer = c; }
+      });
+      if(!bestContainer) return;
+
+      // 2) dentro dessa coluna, acha o item mais próximo (colunas são de item único, só eixo Y importa)
+      const siblings = [...bestContainer.querySelectorAll(':scope > [data-id]')];
+      let ref = null;
+      if(siblings.length === 0){
+        ref = null; // container vazio — placeholder vai direto pro final (único lugar possível)
+      } else {
+        let target = null, targetRect = null, bestDist = Infinity;
+        siblings.forEach(el=>{
+          const r = el.getBoundingClientRect();
+          const ccy = r.top + r.height/2;
+          const d = Math.abs(cy-ccy);
+          if(d < bestDist){ bestDist = d; target = el; targetRect = r; }
+        });
+        const insertBefore = cy < targetRect.top + targetRect.height/2;
+        ref = insertBefore ? target : target.nextSibling;
+      }
+      if(ref === placeholder || (ref===null && bestContainer.lastElementChild===placeholder)) return;
+
+      const before = new Map();
+      containers.forEach(c=>{
+        [...c.children].forEach(el=>{ if(el!==placeholder) before.set(el, el.getBoundingClientRect()); });
+      });
+
+      if(ref) bestContainer.insertBefore(placeholder, ref);
+      else bestContainer.appendChild(placeholder);
+
+      before.forEach((prevRect, el)=>{
+        const now = el.getBoundingClientRect();
+        const dx = prevRect.left - now.left, dy = prevRect.top - now.top;
+        if(Math.abs(dx)>0.5 || Math.abs(dy)>0.5){
+          el.style.transition = 'none';
+          el.style.transform = `translate(${dx}px,${dy}px)`;
+          requestAnimationFrame(()=>{
+            el.style.transition = 'transform .2s cubic-bezier(.22,.85,.32,1)';
+            el.style.transform = '';
+          });
+        }
+      });
+    };
+
+    let rafPending = false;
+    let lastX = e.clientX, lastY = e.clientY;
+    const applyMove = ()=>{
+      rafPending = false;
+      dragging.style.left = (lastX - offsetX) + 'px';
+      dragging.style.top = (lastY - offsetY) + 'px';
+      movePlaceholderIfNeeded(lastX, lastY);
+    };
+    const onMove = (ev)=>{
+      if(ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
+      lastX = ev.clientX; lastY = ev.clientY;
+      pointerClientY = ev.clientY;
+      if(Math.abs(ev.clientX-startX)>2 || Math.abs(ev.clientY-startY)>2) moved = true;
+      if(!rafPending){ rafPending = true; requestAnimationFrame(applyMove); }
+    };
+    const finish = ()=>{
+      if(autoScrollRaf) cancelAnimationFrame(autoScrollRaf);
+      dragging.classList.remove('dragging-floating');
+      dragging.style.position = '';
+      dragging.style.left = ''; dragging.style.top = '';
+      dragging.style.width = ''; dragging.style.height = ''; dragging.style.margin = '';
+      const finalContainer = placeholder.parentElement || sourceContainer;
+      finalContainer.insertBefore(dragging, placeholder);
+      placeholder.remove();
+      if(moved) onDropped();
+    };
+    const onEnd = (ev)=>{
+      if(ended) return;
+      if(ev && ev.pointerId !== undefined && ev.pointerId !== pointerId) return;
+      ended = true;
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('pointercancel', onEnd);
+      window.removeEventListener('blur', onEnd);
+      document.removeEventListener('visibilitychange', onVisChange);
+      try{ handle.releasePointerCapture(pointerId); }catch(err){}
+      if(activeDragCleanup === onEnd) activeDragCleanup = null;
+      finish();
+    };
+    const onVisChange = ()=>{ if(document.visibilityState === 'hidden') onEnd(); };
+
+    window.addEventListener('pointermove', onMove, { passive:true });
+    window.addEventListener('pointerup', onEnd);
+    window.addEventListener('pointercancel', onEnd);
+    window.addEventListener('blur', onEnd);
+    document.addEventListener('visibilitychange', onVisChange);
+
+    activeDragCleanup = onEnd;
+  });
+}
+function reorderPlannerFromDOM(){
+  const dayKeys = ['seg','ter','qua','qui','sex','sab','dom'];
+  const allItems = {};
+  dayKeys.forEach(k=> (state.planner.days[k]||[]).forEach(it=> allItems[it.id]=it));
+  const newDays = {};
+  dayKeys.forEach(k=>{
+    const el = document.getElementById('plannerItems-'+k);
+    const ids = el ? [...el.querySelectorAll(':scope > [data-id]')].map(e=>e.dataset.id) : [];
+    newDays[k] = ids.map(id=>allItems[id]).filter(Boolean);
+  });
+  state.planner.days = newDays;
+  saveState();
+  renderPlanner();
+}
+
 
 function attachTabSortable(){
   const nav = document.getElementById('tabNav');
@@ -6450,6 +6626,7 @@ function setupDragHandlers(){
   attachSortable('assetsList', ids=>reorderArray('assets', ids));
   attachSortableGrid('contactsList', ids=>reorderArray('contacts', ids));
   attachSortableGrid('avisosList', ids=>reorderArray('avisos', ids));
+  attachPlannerDrag('plannerDays', ['seg','ter','qua','qui','sex','sab','dom'], reorderPlannerFromDOM);
   attachSortable('recoveryStepsList', ids=>{ reorderProductSteps('recovery', ids); renderProducts(); });
   attachSortable('deliveryStepsList', ids=>{ reorderProductSteps('delivery', ids); renderProducts(); });
   attachSortable('objectionsStepsList', ids=>{ reorderProductSteps('objections', ids); renderProducts(); });
