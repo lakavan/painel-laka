@@ -296,6 +296,21 @@
 
   /* ---------- ITEMS ---------- */
   .item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
+  /* Tarefas (Urgências): lista mais enxuta — sem "cartão dentro do cartão", divisória fina
+     em vez de caixa própria por item, e a etiqueta de tag só aparece de fato quando tem algo
+     marcado (senão fica escondida até passar o mouse, em vez de ocupar uma linha inteira). */
+  #urgentList .item{
+    background:none;border:none;border-bottom:1px solid var(--border);border-radius:0;
+    padding:9px 2px;margin-bottom:0;align-items:center;
+  }
+  #urgentList .item:last-child{border-bottom:none;}
+  #urgentList .item-body{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  #urgentList .item-text{font-size:13px;}
+  #urgentList .task-tag{margin-top:0;}
+  #urgentList .task-tag.none{opacity:0;transition:opacity .15s;}
+  #urgentList .item:hover .task-tag.none{opacity:1;}
+  #urgentList .del-btn{opacity:0.55;transition:opacity .15s;}
+  #urgentList .item:hover .del-btn{opacity:1;}
   .aviso-ico{flex-shrink:0;font-size:14px;line-height:1.5;}
   .aviso-icon-btn{
     background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer;
