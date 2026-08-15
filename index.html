@@ -832,6 +832,86 @@
     border:1px solid rgba(59,130,246,0.35);border-radius:6px;padding:3px 8px;white-space:nowrap;
   }
   .asset-name{flex:1;font-size:13.5px;}
+
+  /* ---------- MEUS ATIVOS — visão geral ---------- */
+  .asset-stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px;}
+  .asset-stat-tile{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;}
+  .asset-stat-ico{font-size:17px;flex-shrink:0;line-height:1;margin-top:1px;}
+  .asset-stat-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
+  .asset-stat-num{font-family:var(--display);font-weight:800;font-size:21px;color:var(--text);line-height:1.15;}
+  .asset-stat-sub{font-size:10.5px;color:var(--muted2);margin-top:1px;}
+
+  .infra-map{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+  .infra-map-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:8px;}
+  .infra-map-head h3{font-family:var(--display);font-weight:800;font-size:15px;margin:0;}
+  .infra-map-actions{display:flex;gap:8px;flex-shrink:0;}
+  .infra-map-btn{background:var(--surface3);border:1px solid var(--border-strong);color:var(--muted);border-radius:8px;padding:7px 12px;font-size:11.5px;cursor:pointer;white-space:nowrap;transition:border-color .15s, color .15s;}
+  .infra-map-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+
+  .infra-perfil-node{display:flex;justify-content:center;position:relative;padding:22px 0 24px;}
+  .infra-perfil-node::after{content:'';position:absolute;bottom:0;left:50%;width:2px;height:24px;background:var(--border-strong);}
+  .infra-perfil-card{background:var(--surface3);border:1px solid var(--border-strong);border-radius:12px;padding:11px 18px;display:flex;align-items:center;gap:10px;}
+  .infra-perfil-card.editing{display:block;width:min(420px,90vw);}
+  .infra-perfil-ico{font-size:18px;}
+  .infra-perfil-name{font-family:var(--display);font-weight:700;font-size:14px;}
+  .infra-perfil-sub{font-size:11px;color:var(--muted);}
+
+  .infra-bm-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding-top:24px;border-top:2px solid var(--border-strong);}
+  .infra-bm-card{position:relative;background:var(--surface3);border:1px solid var(--border-strong);border-radius:12px;overflow:hidden;}
+  .infra-bm-card::before{content:'';position:absolute;top:-24px;left:50%;width:2px;height:24px;background:var(--border-strong);}
+  .infra-bm-card-head{padding:13px 14px 12px;cursor:pointer;}
+  .infra-bm-card-head:has(.asset-edit-form){cursor:default;}
+  .infra-bm-title-row{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+  .infra-bm-lock{font-size:13px;flex-shrink:0;}
+  .infra-bm-name{font-family:var(--display);font-weight:800;font-size:14px;flex:1;}
+  .asset-status-badge{
+    display:inline-block;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:0.4px;
+    text-transform:uppercase;padding:3px 9px;border-radius:20px;border:1px solid;background:transparent;
+  }
+  .infra-bm-count{font-size:11px;color:var(--muted);margin-top:7px;}
+  .infra-bm-accounts{border-top:1px solid var(--border);padding:11px 14px 13px;display:grid;grid-template-rows:1fr;gap:7px;transition:grid-template-rows .2s ease;}
+  .infra-bm-accounts.collapsed{display:none;}
+  .infra-bm-accounts-label{font-family:var(--mono);font-size:9.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
+  .infra-account-empty{font-size:11.5px;color:var(--muted2);font-style:italic;}
+  .infra-account-row{display:flex;align-items:flex-start;gap:8px;padding:6px 7px;border-radius:7px;cursor:pointer;transition:background .15s;}
+  .infra-account-row:hover{background:var(--surface2);}
+  .infra-account-row.editing{cursor:default;background:none;}
+  .infra-account-row.editing:hover{background:none;}
+  .infra-account-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+  .infra-account-body{flex:1;min-width:0;}
+  .infra-account-name{font-size:12.5px;font-weight:600;}
+  .infra-account-status{font-family:var(--mono);font-size:10px;margin-top:1px;}
+  .infra-account-note{font-size:11px;color:var(--muted);margin-top:2px;}
+
+  .pages-linked-section{margin-bottom:20px;}
+  .pages-linked-section h3{font-family:var(--display);font-weight:800;font-size:15px;margin:0 0 2px;}
+  .pages-linked-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:12px;}
+  .page-linked-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 14px;}
+  .page-linked-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .page-linked-ico{font-size:15px;flex-shrink:0;}
+  .page-linked-name{font-family:var(--display);font-weight:700;font-size:13.5px;flex:1;min-width:0;}
+  .page-linked-rel{font-size:11.5px;color:var(--muted);margin-top:3px;}
+  .page-linked-rel.muted{opacity:0.6;font-style:italic;}
+  .asset-bm-tag{color:var(--blue-bright);font-weight:600;}
+  .page-linked-status{font-family:var(--mono);font-size:10px;font-weight:700;margin-top:6px;}
+
+  .asset-legend-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;}
+  .asset-legend-row.closed .asset-legend-items{display:none;}
+  .asset-legend-items{display:flex;flex-wrap:wrap;gap:22px;}
+  .legend-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--muted);max-width:170px;}
+  .legend-item b{color:var(--text);font-size:11.5px;}
+  .legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+  .asset-legend-total{text-align:right;flex-shrink:0;}
+  .asset-legend-total-num{font-family:var(--display);font-weight:800;font-size:24px;color:var(--blue-bright);}
+  .asset-edit-form{width:100%;}
+
+  @media (max-width:640px){
+    .infra-bm-row{grid-template-columns:1fr;}
+    .infra-perfil-node::after, .infra-bm-card::before{display:none;}
+    .infra-bm-row{border-top:none;padding-top:0;}
+    .asset-legend-row{flex-direction:column;align-items:stretch;}
+    .asset-legend-total{text-align:left;}
+  }
   .add-tool-btn{
     background:linear-gradient(135deg,var(--blue),var(--green));border:none;color:#04140a;
     font-family:var(--display);font-weight:700;font-size:12.5px;border-radius:20px;
@@ -1519,7 +1599,7 @@
 
     <div class="panel full" id="assetsPanel">
       <div class="panel-head">
-        <h2>Meus ativos</h2>
+        <h2><span class="sub">gerencie e monitore todos os ativos da operação</span>Meus ativos</h2>
         <button class="add-tool-btn" id="newAssetToggleBtn" onclick="toggleNewAssetForm(true)">+ Adicionar Ativo</button>
       </div>
       <div id="assetsList"></div>
@@ -1529,9 +1609,11 @@
           <select id="assetTipo">
             <option value="Perfil Facebook">Perfil Facebook</option>
             <option value="BM">BM</option>
-            <option value="Página">Página</option>
             <option value="Conta de anúncio">Conta de anúncio</option>
+            <option value="Página">Página</option>
             <option value="Domínio">Domínio</option>
+            <option value="Pixel/Dataset">Pixel/Dataset</option>
+            <option value="Pagamento">Pagamento</option>
             <option value="Outro">Outro</option>
           </select>
           <input type="text" id="assetNome" placeholder="nome/identificador">
@@ -3318,39 +3400,279 @@ function removeContact(id){
     showToast('Contato excluído.');
   });
 }
-function renderAssets(){
-
-  const el = document.getElementById('assetsList');
-  if(state.assets.length===0){ el.innerHTML='<div class="empty">nenhum ativo cadastrado.</div>'; return; }
-  const ASSET_TYPES = ['Perfil Facebook','BM','Página','Conta de anúncio','Domínio','Outro'];
-  el.innerHTML = state.assets.map(a=>{
-    if(assetEditingId === a.id){
-      return `
-      <div class="asset-row editing" data-id="${a.id}" style="flex-direction:column;align-items:stretch;">
-        <div class="tool-edit-row">
-          <select onchange="updateAssetField('${a.id}','tipo',this.value)">
-            ${ASSET_TYPES.map(t=>`<option value="${t}" ${a.tipo===t?'selected':''}>${t}</option>`).join('')}
-          </select>
-          <input type="text" value="${escapeHtml(a.nome)}" placeholder="nome/identificador" onchange="updateAssetField('${a.id}','nome',this.value)">
-          <input type="text" value="${escapeHtml(a.nota||'')}" placeholder="nota (opcional)" onchange="updateAssetField('${a.id}','nota',this.value)">
-          <div class="mining-actions">
-            <button class="del-btn" onclick="removeAsset('${a.id}')">✕ excluir</button>
-            <button class="mining-save-btn" onclick="toggleAssetEdit('${a.id}')"><span class="ico">✓</span> Concluir edição</button>
-          </div>
-        </div>
-      </div>`;
-    }
-    return `
-    <div class="asset-row" data-id="${a.id}">
-      <span class="drag-handle">⠿</span>
-      <span class="asset-tipo">${escapeHtml(a.tipo)}</span>
-      <div class="asset-name">${escapeHtml(a.nome)} ${a.nota?`<span style="color:var(--muted2);font-size:11.5px;">· ${escapeHtml(a.nota)}</span>`:''}</div>
-      <button class="mining-edit-btn" onclick="toggleAssetEdit('${a.id}')">✎ editar</button>
-      <button class="del-btn" onclick="removeAsset('${a.id}')">✕</button>
-    </div>`;
-  }).join('');
+const ASSET_TYPES = ['Perfil Facebook','BM','Conta de anúncio','Página','Domínio','Pixel/Dataset','Pagamento','Outro'];
+const ASSET_TYPE_META = [
+  {tipo:'Perfil Facebook', label:'Perfis', icon:'👤'},
+  {tipo:'BM', label:'Business Managers', icon:'👥'},
+  {tipo:'Conta de anúncio', label:'Contas de anúncio', icon:'💻'},
+  {tipo:'Página', label:'Páginas', icon:'📄'},
+  {tipo:'Domínio', label:'Domínios', icon:'🌐'},
+  {tipo:'Pixel/Dataset', label:'Pixels / Datasets', icon:'📡'},
+  {tipo:'Pagamento', label:'Pagamentos', icon:'💳'},
+  {tipo:'Outro', label:'Outros', icon:'•••'}
+];
+const ASSET_STATUS_COLORS = {
+  operacional:'var(--ok)', atencao:'var(--warn)', problema:'var(--urgent)',
+  em_analise:'var(--blue-bright)', nao_verificado:'var(--muted2)'
+};
+function assetStatusLabel(tipo, status){
+  if(!status) return '';
+  if(status==='problema') return tipo==='BM' ? 'Bloqueado' : 'Desabilitada';
+  if(status==='operacional') return 'Operacional';
+  if(status==='atencao') return 'Atenção';
+  if(status==='em_analise') return 'Em análise';
+  if(status==='nao_verificado') return 'Não verificado';
+  return status;
 }
+function assetStatusFromText(text){
+  if(!text) return null;
+  const t = text.toLowerCase();
+  if(/não verificad|nao verificad/.test(t)) return 'nao_verificado';
+  if(/em an[aá]lise/.test(t)) return 'em_analise';
+  if(/bloquead|\bblock\b/.test(t)) return 'problema';
+  if(/desabilitad/.test(t)) return 'problema';
+  if(/aten[cç][aã]o|verificar|pendente/.test(t)) return 'atencao';
+  if(/verificad/.test(t)) return 'operacional';
+  return null;
+}
+function extractBmNumber(text){
+  if(!text) return null;
+  const m = text.match(/bm\s*0*(\d+)/i);
+  return m ? m[1].padStart(2,'0') : null;
+}
+// Migração automática (roda uma vez só): os ativos antigos eram uma lista solta em texto
+// livre, sem ligação real entre BM/conta/página. Aqui a gente lê o texto (nome + nota) pra
+// deduzir status e a qual BM cada conta/página pertence, usando também a ORDEM em que os
+// itens já apareciam na lista (contas sempre vinham logo depois da BM delas).
+function migrateAssetsToRelational(){
+  if(state.assetsMigratedV2) return;
+  const bmByNumber = {};
+  state.assets.forEach(a=>{
+    if(a.tipo==='BM'){
+      const num = (a.nome.match(/\d+/)||[])[0];
+      if(num) bmByNumber[num.padStart(2,'0')] = a.id;
+    }
+  });
+  let currentBmId = null;
+  state.assets.forEach(a=>{
+    if(a.tipo==='BM'){
+      currentBmId = a.id;
+      if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
+    } else if(a.tipo==='Conta de anúncio'){
+      if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
+      if(a.parentId===undefined){
+        const explicitBm = extractBmNumber(a.nome);
+        a.parentId = (explicitBm && bmByNumber[explicitBm]) ? bmByNumber[explicitBm] : currentBmId;
+      }
+    } else if(a.tipo==='Página'){
+      if(a.parentId===undefined){
+        const belongsBm = extractBmNumber(a.nota);
+        a.parentId = (belongsBm && bmByNumber[belongsBm]) ? bmByNumber[belongsBm] : currentBmId;
+      }
+      if(a.lentToId===undefined){
+        a.lentToId = null;
+        if(a.nota && /emprestad/i.test(a.nota)){
+          const matches = [...a.nota.matchAll(/bm\s*0*(\d+)/ig)].map(m=>m[1].padStart(2,'0'));
+          const lentNum = matches.find(n => bmByNumber[n] && bmByNumber[n] !== a.parentId);
+          if(lentNum) a.lentToId = bmByNumber[lentNum];
+        }
+      }
+      if(a.status===undefined) a.status = assetStatusFromText(a.nota);
+    }
+  });
+  state.assetsMigratedV2 = true;
+  saveState();
+}
+
 let assetEditingId = null;
+let assetLegendOpen = true;
+let assetsAllExpanded = true;
+let bmCollapsed = {};
+
+function renderAssets(){
+  migrateAssetsToRelational();
+  const el = document.getElementById('assetsList');
+  if(!el) return;
+  if(state.assets.length===0){
+    el.innerHTML = '<div class="empty-block"><div class="empty-block-icon">🗂️</div><div class="empty-block-title">Nenhum ativo cadastrado ainda</div><div class="empty-block-sub">Use o botão "+ Adicionar Ativo" acima pra começar a mapear perfis, BMs, contas e páginas.</div></div>';
+    return;
+  }
+  el.innerHTML = renderAssetStats() + renderInfraMap() + renderPagesLinked() + renderAssetLegend();
+}
+
+function renderAssetStats(){
+  return `<div class="asset-stats-row">${ASSET_TYPE_META.map(t=>{
+    const n = state.assets.filter(a=>a.tipo===t.tipo).length;
+    return `
+    <div class="asset-stat-tile">
+      <div class="asset-stat-ico">${t.icon}</div>
+      <div class="asset-stat-info">
+        <div class="asset-stat-label">${t.label}</div>
+        <div class="asset-stat-num">${n}</div>
+        <div class="asset-stat-sub">${n} ativo${n!==1?'s':''}</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderInfraMap(){
+  const perfis = state.assets.filter(a=>a.tipo==='Perfil Facebook');
+  const bms = state.assets.filter(a=>a.tipo==='BM');
+  const perfil = perfis[0];
+  return `
+  <div class="infra-map">
+    <div class="infra-map-head">
+      <div>
+        <h3>Mapa da infraestrutura</h3>
+        <div class="sub-text">Visão geral da estrutura dos seus ativos</div>
+      </div>
+      <div class="infra-map-actions">
+        <button class="infra-map-btn" onclick="toggleAllBmCards()">⤢ ${assetsAllExpanded ? 'Recolher tudo' : 'Expandir tudo'}</button>
+        <button class="infra-map-btn" onclick="toggleAssetLegend()">👁 Legenda</button>
+      </div>
+    </div>
+    ${perfil ? `
+    <div class="infra-perfil-node">
+      ${assetEditingId===perfil.id ? `<div class="infra-perfil-card editing">${renderAssetEditForm(perfil)}</div>` : `
+      <div class="infra-perfil-card">
+        <span class="infra-perfil-ico">👤</span>
+        <div>
+          <div class="infra-perfil-name">${escapeHtml(perfil.nome)}</div>
+          <div class="infra-perfil-sub">${perfis.length} perfil${perfis.length!==1?'is':''}</div>
+        </div>
+        <button class="mining-edit-btn" onclick="toggleAssetEdit('${perfil.id}')">✎</button>
+      </div>`}
+    </div>` : ''}
+    <div class="infra-bm-row">
+      ${bms.length===0 ? '<div class="empty">nenhuma BM cadastrada ainda.</div>' : bms.map(bm=>renderBmCard(bm)).join('')}
+    </div>
+  </div>`;
+}
+
+function renderBmCard(bm){
+  if(assetEditingId === bm.id){
+    return `<div class="infra-bm-card"><div class="infra-bm-card-head">${renderAssetEditForm(bm)}</div></div>`;
+  }
+  const accounts = state.assets.filter(a=>a.tipo==='Conta de anúncio' && a.parentId===bm.id);
+  const statusKey = bm.status || 'nao_verificado';
+  const collapsed = bmCollapsed[bm.id];
+  const label = /^\d+$/.test(bm.nome.trim()) ? 'BM '+bm.nome.trim() : bm.nome;
+  return `
+  <div class="infra-bm-card">
+    <div class="infra-bm-card-head" onclick="toggleBmCard('${bm.id}')">
+      <div class="infra-bm-title-row">
+        <span class="infra-bm-lock" style="color:${ASSET_STATUS_COLORS[statusKey]};">${statusKey==='problema'?'🔒':'🔓'}</span>
+        <span class="infra-bm-name">${escapeHtml(label)}</span>
+        <button class="mining-edit-btn" onclick="event.stopPropagation(); toggleAssetEdit('${bm.id}')">✎</button>
+      </div>
+      <span class="asset-status-badge" style="color:${ASSET_STATUS_COLORS[statusKey]};border-color:${ASSET_STATUS_COLORS[statusKey]};">${assetStatusLabel('BM',statusKey)}</span>
+      <div class="infra-bm-count">${accounts.length} conta${accounts.length!==1?'s':''}</div>
+    </div>
+    <div class="infra-bm-accounts ${collapsed?'collapsed':''}">
+      <div class="infra-bm-accounts-label">Contas de anúncio</div>
+      ${accounts.length===0 ? `<div class="infra-account-empty">Nenhuma conta</div>` : accounts.map(acc=>renderAccountRow(acc)).join('')}
+    </div>
+  </div>`;
+}
+
+function renderAccountRow(acc){
+  if(assetEditingId === acc.id){
+    return `<div class="infra-account-row editing" onclick="event.stopPropagation()">${renderAssetEditForm(acc)}</div>`;
+  }
+  const statusKey = acc.status || 'nao_verificado';
+  return `
+  <div class="infra-account-row" onclick="toggleAssetEdit('${acc.id}')">
+    <span class="infra-account-dot" style="background:${ASSET_STATUS_COLORS[statusKey]};"></span>
+    <div class="infra-account-body">
+      <div class="infra-account-name">${escapeHtml(acc.nome)}</div>
+      <div class="infra-account-status" style="color:${ASSET_STATUS_COLORS[statusKey]};">${assetStatusLabel('Conta de anúncio',statusKey)}</div>
+      ${acc.nota ? `<div class="infra-account-note">${escapeHtml(acc.nota)}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderPagesLinked(){
+  const pages = state.assets.filter(a=>a.tipo==='Página');
+  if(pages.length===0) return '';
+  return `
+  <div class="pages-linked-section">
+    <h3>Páginas vinculadas</h3>
+    <div class="sub-text">Páginas cadastradas na operação e seus relacionamentos</div>
+    <div class="pages-linked-grid">
+      ${pages.map(p=>{
+        if(assetEditingId === p.id) return `<div class="page-linked-card editing">${renderAssetEditForm(p)}</div>`;
+        const bm = state.assets.find(x=>x.id===p.parentId);
+        const lentBm = state.assets.find(x=>x.id===p.lentToId);
+        return `
+        <div class="page-linked-card">
+          <div class="page-linked-head">
+            <span class="page-linked-ico">📄</span>
+            <div class="page-linked-name">${escapeHtml(p.nome)}</div>
+            <button class="mining-edit-btn" onclick="toggleAssetEdit('${p.id}')">✎</button>
+          </div>
+          ${bm ? `<div class="page-linked-rel">Pertence à <span class="asset-bm-tag">${escapeHtml(bm.nome)}</span></div>` : '<div class="page-linked-rel muted">sem BM vinculada</div>'}
+          ${lentBm ? `<div class="page-linked-rel">Emprestada para → <span class="asset-bm-tag">${escapeHtml(lentBm.nome)}</span></div>` : ''}
+          ${p.status ? `<div class="page-linked-status" style="color:${ASSET_STATUS_COLORS[p.status]};">${assetStatusLabel('Página',p.status)}</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderAssetLegend(){
+  const total = state.assets.length;
+  return `
+  <div class="asset-legend-row ${assetLegendOpen?'':'closed'}" id="assetLegendRow">
+    <div class="asset-legend-items">
+      <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.operacional};"></span><div><b>Operacional</b><br>Ativo funcionando normalmente</div></div>
+      <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.atencao};"></span><div><b>Atenção</b><br>Precisa de atenção ou ação</div></div>
+      <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.problema};"></span><div><b>Problema / Desabilitado</b><br>Com restrições ou pendências críticas</div></div>
+      <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.em_analise};"></span><div><b>Em análise</b><br>Aguardando verificação ou aprovação</div></div>
+      <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.nao_verificado};"></span><div><b>Não verificado</b><br>Documentos não verificados</div></div>
+    </div>
+    <div class="asset-legend-total">
+      <div class="sub-text">Total de ativos cadastrados</div>
+      <div class="asset-legend-total-num">${total}</div>
+    </div>
+  </div>`;
+}
+
+function renderAssetEditForm(a){
+  const needsParent = (a.tipo==='Conta de anúncio' || a.tipo==='Página');
+  const needsStatus = (a.tipo==='BM' || a.tipo==='Conta de anúncio' || a.tipo==='Página');
+  const bmOptions = state.assets.filter(x=>x.tipo==='BM' && x.id!==a.id);
+  return `
+  <div class="tool-edit-row asset-edit-form">
+    <select onchange="updateAssetField('${a.id}','tipo',this.value)">
+      ${ASSET_TYPES.map(t=>`<option value="${t}" ${a.tipo===t?'selected':''}>${t}</option>`).join('')}
+    </select>
+    <input type="text" value="${escapeHtml(a.nome)}" placeholder="nome/identificador" onchange="updateAssetField('${a.id}','nome',this.value)">
+    ${needsParent ? `
+    <select onchange="updateAssetField('${a.id}','parentId',this.value || null)">
+      <option value="">sem BM vinculada</option>
+      ${bmOptions.map(bm=>`<option value="${bm.id}" ${a.parentId===bm.id?'selected':''}>${escapeHtml(bm.nome)}</option>`).join('')}
+    </select>` : ''}
+    ${a.tipo==='Página' ? `
+    <select onchange="updateAssetField('${a.id}','lentToId',this.value || null)">
+      <option value="">não emprestada pra outra BM</option>
+      ${bmOptions.map(bm=>`<option value="${bm.id}" ${a.lentToId===bm.id?'selected':''}>emprestada pra ${escapeHtml(bm.nome)}</option>`).join('')}
+    </select>` : ''}
+    ${needsStatus ? `
+    <select onchange="updateAssetField('${a.id}','status',this.value)">
+      <option value="operacional" ${a.status==='operacional'?'selected':''}>🟢 Operacional</option>
+      <option value="atencao" ${a.status==='atencao'?'selected':''}>🟡 Atenção</option>
+      <option value="problema" ${a.status==='problema'?'selected':''}>🔴 ${a.tipo==='BM'?'Bloqueado':'Desabilitada'}</option>
+      <option value="em_analise" ${a.status==='em_analise'?'selected':''}>🔵 Em análise</option>
+      <option value="nao_verificado" ${a.status==='nao_verificado'?'selected':''}>⚪ Não verificado</option>
+    </select>` : ''}
+    <input type="text" value="${escapeHtml(a.nota||'')}" placeholder="nota/detalhe (opcional)" onchange="updateAssetField('${a.id}','nota',this.value)">
+    <div class="mining-actions">
+      <button class="del-btn" onclick="removeAsset('${a.id}')">✕ excluir</button>
+      <button class="mining-save-btn" onclick="toggleAssetEdit('${a.id}')"><span class="ico">✓</span> Concluir edição</button>
+    </div>
+  </div>`;
+}
+
 function toggleAssetEdit(id){
   assetEditingId = (assetEditingId===id) ? null : id;
   renderAssets();
@@ -3360,6 +3682,20 @@ function updateAssetField(id, field, value){
   if(!a) return;
   a[field] = value;
   saveState();
+  renderAssets();
+}
+function toggleBmCard(id){
+  bmCollapsed[id] = !bmCollapsed[id];
+  renderAssets();
+}
+function toggleAllBmCards(){
+  assetsAllExpanded = !assetsAllExpanded;
+  state.assets.filter(a=>a.tipo==='BM').forEach(bm=> bmCollapsed[bm.id] = !assetsAllExpanded);
+  renderAssets();
+}
+function toggleAssetLegend(){
+  assetLegendOpen = !assetLegendOpen;
+  renderAssets();
 }
 
 /* ---------- ATIVOS ---------- */
@@ -3378,7 +3714,11 @@ function addAsset(){
   const nome = document.getElementById('assetNome');
   const nota = document.getElementById('assetNota').value;
   if(!nome.value.trim()) return;
-  state.assets.push({id:uid(), tipo, nome:nome.value.trim(), nota});
+  const asset = {id:uid(), tipo, nome:nome.value.trim(), nota};
+  if(tipo==='BM' || tipo==='Conta de anúncio') asset.status = 'nao_verificado';
+  if(tipo==='Conta de anúncio' || tipo==='Página'){ asset.parentId = null; }
+  if(tipo==='Página'){ asset.lentToId = null; asset.status = null; }
+  state.assets.push(asset);
   saveState(); renderAssets();
   toggleNewAssetForm(false);
   showToast('Ativo cadastrado.');
@@ -6684,7 +7024,6 @@ function setupDragHandlers(){
   attachSortableGrid('productSelectorGrid', ids=>reorderArray('products', ids));
   attachSortableGrid('warmupGroupsList', ids=>reorderArray('warmupGroups', ids));
   attachSortableGrid('notesList', ids=>reorderArray('notes', ids));
-  attachSortable('assetsList', ids=>reorderArray('assets', ids));
   attachSortableGrid('contactsList', ids=>reorderArray('contacts', ids));
   attachSortableGrid('avisosList', ids=>reorderArray('avisos', ids));
   attachPlannerDrag('plannerDays', ['seg','ter','qua','qui','sex','sab','dom'], reorderPlannerFromDOM);
