@@ -315,9 +315,10 @@
   .aviso-icon-btn{
     background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer;
     width:24px;height:24px;display:flex;align-items:center;justify-content:center;
-    border-radius:6px;flex-shrink:0;opacity:0.7;transition:opacity .15s, background .15s;
+    border-radius:6px;flex-shrink:0;opacity:0;transition:opacity .15s, background .15s;
   }
-  .aviso-icon-btn:hover{opacity:1;background:var(--surface3);}
+  .item:hover .aviso-icon-btn{opacity:1;}
+  .aviso-icon-btn:hover{background:var(--surface3);}
   .item, .cost-row, .mining-card, .funnel-stage{transition:box-shadow .18s, border-color .18s;}
   .item.dragging, .cost-row.dragging, .fin-row.dragging, .mining-card.dragging, .funnel-stage.dragging, .tool-card.dragging{
     opacity:1;border-color:var(--blue-bright);cursor:grabbing;position:relative;z-index:40;
@@ -428,6 +429,8 @@
   @media (max-width:640px){
     .processo-card-body{padding-left:14px;}
     .processo-topico .processo-edit-btn, .processo-topico .del-btn{opacity:1;}
+    .planner-item .planner-drag-handle, .planner-item .del-btn{opacity:1;}
+    .aviso-icon-btn{opacity:1;}
   }
   .item-tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;}
   .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
@@ -574,6 +577,7 @@
     .tab-btn{ white-space:nowrap; flex-shrink:0; font-size:13px; }
     .funnel-stage{ width:100% !important; padding:10px 12px; }
     .funnel-link-stage{ flex-wrap:wrap; }
+    .funnel-link-actions{ opacity:1; }
     
     .gateway-row, .variation-row, .mov-row, .cost-row, .asset-row, .step-item{ flex-wrap:wrap; }
     .gateway-row input, .gateway-row select{ flex:1 1 100px; min-width:0; }
@@ -857,7 +861,8 @@
   .planner-day.today h4{color:var(--blue);}
   .planner-item{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;font-size:12.5px;}
   .planner-items{min-height:22px;}
-  .planner-item .planner-drag-handle{font-size:10px;padding:0 2px;margin-top:2px;}
+  .planner-item .planner-drag-handle{font-size:10px;padding:0 2px;margin-top:2px;opacity:0;transition:opacity .15s;}
+  .planner-item:hover .planner-drag-handle{opacity:1;}
   .planner-empty-hint{pointer-events:none;}
   .planner-item.done{opacity:0.4;text-decoration:line-through;}
   .planner-item .p-status{width:9px;height:9px;border-radius:50%;background:var(--warn);margin-top:3px;flex-shrink:0;cursor:pointer;}
@@ -865,7 +870,8 @@
   .planner-item .check-box{width:14px;height:14px;border-radius:4px;margin-top:1px;}
   .planner-item .check-box.checked::after{font-size:9px;}
   .planner-item .p-text{flex:1;word-break:break-word;}
-  .planner-item .del-btn{font-size:11px;padding:0;}
+  .planner-item .del-btn{font-size:11px;padding:0;opacity:0;transition:opacity .15s;}
+  .planner-item:hover .del-btn{opacity:1;}
   .planner-add{display:flex;gap:4px;margin-top:6px;}
   .planner-add input{font-size:11.5px;padding:5px 6px;flex:1;min-width:0;}
   .planner-add button{background:var(--blue);border:none;color:#070A10;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;}
@@ -906,7 +912,8 @@
   .funnel-link-url{font-size:11.5px;color:var(--blue);word-break:break-all;}
   .funnel-link-url-row .funnel-icon-btn{width:22px;height:22px;flex-shrink:0;}
   
-  .funnel-link-actions{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;}
+  .funnel-link-actions{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;opacity:0;transition:opacity .15s;}
+  .funnel-link-stage:hover .funnel-link-actions{opacity:1;}
   .funnel-icon-btn{
     background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;
     width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
@@ -1458,7 +1465,7 @@
       </div>
       <div class="panel" id="offersPanel">
         <div class="panel-head">
-          <h2><span class="sub">as ofertas que estão rodando agora — de onde cada uma está, sem precisar abrir nada</span>🎯 Operação Atual</h2>
+          <h2>🎯 Operação Atual</h2>
           <button class="add-tool-btn" id="newOfferToggleBtn" onclick="toggleNewOfferForm(true)">+ Adicionar oferta</button>
         </div>
         <div id="offersList"></div>
@@ -1485,7 +1492,7 @@
     </div>
 
     <div class="panel full">
-      <div class="panel-head"><h2><span class="sub">o que fazer hoje, essa semana — foco total em validar/escalar</span>Planejamento</h2></div>
+      <div class="panel-head"><h2>Planejamento</h2></div>
       <div class="planner-focus">
         <label class="field-label">foco da semana</label>
         <textarea id="focoSemanaInput" placeholder="ex: validar a oferta X até sexta, sem se distrair com outras coisas" onblur="saveFocoSemana(this.value)"></textarea>
@@ -1538,27 +1545,7 @@
       </div>
     </div>
 
-    <div class="panel full" id="infraPanel">
-      <div class="panel-head">
-        <h2>Infraestrutura</h2>
-        <button class="add-tool-btn" id="newInfraToggleBtn" onclick="toggleNewInfraForm(true)">+ Adicionar item</button>
-      </div>
-      <div id="infraList"></div>
-      <div class="add-form" id="newInfraRow">
-        <div class="add-row" style="flex-direction:column;">
-          <input type="text" id="infraInput" placeholder="ex: BM 2 - verificação">
-          <div class="add-row" style="margin-top:0;">
-            <select id="infraStatus" style="flex:1;">
-              <option value="pending">atenção</option>
-              <option value="done">ok</option>
-              <option value="blocked">bloqueado</option>
-            </select>
-            <button class="add" style="flex:1;" onclick="addInfra()">+ adicionar item</button>
-            <button class="add-cost-cancel-btn" onclick="toggleNewInfraForm(false)">cancelar</button>
-          </div>
-        </div>
-      </div>
-    </div>
+
 
     </div>
 
@@ -3101,21 +3088,6 @@ function removeSimple(containerId,id){
     saveState(); render();
     showToast('Item excluído.');
   });
-}
-function toggleNewInfraForm(show){
-  document.getElementById('newInfraRow').classList.toggle('open', show);
-  document.getElementById('newInfraToggleBtn').style.display = show ? 'none' : 'inline-flex';
-  document.getElementById('infraPanel').classList.toggle('panel-editing', show);
-  if(show){ document.getElementById('infraInput').focus(); }
-  else{ document.getElementById('infraInput').value=''; document.getElementById('infraStatus').value='pending'; }
-}
-function addInfra(){
-  const input = document.getElementById('infraInput');
-  const status = document.getElementById('infraStatus').value;
-  if(!input.value.trim()) return;
-  state.infra.push({id:uid(), text:input.value.trim(), status});
-  input.value=''; saveState(); render();
-  toggleNewInfraForm(false);
 }
 /* ---------- OPERAÇÃO ATUAL (antigo "Ofertas em foco") ---------- */
 function toggleNewOfferForm(show){
@@ -5187,7 +5159,6 @@ function renderOpSummary(){
   const urgentPending = state.tasks.filter(t=>t.priority==='urgente' && t.status!=='done').length;
   const validando = state.offers.filter(o=>o.status==='validando').length;
   const escalando = state.offers.filter(o=>o.status==='escalando').length;
-  const infraProblemas = state.infra.filter(i=>i.status==='blocked').length;
   const minerados = state.mining.length;
   const el = document.getElementById('opSummary');
   if(!el) return;
@@ -5200,9 +5171,6 @@ function renderOpSummary(){
     </div>
     <div class="op-card ok" onclick="scrollToPanel('offersPanel')">
       <div class="n">${escalando}</div><div class="l">Ofertas Escalando</div>
-    </div>
-    <div class="op-card ${infraProblemas>0?'crit':'ok'}" onclick="scrollToPanel('infraPanel')">
-      <div class="n">${infraProblemas}</div><div class="l">Infraestrutura</div>
     </div>
     <div class="op-card info" onclick="switchTab('mining')">
       <div class="n">${minerados}</div><div class="l">Produtos Minerados</div>
@@ -5219,7 +5187,6 @@ function render(){
   renderTabNav();
   renderTasks();
   renderAvisos();
-  renderSimpleList('infraList', state.infra, infraCycle);
   renderOperacaoAtual();
   renderCosts();
   renderFinanceTable();
@@ -5756,12 +5723,92 @@ function onNoteContentInput(){
   const n = currentNote();
   const editor = document.getElementById('noteContentEditor');
   if(!n || !editor) return;
+  autoLinkAtCursor(editor);
   n.conteudo = editor.innerHTML;
   n.atualizadoEm = new Date().toISOString();
   saveState();
   renderNotesList();
   const dateEl = document.getElementById('noteMetaDate');
   if(dateEl) dateEl.innerText = 'editado ' + fmtDateTime(n.atualizadoEm);
+}
+// Assim que o usuário termina de digitar um link (dá espaço logo depois), transforma
+// o texto em <a> clicável automaticamente — sem precisar selecionar e formatar manualmente.
+function autoLinkAtCursor(editor){
+  const sel = window.getSelection();
+  if(!sel || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  if(!range.collapsed) return;
+  const node = range.startContainer;
+  if(node.nodeType !== Node.TEXT_NODE) return;
+  if(node.parentElement && node.parentElement.closest('a')) return;
+  const text = node.textContent;
+  const cursorPos = range.startOffset;
+  const lastChar = text[cursorPos-1];
+  if(cursorPos === 0 || (lastChar !== ' ' && lastChar !== '\u00A0')) return;
+  const before = text.slice(0, cursorPos-1);
+  const match = before.match(/(https?:\/\/[^\s<]+|www\.[^\s<]+\.[^\s<]+)$/i);
+  if(!match) return;
+  const urlText = match[0];
+  const start = before.length - urlText.length;
+  const href = urlText.match(/^https?:\/\//i) ? urlText : 'https://' + urlText;
+
+  const beforeNode = document.createTextNode(text.slice(0, start));
+  const afterNode = document.createTextNode(text.slice(cursorPos-1));
+  const a = document.createElement('a');
+  a.href = href; a.target = '_blank'; a.rel = 'noopener';
+  a.textContent = urlText;
+
+  const parent = node.parentNode;
+  parent.insertBefore(beforeNode, node);
+  parent.insertBefore(a, node);
+  parent.insertBefore(afterNode, node);
+  parent.removeChild(node);
+
+  const newRange = document.createRange();
+  newRange.setStart(afterNode, Math.min(1, afterNode.length));
+  newRange.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(newRange);
+}
+// Rede de segurança: ao sair do campo (colar um link sem digitar espaço depois, ou link
+// no fim da nota), varre o texto inteiro e converte qualquer URL que tenha passado batido.
+function linkifyEditorOnBlur(){
+  const n = currentNote();
+  const editor = document.getElementById('noteContentEditor');
+  if(!n || !editor) return;
+  const urlRe = /(https?:\/\/[^\s<]+|www\.[^\s<]+\.[^\s<]+)/gi;
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT, null);
+  const nodes = [];
+  let node;
+  while((node = walker.nextNode())){
+    if(node.parentElement && node.parentElement.closest('a')) continue;
+    urlRe.lastIndex = 0;
+    if(urlRe.test(node.textContent)) nodes.push(node);
+  }
+  if(nodes.length === 0) return;
+  nodes.forEach(textNode=>{
+    const text = textNode.textContent;
+    const frag = document.createDocumentFragment();
+    let lastIndex = 0;
+    urlRe.lastIndex = 0;
+    let m;
+    while((m = urlRe.exec(text))){
+      frag.appendChild(document.createTextNode(text.slice(lastIndex, m.index)));
+      const urlText = m[0];
+      const href = urlText.match(/^https?:\/\//i) ? urlText : 'https://' + urlText;
+      const a = document.createElement('a');
+      a.href = href; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = urlText;
+      frag.appendChild(a);
+      lastIndex = m.index + urlText.length;
+    }
+    frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+    textNode.parentNode.replaceChild(frag, textNode);
+  });
+  n.conteudo = editor.innerHTML;
+  n.atualizadoEm = new Date().toISOString();
+  saveState();
+  renderNotesList();
 }
 function noteFocusEditor(){
   const editor = document.getElementById('noteContentEditor');
@@ -5931,7 +5978,7 @@ function renderNoteEditor(){
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteInsertLink()">🔗 link</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertHorizontalRule')">― divisor</button>
     </div>
-    <div class="note-content-editor" id="noteContentEditor" contenteditable="true" data-placeholder="Escreva aqui..." oninput="onNoteContentInput()">${n.conteudo || ''}</div>
+    <div class="note-content-editor" id="noteContentEditor" contenteditable="true" data-placeholder="Escreva aqui..." oninput="onNoteContentInput()" onblur="linkifyEditorOnBlur()">${n.conteudo || ''}</div>
   `;
 }
 function renderNotes(){
@@ -6628,7 +6675,6 @@ function reorderArray(key, ids){
 function setupDragHandlers(){
   attachSortable('urgentList', reorderTasksGroup);
   attachSortableGrid('processosList', ids=>reorderArray('processos', ids));
-  attachSortable('infraList', ids=>reorderArray('infra', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
   attachSortable('miningList', ids=>reorderArray('mining', ids));
