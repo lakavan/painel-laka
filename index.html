@@ -856,7 +856,8 @@
   .infra-perfil-name{font-family:var(--display);font-weight:700;font-size:14px;}
   .infra-perfil-sub{font-size:11px;color:var(--muted);}
 
-  .infra-bm-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding-top:24px;border-top:2px solid var(--border-strong);align-items:start;}
+  .infra-bm-row{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:16px;padding-top:24px;padding-bottom:6px;border-top:2px solid var(--border-strong);align-items:start;}
+  .infra-bm-card{flex:0 0 260px;}
   .infra-bm-card{position:relative;background:var(--surface3);border:1px solid var(--border-strong);border-radius:12px;overflow:hidden;}
   .infra-bm-card::before{content:'';position:absolute;top:-24px;left:50%;width:2px;height:24px;background:var(--border-strong);}
   .infra-bm-card-head{padding:13px 14px 12px;cursor:pointer;}
@@ -906,7 +907,8 @@
   .asset-edit-form{width:100%;}
 
   @media (max-width:640px){
-    .infra-bm-row{grid-template-columns:1fr;}
+    .infra-bm-row{flex-direction:column;overflow-x:visible;}
+    .infra-bm-card{flex:1 1 auto;}
     .infra-perfil-node::after, .infra-bm-card::before{display:none;}
     .infra-bm-row{border-top:none;padding-top:0;}
     .asset-legend-row{flex-direction:column;align-items:stretch;}
@@ -3412,13 +3414,14 @@ const ASSET_TYPE_META = [
   {tipo:'Outro', label:'Outros', icon:'•••'}
 ];
 const ASSET_STATUS_COLORS = {
-  operacional:'var(--ok)', atencao:'var(--warn)', problema:'var(--urgent)',
+  operacional:'var(--ok)', verificada:'#2dd4bf', atencao:'var(--warn)', problema:'var(--urgent)',
   em_analise:'var(--blue-bright)', nao_verificado:'var(--muted2)'
 };
 function assetStatusLabel(tipo, status){
   if(!status) return '';
   if(status==='problema') return tipo==='BM' ? 'Bloqueado' : 'Desabilitada';
   if(status==='operacional') return 'Operacional';
+  if(status==='verificada') return 'Verificada';
   if(status==='atencao') return 'Atenção';
   if(status==='em_analise') return 'Em análise';
   if(status==='nao_verificado') return 'Não verificado';
@@ -3432,7 +3435,7 @@ function assetStatusFromText(text){
   if(/bloquead|\bblock\b/.test(t)) return 'problema';
   if(/desabilitad/.test(t)) return 'problema';
   if(/aten[cç][aã]o|verificar|pendente/.test(t)) return 'atencao';
-  if(/verificad/.test(t)) return 'operacional';
+  if(/verificad/.test(t)) return 'verificada';
   return null;
 }
 function extractBmNumber(text){
@@ -3625,6 +3628,7 @@ function renderAssetLegend(){
   <div class="asset-legend-row ${assetLegendOpen?'':'closed'}" id="assetLegendRow">
     <div class="asset-legend-items">
       <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.operacional};"></span><div><b>Operacional</b><br>Ativo funcionando normalmente</div></div>
+      <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.verificada};"></span><div><b>Verificada</b><br>Documentação conferida e aprovada</div></div>
       <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.atencao};"></span><div><b>Atenção</b><br>Precisa de atenção ou ação</div></div>
       <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.problema};"></span><div><b>Problema / Desabilitado</b><br>Com restrições ou pendências críticas</div></div>
       <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.em_analise};"></span><div><b>Em análise</b><br>Aguardando verificação ou aprovação</div></div>
@@ -3660,6 +3664,7 @@ function renderAssetEditForm(a){
     ${needsStatus ? `
     <select onchange="updateAssetField('${a.id}','status',this.value)">
       <option value="operacional" ${a.status==='operacional'?'selected':''}>🟢 Operacional</option>
+      <option value="verificada" ${a.status==='verificada'?'selected':''}>🟢 Verificada</option>
       <option value="atencao" ${a.status==='atencao'?'selected':''}>🟡 Atenção</option>
       <option value="problema" ${a.status==='problema'?'selected':''}>🔴 ${a.tipo==='BM'?'Bloqueado':'Desabilitada'}</option>
       <option value="em_analise" ${a.status==='em_analise'?'selected':''}>🔵 Em análise</option>
