@@ -856,10 +856,8 @@
   .infra-perfil-name{font-family:var(--display);font-weight:700;font-size:14px;}
   .infra-perfil-sub{font-size:11px;color:var(--muted);}
 
-  .infra-bm-row{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:16px;padding-top:24px;padding-bottom:6px;border-top:2px solid var(--border-strong);align-items:start;}
-  .infra-bm-card{flex:0 0 260px;}
+  .infra-bm-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;padding-top:24px;border-top:2px solid var(--border-strong);align-items:start;}
   .infra-bm-card{position:relative;background:var(--surface3);border:1px solid var(--border-strong);border-radius:12px;overflow:hidden;}
-  .infra-bm-card::before{content:'';position:absolute;top:-24px;left:50%;width:2px;height:24px;background:var(--border-strong);}
   .infra-bm-card-head{padding:13px 14px 12px;cursor:pointer;}
   .infra-bm-card-head:has(.asset-edit-form){cursor:default;}
   .infra-bm-title-row{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
@@ -897,7 +895,6 @@
   .page-linked-status{font-family:var(--mono);font-size:10px;font-weight:700;margin-top:6px;}
 
   .asset-legend-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;}
-  .asset-legend-row.closed .asset-legend-items{display:none;}
   .asset-legend-items{display:flex;flex-wrap:wrap;gap:22px;}
   .legend-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--muted);max-width:170px;}
   .legend-item b{color:var(--text);font-size:11.5px;}
@@ -907,9 +904,8 @@
   .asset-edit-form{width:100%;}
 
   @media (max-width:640px){
-    .infra-bm-row{flex-direction:column;overflow-x:visible;}
-    .infra-bm-card{flex:1 1 auto;}
-    .infra-perfil-node::after, .infra-bm-card::before{display:none;}
+    .infra-bm-row{grid-template-columns:1fr;}
+    .infra-perfil-node::after{display:none;}
     .infra-bm-row{border-top:none;padding-top:0;}
     .asset-legend-row{flex-direction:column;align-items:stretch;}
     .asset-legend-total{text-align:left;}
@@ -3488,7 +3484,6 @@ function migrateAssetsToRelational(){
 }
 
 let assetEditingId = null;
-let assetLegendOpen = true;
 let assetsAllExpanded = true;
 let bmCollapsed = {};
 
@@ -3531,7 +3526,6 @@ function renderInfraMap(){
       </div>
       <div class="infra-map-actions">
         <button class="infra-map-btn" onclick="toggleAllBmCards()">⤢ ${assetsAllExpanded ? 'Recolher tudo' : 'Expandir tudo'}</button>
-        <button class="infra-map-btn" onclick="toggleAssetLegend()">👁 Legenda</button>
       </div>
     </div>
     ${perfil ? `
@@ -3552,6 +3546,10 @@ function renderInfraMap(){
   </div>`;
 }
 
+function bmDisplayName(bm){
+  if(!bm) return '';
+  return /^\d+$/.test(bm.nome.trim()) ? 'BM '+bm.nome.trim() : bm.nome;
+}
 function renderBmCard(bm){
   if(assetEditingId === bm.id){
     return `<div class="infra-bm-card"><div class="infra-bm-card-head">${renderAssetEditForm(bm)}</div></div>`;
@@ -3559,7 +3557,7 @@ function renderBmCard(bm){
   const accounts = state.assets.filter(a=>a.tipo==='Conta de anúncio' && a.parentId===bm.id);
   const statusKey = bm.status || 'nao_verificado';
   const collapsed = bmCollapsed[bm.id];
-  const label = /^\d+$/.test(bm.nome.trim()) ? 'BM '+bm.nome.trim() : bm.nome;
+  const label = bmDisplayName(bm);
   return `
   <div class="infra-bm-card">
     <div class="infra-bm-card-head" onclick="toggleBmCard('${bm.id}')">
@@ -3613,8 +3611,8 @@ function renderPagesLinked(){
             <div class="page-linked-name">${escapeHtml(p.nome)}</div>
             <button class="mining-edit-btn" onclick="toggleAssetEdit('${p.id}')">✎</button>
           </div>
-          ${bm ? `<div class="page-linked-rel">Pertence à <span class="asset-bm-tag">${escapeHtml(bm.nome)}</span></div>` : '<div class="page-linked-rel muted">sem BM vinculada</div>'}
-          ${lentBm ? `<div class="page-linked-rel">Emprestada para → <span class="asset-bm-tag">${escapeHtml(lentBm.nome)}</span></div>` : ''}
+          ${bm ? `<div class="page-linked-rel">Pertence à <span class="asset-bm-tag">${escapeHtml(bmDisplayName(bm))}</span></div>` : '<div class="page-linked-rel muted">sem BM vinculada</div>'}
+          ${lentBm ? `<div class="page-linked-rel">Emprestada para → <span class="asset-bm-tag">${escapeHtml(bmDisplayName(lentBm))}</span></div>` : ''}
           ${p.status ? `<div class="page-linked-status" style="color:${ASSET_STATUS_COLORS[p.status]};">${assetStatusLabel('Página',p.status)}</div>` : ''}
         </div>`;
       }).join('')}
@@ -3625,7 +3623,7 @@ function renderPagesLinked(){
 function renderAssetLegend(){
   const total = state.assets.length;
   return `
-  <div class="asset-legend-row ${assetLegendOpen?'':'closed'}" id="assetLegendRow">
+  <div class="asset-legend-row" id="assetLegendRow">
     <div class="asset-legend-items">
       <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.operacional};"></span><div><b>Operacional</b><br>Ativo funcionando normalmente</div></div>
       <div class="legend-item"><span class="legend-dot" style="background:${ASSET_STATUS_COLORS.verificada};"></span><div><b>Verificada</b><br>Documentação conferida e aprovada</div></div>
@@ -3654,12 +3652,12 @@ function renderAssetEditForm(a){
     ${needsParent ? `
     <select onchange="updateAssetField('${a.id}','parentId',this.value || null)">
       <option value="">sem BM vinculada</option>
-      ${bmOptions.map(bm=>`<option value="${bm.id}" ${a.parentId===bm.id?'selected':''}>${escapeHtml(bm.nome)}</option>`).join('')}
+      ${bmOptions.map(bm=>`<option value="${bm.id}" ${a.parentId===bm.id?'selected':''}>${escapeHtml(bmDisplayName(bm))}</option>`).join('')}
     </select>` : ''}
     ${a.tipo==='Página' ? `
     <select onchange="updateAssetField('${a.id}','lentToId',this.value || null)">
       <option value="">não emprestada pra outra BM</option>
-      ${bmOptions.map(bm=>`<option value="${bm.id}" ${a.lentToId===bm.id?'selected':''}>emprestada pra ${escapeHtml(bm.nome)}</option>`).join('')}
+      ${bmOptions.map(bm=>`<option value="${bm.id}" ${a.lentToId===bm.id?'selected':''}>emprestada pra ${escapeHtml(bmDisplayName(bm))}</option>`).join('')}
     </select>` : ''}
     ${needsStatus ? `
     <select onchange="updateAssetField('${a.id}','status',this.value)">
@@ -3696,10 +3694,6 @@ function toggleBmCard(id){
 function toggleAllBmCards(){
   assetsAllExpanded = !assetsAllExpanded;
   state.assets.filter(a=>a.tipo==='BM').forEach(bm=> bmCollapsed[bm.id] = !assetsAllExpanded);
-  renderAssets();
-}
-function toggleAssetLegend(){
-  assetLegendOpen = !assetLegendOpen;
   renderAssets();
 }
 
