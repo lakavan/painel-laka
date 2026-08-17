@@ -164,6 +164,13 @@
   .today-stat .trend.neg{color:var(--neg);}
   .today-stat .trend.neutral{color:var(--muted2);}
   .today-stat .spark{margin-top:8px;line-height:0;opacity:0.85;}
+  .today-stat{position:relative;overflow:hidden;}
+  .today-stat-spark{width:100%;height:32px;display:block;margin-top:8px;color:var(--blue);}
+  .today-stat.card-crit .today-stat-spark{color:var(--urgent);}
+  .today-stat.card-lime .today-stat-spark{color:var(--green);}
+  .today-stat.card-warn .today-stat-spark{color:var(--warn);}
+  .today-stat-spark .tss-fill{fill:currentColor;opacity:0.18;stroke:none;}
+  .today-stat-spark .tss-line{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
   .op-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;}
   @media(max-width:900px){.op-summary{grid-template-columns:1fr 1fr 1fr;}}
   @media(max-width:520px){.op-summary{grid-template-columns:1fr 1fr;}}
@@ -848,6 +855,9 @@
   .infra-map-btn{background:var(--surface3);border:1px solid var(--border-strong);color:var(--muted);border-radius:8px;padding:7px 12px;font-size:11.5px;cursor:pointer;white-space:nowrap;transition:border-color .15s, color .15s;}
   .infra-map-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
 
+  .infra-profile-branch{margin-bottom:4px;}
+  .infra-profile-divider{height:1px;background:var(--border);margin:22px 0;}
+  .infra-perfil-card.muted-card{border-style:dashed;opacity:0.75;}
   .infra-perfil-node{display:flex;justify-content:center;position:relative;padding:22px 0 24px;}
   .infra-perfil-node::after{content:'';position:absolute;bottom:0;left:50%;width:2px;height:24px;background:var(--border-strong);}
   .infra-perfil-card{background:var(--surface3);border:1px solid var(--border-strong);border-radius:12px;padding:11px 18px;display:flex;align-items:center;gap:10px;}
@@ -3445,6 +3455,7 @@ function extractBmNumber(text){
 // itens já apareciam na lista (contas sempre vinham logo depois da BM delas).
 function migrateAssetsToRelational(){
   if(state.assetsMigratedV2) return;
+  const firstProfile = state.assets.find(a=>a.tipo==='Perfil Facebook');
   const bmByNumber = {};
   state.assets.forEach(a=>{
     if(a.tipo==='BM'){
@@ -3457,6 +3468,7 @@ function migrateAssetsToRelational(){
     if(a.tipo==='BM'){
       currentBmId = a.id;
       if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
+      if(a.profileId===undefined) a.profileId = firstProfile ? firstProfile.id : null;
     } else if(a.tipo==='Conta de anúncio'){
       if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
       if(a.parentId===undefined){
@@ -3516,7 +3528,7 @@ function renderAssetStats(){
 function renderInfraMap(){
   const perfis = state.assets.filter(a=>a.tipo==='Perfil Facebook');
   const bms = state.assets.filter(a=>a.tipo==='BM');
-  const perfil = perfis[0];
+  const orphanBms = bms.filter(bm => !bm.profileId || !perfis.find(p=>p.id===bm.profileId));
   return `
   <div class="infra-map">
     <div class="infra-map-head">
@@ -3528,20 +3540,40 @@ function renderInfraMap(){
         <button class="infra-map-btn" onclick="toggleAllBmCards()">⤢ ${assetsAllExpanded ? 'Recolher tudo' : 'Expandir tudo'}</button>
       </div>
     </div>
-    ${perfil ? `
+    ${perfis.length===0 ? '<div class="empty">nenhum perfil cadastrado ainda.</div>' : perfis.map(perfil=>renderProfileBranch(perfil, bms)).join('<div class="infra-profile-divider"></div>')}
+    ${orphanBms.length>0 ? `
+    <div class="infra-profile-divider"></div>
+    <div class="infra-profile-branch">
+      <div class="infra-perfil-node">
+        <div class="infra-perfil-card muted-card">
+          <span class="infra-perfil-ico">❔</span>
+          <div>
+            <div class="infra-perfil-name">Sem perfil vinculado</div>
+            <div class="infra-perfil-sub">${orphanBms.length} BM${orphanBms.length!==1?'s':''}</div>
+          </div>
+        </div>
+      </div>
+      <div class="infra-bm-row">${orphanBms.map(bm=>renderBmCard(bm)).join('')}</div>
+    </div>` : ''}
+  </div>`;
+}
+function renderProfileBranch(perfil, allBms){
+  const bms = allBms.filter(bm=>bm.profileId===perfil.id);
+  return `
+  <div class="infra-profile-branch">
     <div class="infra-perfil-node">
       ${assetEditingId===perfil.id ? `<div class="infra-perfil-card editing">${renderAssetEditForm(perfil)}</div>` : `
       <div class="infra-perfil-card">
         <span class="infra-perfil-ico">👤</span>
         <div>
           <div class="infra-perfil-name">${escapeHtml(perfil.nome)}</div>
-          <div class="infra-perfil-sub">${perfis.length} perfil${perfis.length!==1?'is':''}</div>
+          <div class="infra-perfil-sub">${bms.length} BM${bms.length!==1?'s':''}</div>
         </div>
         <button class="mining-edit-btn" onclick="toggleAssetEdit('${perfil.id}')">✎</button>
       </div>`}
-    </div>` : ''}
+    </div>
     <div class="infra-bm-row">
-      ${bms.length===0 ? '<div class="empty">nenhuma BM cadastrada ainda.</div>' : bms.map(bm=>renderBmCard(bm)).join('')}
+      ${bms.length===0 ? '<div class="empty">nenhuma BM vinculada a esse perfil ainda.</div>' : bms.map(bm=>renderBmCard(bm)).join('')}
     </div>
   </div>`;
 }
@@ -3593,25 +3625,26 @@ function renderAccountRow(acc){
 }
 
 function renderPagesLinked(){
-  const pages = state.assets.filter(a=>a.tipo==='Página');
-  if(pages.length===0) return '';
+  const items = state.assets.filter(a=>(a.tipo==='Página' || a.tipo==='Pixel/Dataset' || a.tipo==='Outro') && (a.parentId!==undefined && a.parentId!==null));
+  if(items.length===0) return '';
+  const icoByTipo = {'Página':'📄','Pixel/Dataset':'📡','Outro':'•••'};
   return `
   <div class="pages-linked-section">
-    <h3>Páginas vinculadas</h3>
-    <div class="sub-text">Páginas cadastradas na operação e seus relacionamentos</div>
+    <h3>Páginas e outros ativos vinculados</h3>
+    <div class="sub-text">Itens da operação com uma BM associada e seus relacionamentos</div>
     <div class="pages-linked-grid">
-      ${pages.map(p=>{
+      ${items.map(p=>{
         if(assetEditingId === p.id) return `<div class="page-linked-card editing">${renderAssetEditForm(p)}</div>`;
-        const bm = state.assets.find(x=>x.id===p.parentId);
+        const parentLabel = resolveParentLabel(p);
         const lentBm = state.assets.find(x=>x.id===p.lentToId);
         return `
         <div class="page-linked-card">
           <div class="page-linked-head">
-            <span class="page-linked-ico">📄</span>
+            <span class="page-linked-ico">${icoByTipo[p.tipo]||'📄'}</span>
             <div class="page-linked-name">${escapeHtml(p.nome)}</div>
             <button class="mining-edit-btn" onclick="toggleAssetEdit('${p.id}')">✎</button>
           </div>
-          ${bm ? `<div class="page-linked-rel">Pertence à <span class="asset-bm-tag">${escapeHtml(bmDisplayName(bm))}</span></div>` : '<div class="page-linked-rel muted">sem BM vinculada</div>'}
+          ${parentLabel ? `<div class="page-linked-rel">Pertence à <span class="asset-bm-tag">${escapeHtml(parentLabel)}</span></div>` : '<div class="page-linked-rel muted">sem BM vinculada</div>'}
           ${lentBm ? `<div class="page-linked-rel">Emprestada para → <span class="asset-bm-tag">${escapeHtml(bmDisplayName(lentBm))}</span></div>` : ''}
           ${p.status ? `<div class="page-linked-status" style="color:${ASSET_STATUS_COLORS[p.status]};">${assetStatusLabel('Página',p.status)}</div>` : ''}
         </div>`;
@@ -3639,8 +3672,13 @@ function renderAssetLegend(){
   </div>`;
 }
 
+function resolveParentLabel(a){
+  if(a.parentId === 'external') return a.parentExternal ? a.parentExternal : 'BM externa (não cadastrada)';
+  const bm = state.assets.find(x=>x.id===a.parentId);
+  return bm ? bmDisplayName(bm) : null;
+}
 function renderAssetEditForm(a){
-  const needsParent = (a.tipo==='Conta de anúncio' || a.tipo==='Página');
+  const needsParent = (a.tipo==='Conta de anúncio' || a.tipo==='Página' || a.tipo==='Pixel/Dataset' || a.tipo==='Outro');
   const needsStatus = (a.tipo==='BM' || a.tipo==='Conta de anúncio' || a.tipo==='Página');
   const bmOptions = state.assets.filter(x=>x.tipo==='BM' && x.id!==a.id);
   return `
@@ -3649,11 +3687,18 @@ function renderAssetEditForm(a){
       ${ASSET_TYPES.map(t=>`<option value="${t}" ${a.tipo===t?'selected':''}>${t}</option>`).join('')}
     </select>
     <input type="text" value="${escapeHtml(a.nome)}" placeholder="nome/identificador" onchange="updateAssetField('${a.id}','nome',this.value)">
+    ${a.tipo==='BM' ? `
+    <select onchange="updateAssetField('${a.id}','profileId',this.value || null)">
+      <option value="">sem perfil vinculado</option>
+      ${state.assets.filter(x=>x.tipo==='Perfil Facebook').map(pf=>`<option value="${pf.id}" ${a.profileId===pf.id?'selected':''}>${escapeHtml(pf.nome)}</option>`).join('')}
+    </select>` : ''}
     ${needsParent ? `
     <select onchange="updateAssetField('${a.id}','parentId',this.value || null)">
       <option value="">sem BM vinculada</option>
       ${bmOptions.map(bm=>`<option value="${bm.id}" ${a.parentId===bm.id?'selected':''}>${escapeHtml(bmDisplayName(bm))}</option>`).join('')}
-    </select>` : ''}
+      <option value="external" ${a.parentId==='external'?'selected':''}>Outra (BM não cadastrada no painel)</option>
+    </select>
+    ${a.parentId==='external' ? `<input type="text" value="${escapeHtml(a.parentExternal||'')}" placeholder="nome da BM externa (ex: BM do João - T905008)" onchange="updateAssetField('${a.id}','parentExternal',this.value)">` : ''}` : ''}
     ${a.tipo==='Página' ? `
     <select onchange="updateAssetField('${a.id}','lentToId',this.value || null)">
       <option value="">não emprestada pra outra BM</option>
@@ -3714,8 +3759,13 @@ function addAsset(){
   const nota = document.getElementById('assetNota').value;
   if(!nome.value.trim()) return;
   const asset = {id:uid(), tipo, nome:nome.value.trim(), nota};
-  if(tipo==='BM' || tipo==='Conta de anúncio') asset.status = 'nao_verificado';
-  if(tipo==='Conta de anúncio' || tipo==='Página'){ asset.parentId = null; }
+  if(tipo==='BM'){
+    asset.status = 'nao_verificado';
+    const profiles = state.assets.filter(x=>x.tipo==='Perfil Facebook');
+    asset.profileId = profiles.length===1 ? profiles[0].id : null;
+  }
+  if(tipo==='Conta de anúncio') asset.status = 'nao_verificado';
+  if(tipo==='Conta de anúncio' || tipo==='Página' || tipo==='Pixel/Dataset' || tipo==='Outro'){ asset.parentId = null; }
   if(tipo==='Página'){ asset.lentToId = null; asset.status = null; }
   state.assets.push(asset);
   saveState(); renderAssets();
@@ -5454,6 +5504,35 @@ function trendBadgeMes(val){
   const arrow = positive ? '▲':'▼';
   return `<span class="trend ${cls}">${arrow} ${Math.abs(val).toFixed(0)}% vs mês anterior</span>`;
 }
+function monthDailyValues(key, field){
+  const monthObj = state.finance.months[key] || {days:{}};
+  const n = daysInMonth(key);
+  const arr = [];
+  for(let d=1; d<=n; d++){
+    const day = monthObj.days[String(d)] || {};
+    if(field==='lucro') arr.push(Number(day.faturamento||0) - Number(day.gasto||0));
+    else if(field==='roi'){ const g=Number(day.gasto||0), f=Number(day.faturamento||0); arr.push(g>0 ? f/g : 0); }
+    else arr.push(Number(day[field]||0));
+  }
+  return arr;
+}
+function miniAreaSpark(values){
+  const w=100, h=32;
+  if(!values || values.length<2 || values.every(v=>v===0)) return '';
+  const max = Math.max(...values.map(v=>Math.abs(v)), 1);
+  const stepX = w/(values.length-1);
+  const pts = values.map((v,i)=>{
+    const x = i*stepX;
+    const y = h - (Math.max(v,0)/max)*(h-2) - 1;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const line = pts.join(' ');
+  const area = `0,${h} ${line} ${w},${h}`;
+  return `<svg viewBox="0 0 ${w} ${h}" class="today-stat-spark" preserveAspectRatio="none">
+    <polyline points="${area}" class="tss-fill"></polyline>
+    <polyline points="${line}" class="tss-line"></polyline>
+  </svg>`;
+}
 function renderTodayPanel(){
   const key = state.finance.currentMonth;
   const prevKey = shiftMonthKey(key, -1);
@@ -5465,31 +5544,39 @@ function renderTodayPanel(){
   const dFat = pctChange(curr.fat, prev.fat);
   const dLucro = pctChange(curr.lucro, prev.lucro);
   const dRoi = (roi!==null && prevRoi!==null) ? (roi-prevRoi) : null;
+  const gastoArr = monthDailyValues(key, 'gasto');
+  const fatArr = monthDailyValues(key, 'faturamento');
+  const lucroArr = monthDailyValues(key, 'lucro');
+  const roiArr = monthDailyValues(key, 'roi');
   document.getElementById('todayDate').innerHTML = `
     <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
     <span style="margin:0 8px;">${monthLabel(key)}</span>
     <button class="nav-btn" onclick="changeMonth(1)">›</button>
   `;
   document.getElementById('todayStats').innerHTML = `
-    <div class="today-stat">
+    <div class="today-stat card-crit">
       <div class="l">Gasto do mês</div>
       <div class="v">${brl(curr.gasto)}</div>
       ${trendBadgeMes(dGasto)}
+      ${miniAreaSpark(gastoArr)}
+    </div>
+    <div class="today-stat">
+      <div class="l">Faturamento do mês</div>
+      <div class="v">${brl(curr.fat)}</div>
+      ${trendBadgeMes(dFat)}
+      ${miniAreaSpark(fatArr)}
     </div>
     <div class="today-stat card-lime">
-      <div class="l">Faturamento do mês</div>
-      <div class="v lime">${brl(curr.fat)}</div>
-      ${trendBadgeMes(dFat)}
-    </div>
-    <div class="today-stat card-warn">
       <div class="l">Lucro do mês</div>
       <div class="v ${curr.lucro>=0?'pos':'neg'}">${brl(curr.lucro)}</div>
       ${trendBadgeMes(dLucro)}
+      ${miniAreaSpark(lucroArr)}
     </div>
-    <div class="today-stat card-crit">
+    <div class="today-stat card-warn">
       <div class="l">ROI do mês</div>
       <div class="v">${roi===null?'—':roi.toFixed(2)+'x'}</div>
       ${dRoi===null ? '<span class="trend neutral">— vs mês anterior</span>' : `<span class="trend ${dRoi>=0?'pos':'neg'}">${dRoi>=0?'▲':'▼'} ${Math.abs(dRoi).toFixed(2)} vs mês anterior</span>`}
+      ${miniAreaSpark(roiArr)}
     </div>
   `;
 }
@@ -6159,6 +6246,11 @@ function noteCmd(cmd, value){
   document.execCommand(cmd, false, value || null);
   onNoteContentInput();
 }
+function undoNoteEdit(){
+  noteFocusEditor();
+  document.execCommand('undo');
+  onNoteContentInput();
+}
 function noteInsertLink(){
   noteFocusEditor();
   const url = window.prompt('Cole o link (URL):');
@@ -6290,6 +6382,8 @@ function renderNoteEditor(){
     </div>
     <div class="note-meta-date" id="noteMetaDate">editado ${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
     <div class="note-toolbar">
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="undoNoteEdit()" title="desfazer última alteração">↩ desfazer</button>
+      <div class="note-tb-sep"></div>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H1')">Título</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H2')">Subtítulo</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','P')">Normal</button>
