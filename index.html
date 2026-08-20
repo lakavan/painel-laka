@@ -67,7 +67,7 @@
     min-height:100vh;
     letter-spacing:-0.005em;
   }
-  .wrap{max-width:1440px;margin:0 auto;}
+  .wrap{max-width:1600px;margin:0 auto;}
   ::-webkit-scrollbar{width:10px;height:10px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
@@ -750,7 +750,7 @@
   .mining-tooltip .mt-diff{font-size:10px;color:var(--muted);}
   .mining-tooltip .mt-diff.pos{color:var(--ok);}
   .mining-tooltip .mt-diff.neg{color:var(--urgent);}
-  .mining-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;}
+  .mining-stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;}
   .mining-stat{display:flex;flex-direction:column;gap:2px;}
   .ms-label{font-family:var(--mono);font-size:8.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.4px;}
   .ms-value{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);}
@@ -841,7 +841,7 @@
   .asset-name{flex:1;font-size:13.5px;}
 
   /* ---------- MEUS ATIVOS — visão geral ---------- */
-  .asset-stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px;}
+  .asset-stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:22px;}
   .asset-stat-tile{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;}
   .asset-stat-ico{font-size:17px;flex-shrink:0;line-height:1;margin-top:1px;}
   .asset-stat-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
@@ -866,7 +866,7 @@
   .infra-perfil-name{font-family:var(--display);font-weight:700;font-size:14px;}
   .infra-perfil-sub{font-size:11px;color:var(--muted);}
 
-  .infra-bm-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;padding-top:24px;border-top:2px solid var(--border-strong);align-items:start;}
+  .infra-bm-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;padding-top:24px;border-top:2px solid var(--border-strong);align-items:start;}
   .infra-bm-card{position:relative;background:var(--surface3);border:1px solid var(--border-strong);border-radius:12px;overflow:hidden;}
   .infra-bm-card-head{padding:13px 14px 12px;cursor:pointer;}
   .infra-bm-card-head:has(.asset-edit-form){cursor:default;}
@@ -1280,9 +1280,11 @@
     transition:border-color .15s,color .15s,background .15s;line-height:1;
   }
   .note-tb-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .note-tb-btn.active{border-color:var(--blue);color:var(--blue-bright);background:rgba(91,157,255,0.14);}
   .note-content-editor{
     flex:1;font-family:var(--sans);font-size:14px;line-height:1.7;color:var(--text);outline:none;min-height:320px;
   }
+  .note-content-editor.format-painting, .note-content-editor.format-painting *{cursor:copy !important;}
   .note-content-editor:empty:before{content:attr(data-placeholder);color:var(--muted2);}
   .note-content-editor h1{font-family:var(--display);font-size:22px;font-weight:800;margin:18px 0 8px;}
   .note-content-editor h1:first-child{margin-top:0;}
@@ -2265,6 +2267,18 @@ let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{current
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
+// Limpa texto colado/digitado em campos de texto puro (textareas): tira qualquer
+// "<br>", "<br/>", "<br />" literal (vira quebra de linha de verdade), remove outras
+// tags HTML que tenham vindo junto de uma colagem, e desfaz entidades comuns (&nbsp; etc).
+// Usado nos campos da aba de Produtos pra evitar que "<br>" apareça no meio do texto.
+function sanitizePlainText(s){
+  if(s === undefined || s === null) return '';
+  let out = String(s);
+  out = out.replace(/<br\s*\/?>/gi, '\n');
+  out = out.replace(/<\/?[a-z][^>]*>/gi, '');
+  out = out.replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;/gi, "'");
+  return out;
+}
 function brl(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
 function showToast(message, type){
   const container = document.getElementById('toastContainer');
@@ -2626,6 +2640,10 @@ async function loadState(){
               delete step.texto;
             }
             if(!step.nome) step.nome = (type==='objections' ? 'Objeção ' : 'Etapa ') + (idx+1);
+            // limpeza única: remove "<br>" literal que ficou gravado em textos salvos anteriormente
+            step.nome = sanitizePlainText(step.nome);
+            if(step.descricao) step.descricao = sanitizePlainText(step.descricao);
+            (step.variations||[]).forEach(v=>{ v.texto = sanitizePlainText(v.texto); });
           });
         });
       });
@@ -3454,45 +3472,61 @@ function extractBmNumber(text){
 // deduzir status e a qual BM cada conta/página pertence, usando também a ORDEM em que os
 // itens já apareciam na lista (contas sempre vinham logo depois da BM delas).
 function migrateAssetsToRelational(){
-  if(state.assetsMigratedV2) return;
-  const firstProfile = state.assets.find(a=>a.tipo==='Perfil Facebook');
-  const bmByNumber = {};
-  state.assets.forEach(a=>{
-    if(a.tipo==='BM'){
-      const num = (a.nome.match(/\d+/)||[])[0];
-      if(num) bmByNumber[num.padStart(2,'0')] = a.id;
-    }
-  });
-  let currentBmId = null;
-  state.assets.forEach(a=>{
-    if(a.tipo==='BM'){
-      currentBmId = a.id;
-      if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
-      if(a.profileId===undefined) a.profileId = firstProfile ? firstProfile.id : null;
-    } else if(a.tipo==='Conta de anúncio'){
-      if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
-      if(a.parentId===undefined){
-        const explicitBm = extractBmNumber(a.nome);
-        a.parentId = (explicitBm && bmByNumber[explicitBm]) ? bmByNumber[explicitBm] : currentBmId;
+  let changed = false;
+  if(!state.assetsMigratedV2){
+    const firstProfile = state.assets.find(a=>a.tipo==='Perfil Facebook');
+    const bmByNumber = {};
+    state.assets.forEach(a=>{
+      if(a.tipo==='BM'){
+        const num = (a.nome.match(/\d+/)||[])[0];
+        if(num) bmByNumber[num.padStart(2,'0')] = a.id;
       }
-    } else if(a.tipo==='Página'){
-      if(a.parentId===undefined){
-        const belongsBm = extractBmNumber(a.nota);
-        a.parentId = (belongsBm && bmByNumber[belongsBm]) ? bmByNumber[belongsBm] : currentBmId;
-      }
-      if(a.lentToId===undefined){
-        a.lentToId = null;
-        if(a.nota && /emprestad/i.test(a.nota)){
-          const matches = [...a.nota.matchAll(/bm\s*0*(\d+)/ig)].map(m=>m[1].padStart(2,'0'));
-          const lentNum = matches.find(n => bmByNumber[n] && bmByNumber[n] !== a.parentId);
-          if(lentNum) a.lentToId = bmByNumber[lentNum];
+    });
+    let currentBmId = null;
+    state.assets.forEach(a=>{
+      if(a.tipo==='BM'){
+        currentBmId = a.id;
+        if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
+        if(a.profileId===undefined) a.profileId = firstProfile ? firstProfile.id : null;
+      } else if(a.tipo==='Conta de anúncio'){
+        if(a.status===undefined) a.status = assetStatusFromText(a.nota) || 'nao_verificado';
+        if(a.parentId===undefined){
+          const explicitBm = extractBmNumber(a.nome);
+          a.parentId = (explicitBm && bmByNumber[explicitBm]) ? bmByNumber[explicitBm] : currentBmId;
         }
+      } else if(a.tipo==='Página'){
+        if(a.parentId===undefined){
+          const belongsBm = extractBmNumber(a.nota);
+          a.parentId = (belongsBm && bmByNumber[belongsBm]) ? bmByNumber[belongsBm] : currentBmId;
+        }
+        if(a.lentToId===undefined){
+          a.lentToId = null;
+          if(a.nota && /emprestad/i.test(a.nota)){
+            const matches = [...a.nota.matchAll(/bm\s*0*(\d+)/ig)].map(m=>m[1].padStart(2,'0'));
+            const lentNum = matches.find(n => bmByNumber[n] && bmByNumber[n] !== a.parentId);
+            if(lentNum) a.lentToId = bmByNumber[lentNum];
+          }
+        }
+        if(a.status===undefined) a.status = assetStatusFromText(a.nota);
       }
-      if(a.status===undefined) a.status = assetStatusFromText(a.nota);
-    }
-  });
-  state.assetsMigratedV2 = true;
-  saveState();
+    });
+    state.assetsMigratedV2 = true;
+    changed = true;
+  }
+  // Passo separado (roda mesmo pra quem já migrou antes): vincula as BMs que ainda não
+  // tinham "profileId" ao primeiro perfil cadastrado, já que esse campo é mais novo que
+  // a migração original e não pode ficar preso atrás da flag "já migrei" de quem já rodou.
+  if(!state.assetsProfileMigrated){
+    const firstProfile = state.assets.find(a=>a.tipo==='Perfil Facebook');
+    state.assets.forEach(a=>{
+      if(a.tipo==='BM' && a.profileId===undefined){
+        a.profileId = firstProfile ? firstProfile.id : null;
+      }
+    });
+    state.assetsProfileMigrated = true;
+    changed = true;
+  }
+  if(changed) saveState();
 }
 
 let assetEditingId = null;
@@ -3625,7 +3659,7 @@ function renderAccountRow(acc){
 }
 
 function renderPagesLinked(){
-  const items = state.assets.filter(a=>(a.tipo==='Página' || a.tipo==='Pixel/Dataset' || a.tipo==='Outro') && (a.parentId!==undefined && a.parentId!==null));
+  const items = state.assets.filter(a=>a.tipo==='Página' || a.tipo==='Pixel/Dataset' || a.tipo==='Outro');
   if(items.length===0) return '';
   const icoByTipo = {'Página':'📄','Pixel/Dataset':'📡','Outro':'•••'};
   return `
@@ -4210,7 +4244,7 @@ function updateStepName(type, stepId, value){
   if(!product) return;
   const step = product[type].find(s=>s.id===stepId);
   if(!step) return;
-  step.nome = value;
+  step.nome = sanitizePlainText(value);
   saveState();
 }
 function updateStepDescricao(type, stepId, value){
@@ -4218,7 +4252,7 @@ function updateStepDescricao(type, stepId, value){
   if(!product) return;
   const step = product[type].find(s=>s.id===stepId);
   if(!step) return;
-  step.descricao = value;
+  step.descricao = sanitizePlainText(value);
   saveState();
 }
 function addVariation(type, stepId){
@@ -4247,7 +4281,7 @@ function updateVariationText(type, stepId, varId, value){
   if(!step) return;
   const v = step.variations.find(v=>v.id===varId);
   if(!v) return;
-  v.texto = value;
+  v.texto = sanitizePlainText(value);
   saveState();
 }
 function autoGrow(el){
@@ -6116,11 +6150,13 @@ function createNote(){
   }, 0);
 }
 function openNote(id){
+  noteFormatPainterExit();
   state.currentNoteId = id;
   saveState();
   renderNotes();
 }
 function closeNoteDetail(){
+  noteFormatPainterExit();
   state.currentNoteId = null;
   saveState();
   renderNotes();
@@ -6303,6 +6339,88 @@ function applyNoteColor(color){
   const menu = document.getElementById('noteColorMenu');
   if(menu) menu.classList.remove('open');
 }
+
+// Pincel de formatação (parecido com o "pincel" do Word/Google Docs): copia a formatação
+// (negrito, itálico, sublinhado, cor, destaque e título/subtítulo) de um trecho selecionado
+// e aplica no próximo trecho selecionado. Clique simples = usa uma vez. Clique duplo = fica
+// ativo pra aplicar em vários trechos seguidos, até clicar de novo ou apertar Esc.
+let notePaintedFormat = null;
+let noteFormatPainterMode = null; // null | 'once' | 'sticky'
+
+function noteFormatPainterClick(ev){
+  if(noteFormatPainterMode){ noteFormatPainterExit(); return; }
+  const editor = document.getElementById('noteContentEditor');
+  if(!editor) return;
+  const sel = window.getSelection();
+  if(!sel || sel.isCollapsed || sel.rangeCount === 0 || !editor.contains(sel.anchorNode)){
+    showToast('Selecione um trecho com a formatação que você quer copiar primeiro.', 'error');
+    return;
+  }
+  notePaintedFormat = noteCaptureFormat(sel);
+  noteFormatPainterMode = (ev && ev.detail === 2) ? 'sticky' : 'once';
+  editor.classList.add('format-painting');
+  const btn = document.getElementById('noteFormatPainterBtn');
+  if(btn) btn.classList.add('active');
+  showToast(noteFormatPainterMode === 'sticky'
+    ? 'Pincel ativo — selecione trechos pra formatar (clique no pincel de novo pra parar).'
+    : 'Pincel ativo — selecione o trecho que vai receber essa formatação.');
+}
+
+function noteCaptureFormat(sel){
+  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
+  let node = sel.anchorNode;
+  if(node && node.nodeType === Node.TEXT_NODE) node = node.parentElement;
+  const blockEl = node ? node.closest('h1,h2,p') : null;
+  return {
+    bold: document.queryCommandState('bold'),
+    italic: document.queryCommandState('italic'),
+    underline: document.queryCommandState('underline'),
+    foreColor: document.queryCommandValue('foreColor'),
+    hiliteColor: document.queryCommandValue('hiliteColor'),
+    block: blockEl ? blockEl.tagName : 'P'
+  };
+}
+
+function noteFormatPainterExit(){
+  noteFormatPainterMode = null;
+  notePaintedFormat = null;
+  const editor = document.getElementById('noteContentEditor');
+  if(editor) editor.classList.remove('format-painting');
+  const btn = document.getElementById('noteFormatPainterBtn');
+  if(btn) btn.classList.remove('active');
+}
+
+function noteApplyPaintedFormat(){
+  const editor = document.getElementById('noteContentEditor');
+  const sel = window.getSelection();
+  if(!editor || !sel || sel.isCollapsed || !notePaintedFormat || !editor.contains(sel.anchorNode)) return;
+  noteFocusEditor();
+  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
+  document.execCommand('removeFormat');
+  if(notePaintedFormat.block) document.execCommand('formatBlock', false, notePaintedFormat.block);
+  if(notePaintedFormat.bold) document.execCommand('bold');
+  if(notePaintedFormat.italic) document.execCommand('italic');
+  if(notePaintedFormat.underline) document.execCommand('underline');
+  if(notePaintedFormat.foreColor) document.execCommand('foreColor', false, notePaintedFormat.foreColor);
+  if(notePaintedFormat.hiliteColor && !/transparent|rgba\(0,\s*0,\s*0,\s*0\)/i.test(notePaintedFormat.hiliteColor)){
+    document.execCommand('hiliteColor', false, notePaintedFormat.hiliteColor);
+  }
+  onNoteContentInput();
+  if(noteFormatPainterMode !== 'sticky') noteFormatPainterExit();
+}
+
+document.addEventListener('mouseup', (e)=>{
+  if(!noteFormatPainterMode) return;
+  const editor = document.getElementById('noteContentEditor');
+  if(!editor || !editor.contains(e.target)) return;
+  setTimeout(()=>{
+    const sel = window.getSelection();
+    if(sel && !sel.isCollapsed) noteApplyPaintedFormat();
+  }, 0);
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && noteFormatPainterMode) noteFormatPainterExit();
+});
 document.addEventListener('click', (e)=>{
   const menu = document.getElementById('noteColorMenu');
   if(menu && menu.classList.contains('open') && !e.target.closest('.note-color-wrap')){
@@ -6383,6 +6501,8 @@ function renderNoteEditor(){
     <div class="note-meta-date" id="noteMetaDate">editado ${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
     <div class="note-toolbar">
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="undoNoteEdit()" title="desfazer última alteração">↩ desfazer</button>
+      <div class="note-tb-sep"></div>
+      <button type="button" class="note-tb-btn" id="noteFormatPainterBtn" onmousedown="event.preventDefault()" onclick="noteFormatPainterClick(event)" title="pincel de formatação — selecione um trecho com a formatação desejada, clique aqui, depois selecione o trecho que deve receber essa formatação (clique duplo mantém o pincel ativo pra aplicar várias vezes)">🖌️ pincel</button>
       <div class="note-tb-sep"></div>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H1')">Título</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H2')">Subtítulo</button>
@@ -7127,6 +7247,24 @@ function setupDragHandlers(){
   attachSortableGrid('projResourcesGrid', ids=>reorderProjectResources(ids));
   attachSortable('phonesList', ids=>reorderArray('phones', ids));
 }
+
+// Cola sempre como texto puro nas caixas de texto da aba Produtos (recuperação de vendas,
+// entrega do entregável, quebra de objeções): evita que "<br>" ou qualquer outra formatação
+// escondida no que foi copiado apareça junto no meio do texto.
+document.addEventListener('paste', function(e){
+  const el = e.target;
+  if(!el || el.tagName !== 'TEXTAREA') return;
+  const productsView = document.getElementById('productsView');
+  if(!productsView || !productsView.contains(el)) return;
+  e.preventDefault();
+  const text = sanitizePlainText((e.clipboardData || window.clipboardData).getData('text/plain'));
+  const start = el.selectionStart, end = el.selectionEnd;
+  const before = el.value.slice(0, start), after = el.value.slice(end);
+  el.value = before + text + after;
+  const pos = start + text.length;
+  el.selectionStart = el.selectionEnd = pos;
+  autoGrow(el);
+}, true);
 
 // inicialização controlada por sb.auth.onAuthStateChange (ver acima)
 applyHideValuesPreference();
