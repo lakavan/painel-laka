@@ -6340,10 +6340,13 @@ function applyNoteColor(color){
   if(menu) menu.classList.remove('open');
 }
 
-// Pincel de formatação (parecido com o "pincel" do Word/Google Docs): copia a formatação
-// (negrito, itálico, sublinhado, cor, destaque e título/subtítulo) de um trecho selecionado
-// e aplica no próximo trecho selecionado. Clique simples = usa uma vez. Clique duplo = fica
-// ativo pra aplicar em vários trechos seguidos, até clicar de novo ou apertar Esc.
+// Pincel de formatação (parecido com o "pincel" do Word/Google Docs): copia TODA a
+// formatação visual de um trecho selecionado — negrito, itálico, sublinhado, cor do texto,
+// cor de destaque, tamanho da fonte, tipo/família da fonte, espaçamento entre letras, etc —
+// e aplica exatamente essa formatação no próximo trecho selecionado. Usa o estilo computado
+// de verdade do texto (não só os comandos do editor), então pega até formatação que tenha
+// vindo de uma colagem de fora. Clique simples = usa uma vez. Clique duplo = fica ativo pra
+// aplicar em vários trechos seguidos, até clicar de novo ou apertar Esc.
 let notePaintedFormat = null;
 let noteFormatPainterMode = null; // null | 'once' | 'sticky'
 
@@ -6366,19 +6369,22 @@ function noteFormatPainterClick(ev){
     : 'Pincel ativo — selecione o trecho que vai receber essa formatação.');
 }
 
+// Propriedades CSS que definem a aparência de um trecho de texto — captura o valor
+// já computado (resultado final, depois de herança/tags/estilos inline) pra copiar
+// exatamente o que está na tela, com o que quer que tenha gerado aquela formatação.
+const NOTE_FORMAT_PROPS = [
+  'fontWeight','fontStyle','textDecorationLine','color','backgroundColor',
+  'fontSize','fontFamily','letterSpacing','wordSpacing','textTransform',
+  'verticalAlign'
+];
 function noteCaptureFormat(sel){
-  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
   let node = sel.anchorNode;
   if(node && node.nodeType === Node.TEXT_NODE) node = node.parentElement;
-  const blockEl = node ? node.closest('h1,h2,p') : null;
-  return {
-    bold: document.queryCommandState('bold'),
-    italic: document.queryCommandState('italic'),
-    underline: document.queryCommandState('underline'),
-    foreColor: document.queryCommandValue('foreColor'),
-    hiliteColor: document.queryCommandValue('hiliteColor'),
-    block: blockEl ? blockEl.tagName : 'P'
-  };
+  if(!node) return null;
+  const cs = window.getComputedStyle(node);
+  const format = {};
+  NOTE_FORMAT_PROPS.forEach(prop=>{ format[prop] = cs[prop]; });
+  return format;
 }
 
 function noteFormatPainterExit(){
@@ -6393,18 +6399,27 @@ function noteFormatPainterExit(){
 function noteApplyPaintedFormat(){
   const editor = document.getElementById('noteContentEditor');
   const sel = window.getSelection();
-  if(!editor || !sel || sel.isCollapsed || !notePaintedFormat || !editor.contains(sel.anchorNode)) return;
+  if(!editor || !sel || sel.isCollapsed || !notePaintedFormat || sel.rangeCount === 0) return;
+  if(!editor.contains(sel.anchorNode)) return;
   noteFocusEditor();
-  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
-  document.execCommand('removeFormat');
-  if(notePaintedFormat.block) document.execCommand('formatBlock', false, notePaintedFormat.block);
-  if(notePaintedFormat.bold) document.execCommand('bold');
-  if(notePaintedFormat.italic) document.execCommand('italic');
-  if(notePaintedFormat.underline) document.execCommand('underline');
-  if(notePaintedFormat.foreColor) document.execCommand('foreColor', false, notePaintedFormat.foreColor);
-  if(notePaintedFormat.hiliteColor && !/transparent|rgba\(0,\s*0,\s*0,\s*0\)/i.test(notePaintedFormat.hiliteColor)){
-    document.execCommand('hiliteColor', false, notePaintedFormat.hiliteColor);
-  }
+  const range = sel.getRangeAt(0);
+  const span = document.createElement('span');
+  NOTE_FORMAT_PROPS.forEach(prop=>{
+    const value = notePaintedFormat[prop];
+    if(!value) return;
+    if(prop === 'backgroundColor' && /transparent|rgba\(0,\s*0,\s*0,\s*0\)/i.test(value)) return;
+    if(prop === 'textTransform' && value === 'none') return;
+    span.style[prop] = value;
+  });
+  try{
+    const contents = range.extractContents();
+    span.appendChild(contents);
+    range.insertNode(span);
+    const newRange = document.createRange();
+    newRange.selectNodeContents(span);
+    sel.removeAllRanges();
+    sel.addRange(newRange);
+  }catch(e){ console.error('erro ao aplicar formatação com o pincel', e); }
   onNoteContentInput();
   if(noteFormatPainterMode !== 'sticky') noteFormatPainterExit();
 }
@@ -6502,7 +6517,7 @@ function renderNoteEditor(){
     <div class="note-toolbar">
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="undoNoteEdit()" title="desfazer última alteração">↩ desfazer</button>
       <div class="note-tb-sep"></div>
-      <button type="button" class="note-tb-btn" id="noteFormatPainterBtn" onmousedown="event.preventDefault()" onclick="noteFormatPainterClick(event)" title="pincel de formatação — selecione um trecho com a formatação desejada, clique aqui, depois selecione o trecho que deve receber essa formatação (clique duplo mantém o pincel ativo pra aplicar várias vezes)">🖌️ pincel</button>
+      <button type="button" class="note-tb-btn" id="noteFormatPainterBtn" onmousedown="event.preventDefault()" onclick="noteFormatPainterClick(event)" title="pincel de formatação — copia TODA a formatação (negrito, itálico, sublinhado, cor, destaque, tamanho e tipo de fonte) de um trecho selecionado e aplica em outro (clique duplo mantém o pincel ativo pra aplicar várias vezes)">🖌️ pincel</button>
       <div class="note-tb-sep"></div>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H1')">Título</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H2')">Subtítulo</button>
