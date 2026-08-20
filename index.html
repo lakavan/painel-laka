@@ -4297,11 +4297,11 @@ function stepsHtml(steps, type){
     const varsHtml = (s.variations||[]).map((v,vi)=>`
       <div class="variation-row">
         <span class="variation-label">v${vi+1}</span>
-        <textarea oninput="autoGrow(this)" onblur="updateVariationText('${type}','${s.id}','${v.id}',this.value)" placeholder="texto dessa variação...">${escapeHtml(v.texto||'')}</textarea>
+        <textarea oninput="autoGrow(this)" onblur="updateVariationText('${type}','${s.id}','${v.id}',this.value)" placeholder="texto dessa variação...">${escapeHtml(sanitizePlainText(v.texto||''))}</textarea>
         <button class="del-btn" onclick="removeVariation('${type}','${s.id}','${v.id}')">✕</button>
       </div>
     `).join('');
-    const descHtml = isObjection ? `<textarea class="objection-desc" oninput="autoGrow(this)" onblur="updateStepDescricao('${type}','${s.id}',this.value)" placeholder="sobre o que é essa objeção (ex: preço, desconfiança, prazo de entrega)...">${escapeHtml(s.descricao||'')}</textarea>` : '';
+    const descHtml = isObjection ? `<textarea class="objection-desc" oninput="autoGrow(this)" onblur="updateStepDescricao('${type}','${s.id}',this.value)" placeholder="sobre o que é essa objeção (ex: preço, desconfiança, prazo de entrega)...">${escapeHtml(sanitizePlainText(s.descricao||''))}</textarea>` : '';
     const stage = `<div class="funnel-stage" data-id="${s.id}" style="width:${w}%;">
       <div class="wa-stage-head">
         <span class="drag-handle">⠿</span>
@@ -4309,7 +4309,7 @@ function stepsHtml(steps, type){
         <span style="font-family:var(--mono);font-size:10px;color:var(--muted2);">#${idx+1}</span>
         <button class="del-btn" style="margin-left:auto;" onclick="removeStep('${type}','${s.id}')">✕ remover</button>
       </div>
-      <div class="step-name-input" contenteditable="true" onblur="updateStepName('${type}','${s.id}',this.innerText)">${escapeHtml(s.nome || ('Etapa '+(idx+1)))}</div>
+      <div class="step-name-input" contenteditable="true" onblur="updateStepName('${type}','${s.id}',this.innerText)">${escapeHtml(sanitizePlainText(s.nome || ('Etapa '+(idx+1))))}</div>
       ${descHtml}
       ${varsHtml}
       <button class="add-variation-btn" onclick="addVariation('${type}','${s.id}')">+ variação${isObjection ? '' : ' (evita chip cair por copiar/colar igual)'}</button>
@@ -6340,32 +6340,62 @@ function applyNoteColor(color){
   if(menu) menu.classList.remove('open');
 }
 
-// Pincel de formatação (parecido com o "pincel" do Word/Google Docs): copia TODA a
-// formatação visual de um trecho selecionado — negrito, itálico, sublinhado, cor do texto,
-// cor de destaque, tamanho da fonte, tipo/família da fonte, espaçamento entre letras, etc —
-// e aplica exatamente essa formatação no próximo trecho selecionado. Usa o estilo computado
-// de verdade do texto (não só os comandos do editor), então pega até formatação que tenha
-// vindo de uma colagem de fora. Clique simples = usa uma vez. Clique duplo = fica ativo pra
-// aplicar em vários trechos seguidos, até clicar de novo ou apertar Esc.
+// Pincel de formatação (igual ao "pincel" do Word/Google Docs): copia TODA a formatação
+// visual de um trecho selecionado — negrito, itálico, sublinhado, cor do texto, cor de
+// destaque, tamanho da fonte, tipo/família da fonte, espaçamento entre letras, etc — e
+// aplica exatamente essa formatação no próximo trecho selecionado, SEM bagunçar parágrafos
+// (formata cada trecho de texto individualmente, preservando a estrutura da nota).
+// Clique simples: seleciona a origem → clica no pincel → seleciona o destino → aplica uma
+// vez e desativa. Clique duplo no pincel: fica "fixado" e aplica em quantos trechos você
+// selecionar seguido, até clicar no pincel de novo ou apertar Esc — igual ao Word.
 let notePaintedFormat = null;
 let noteFormatPainterMode = null; // null | 'once' | 'sticky'
 
+function noteEditorSelectionValid(sel, editor){
+  return !!(sel && !sel.isCollapsed && sel.rangeCount > 0 && editor && editor.contains(sel.anchorNode) && editor.contains(sel.focusNode));
+}
+
 function noteFormatPainterClick(ev){
-  if(noteFormatPainterMode){ noteFormatPainterExit(); return; }
+  if(ev && ev.detail >= 2) return; // clique duplo é tratado só pelo dblclick, abaixo
   const editor = document.getElementById('noteContentEditor');
   if(!editor) return;
+  // clicar de novo enquanto o pincel já está ativo cancela (igual ao Word)
+  if(noteFormatPainterMode){ noteFormatPainterExit(); return; }
   const sel = window.getSelection();
-  if(!sel || sel.isCollapsed || sel.rangeCount === 0 || !editor.contains(sel.anchorNode)){
+  if(!noteEditorSelectionValid(sel, editor)){
     showToast('Selecione um trecho com a formatação que você quer copiar primeiro.', 'error');
     return;
   }
   notePaintedFormat = noteCaptureFormat(sel);
-  noteFormatPainterMode = (ev && ev.detail === 2) ? 'sticky' : 'once';
-  editor.classList.add('format-painting');
+  noteFormatPainterArm('once');
+}
+
+function noteFormatPainterDblClick(ev){
+  if(ev) ev.preventDefault();
+  const editor = document.getElementById('noteContentEditor');
+  if(!editor) return;
+  // o primeiro clique do duplo-clique já deve ter armado o pincel em modo "once" — só
+  // precisamos "promover" pra sticky. Se por algum motivo não armou (seleção perdida entre
+  // os cliques), tenta capturar de novo a partir da seleção atual.
+  if(!noteFormatPainterMode){
+    const sel = window.getSelection();
+    if(!noteEditorSelectionValid(sel, editor)){
+      showToast('Selecione um trecho com a formatação que você quer copiar primeiro.', 'error');
+      return;
+    }
+    notePaintedFormat = noteCaptureFormat(sel);
+  }
+  noteFormatPainterArm('sticky');
+}
+
+function noteFormatPainterArm(mode){
+  const editor = document.getElementById('noteContentEditor');
+  noteFormatPainterMode = mode;
+  if(editor) editor.classList.add('format-painting');
   const btn = document.getElementById('noteFormatPainterBtn');
   if(btn) btn.classList.add('active');
-  showToast(noteFormatPainterMode === 'sticky'
-    ? 'Pincel ativo — selecione trechos pra formatar (clique no pincel de novo pra parar).'
+  showToast(mode === 'sticky'
+    ? 'Pincel fixado — selecione quantos trechos quiser (clique no pincel de novo pra parar).'
     : 'Pincel ativo — selecione o trecho que vai receber essa formatação.');
 }
 
@@ -6396,43 +6426,71 @@ function noteFormatPainterExit(){
   if(btn) btn.classList.remove('active');
 }
 
+// Aplica o formato copiado em cada nó de texto que está dentro da seleção, dividindo os
+// nós exatamente nos limites da seleção — assim parágrafos, listas, links etc. continuam
+// intactos (só o texto selecionado ganha um <span> novo por cima, nunca a estrutura toda).
+function noteWrapRangeTextNodes(root, range, format){
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){ return range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
+  });
+  const nodes = [];
+  let n;
+  while((n = walker.nextNode())) nodes.push(n);
+  let firstSpan = null, lastSpan = null;
+  nodes.forEach(node=>{
+    const isStart = node === range.startContainer;
+    const isEnd = node === range.endContainer;
+    const localStart = isStart ? range.startOffset : 0;
+    const localEnd = isEnd ? range.endOffset : node.length;
+    if(localStart >= localEnd) return;
+    let working = node;
+    if(localEnd < working.length) working.splitText(localEnd);
+    if(localStart > 0) working = working.splitText(localStart);
+    if(!working.textContent) return;
+    const span = document.createElement('span');
+    NOTE_FORMAT_PROPS.forEach(prop=>{
+      const value = format[prop];
+      if(!value) return;
+      if(prop === 'backgroundColor' && /transparent|rgba\(0,\s*0,\s*0,\s*0\)/i.test(value)) return;
+      if(prop === 'textTransform' && value === 'none') return;
+      span.style[prop] = value;
+    });
+    working.parentNode.insertBefore(span, working);
+    span.appendChild(working);
+    if(!firstSpan) firstSpan = span;
+    lastSpan = span;
+  });
+  return { firstSpan, lastSpan };
+}
+
 function noteApplyPaintedFormat(){
   const editor = document.getElementById('noteContentEditor');
   const sel = window.getSelection();
-  if(!editor || !sel || sel.isCollapsed || !notePaintedFormat || sel.rangeCount === 0) return;
-  if(!editor.contains(sel.anchorNode)) return;
-  noteFocusEditor();
-  const range = sel.getRangeAt(0);
-  const span = document.createElement('span');
-  NOTE_FORMAT_PROPS.forEach(prop=>{
-    const value = notePaintedFormat[prop];
-    if(!value) return;
-    if(prop === 'backgroundColor' && /transparent|rgba\(0,\s*0,\s*0,\s*0\)/i.test(value)) return;
-    if(prop === 'textTransform' && value === 'none') return;
-    span.style[prop] = value;
-  });
-  try{
-    const contents = range.extractContents();
-    span.appendChild(contents);
-    range.insertNode(span);
+  if(!notePaintedFormat || !noteEditorSelectionValid(sel, editor)) return;
+  const range = sel.getRangeAt(0).cloneRange();
+  const { firstSpan, lastSpan } = noteWrapRangeTextNodes(editor, range, notePaintedFormat);
+  if(firstSpan && lastSpan){
     const newRange = document.createRange();
-    newRange.selectNodeContents(span);
+    newRange.setStartBefore(firstSpan);
+    newRange.setEndAfter(lastSpan);
     sel.removeAllRanges();
     sel.addRange(newRange);
-  }catch(e){ console.error('erro ao aplicar formatação com o pincel', e); }
+  }
   onNoteContentInput();
   if(noteFormatPainterMode !== 'sticky') noteFormatPainterExit();
 }
 
-document.addEventListener('mouseup', (e)=>{
+function noteFormatPainterMaybeApply(target){
   if(!noteFormatPainterMode) return;
   const editor = document.getElementById('noteContentEditor');
-  if(!editor || !editor.contains(e.target)) return;
+  if(!editor || !editor.contains(target)) return;
   setTimeout(()=>{
     const sel = window.getSelection();
     if(sel && !sel.isCollapsed) noteApplyPaintedFormat();
   }, 0);
-});
+}
+document.addEventListener('mouseup', (e)=> noteFormatPainterMaybeApply(e.target));
+document.addEventListener('touchend', (e)=> noteFormatPainterMaybeApply(e.target));
 document.addEventListener('keydown', (e)=>{
   if(e.key === 'Escape' && noteFormatPainterMode) noteFormatPainterExit();
 });
@@ -6517,7 +6575,7 @@ function renderNoteEditor(){
     <div class="note-toolbar">
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="undoNoteEdit()" title="desfazer última alteração">↩ desfazer</button>
       <div class="note-tb-sep"></div>
-      <button type="button" class="note-tb-btn" id="noteFormatPainterBtn" onmousedown="event.preventDefault()" onclick="noteFormatPainterClick(event)" title="pincel de formatação — copia TODA a formatação (negrito, itálico, sublinhado, cor, destaque, tamanho e tipo de fonte) de um trecho selecionado e aplica em outro (clique duplo mantém o pincel ativo pra aplicar várias vezes)">🖌️ pincel</button>
+      <button type="button" class="note-tb-btn" id="noteFormatPainterBtn" onmousedown="event.preventDefault()" onclick="noteFormatPainterClick(event)" ondblclick="noteFormatPainterDblClick(event)" title="pincel de formatação — copia TODA a formatação (negrito, itálico, sublinhado, cor, destaque, tamanho e tipo de fonte) de um trecho selecionado e aplica em outro (clique duplo mantém o pincel ativo pra aplicar várias vezes)">🖌️ pincel</button>
       <div class="note-tb-sep"></div>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H1')">Título</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H2')">Subtítulo</button>
