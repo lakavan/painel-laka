@@ -458,9 +458,9 @@
   .fin-table-wrap{overflow-x:auto;}
   .fin-table{width:100%;border-collapse:collapse;min-width:640px;}
   .fin-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border-strong);}
-  .fin-table td{font-size:13px;padding:8px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .fin-table td{font-size:13.5px;padding:9px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
   .fin-table tr:hover td{background:var(--surface2);}
-  .fin-num{font-family:var(--mono);text-align:right;white-space:nowrap;}
+  .fin-num{font-family:var(--sans);font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;letter-spacing:0.1px;text-align:right;white-space:nowrap;}
   .fin-num.pos{color:var(--ok);}
   .fin-num.neg{color:var(--neg);}
   .fin-breakdown{font-size:11px;color:var(--muted);margin-top:2px;}
@@ -495,17 +495,22 @@
   .month-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
   .msum{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:130px;}
   .msum .l{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:3px;}
-  .msum .v{font-family:var(--mono);font-size:16px;font-weight:700;}
+  .msum .v{font-family:var(--sans);font-variant-numeric:tabular-nums;font-size:17px;font-weight:700;}
   .msum .v.pos{color:var(--ok);}
   .msum .v.neg{color:var(--neg);}
   .msum.imposto-box input{width:100%;background:transparent;border:none;color:var(--warn);font-family:var(--mono);font-size:16px;font-weight:700;padding:0;}
 
   .day-cell-input{
     background:transparent;border:1px solid transparent;color:var(--text);
-    border-radius:6px;padding:5px 6px;font-family:var(--mono);font-size:12.5px;
-    width:90px;text-align:right;
+    border-radius:6px;padding:6px 7px;font-family:var(--sans);font-variant-numeric:tabular-nums;
+    font-size:14px;font-weight:600;width:90px;text-align:right;
   }
   .day-cell-input:hover, .day-cell-input:focus{background:var(--bg);border-color:var(--border-strong);}
+  /* remove as setinhas nativas de incrementar/decrementar dos campos numéricos da
+     tabela financeira — fica mais limpo, digitação direta sem clique acidental nelas */
+  .day-cell-input::-webkit-inner-spin-button,
+  .day-cell-input::-webkit-outer-spin-button{ -webkit-appearance:none; margin:0; }
+  .day-cell-input[type=number]{ -moz-appearance:textfield; }
   .fin-table tr.weekend td{background:rgba(59,130,246,0.04);}
   .detail-btn{background:none;border:none;color:var(--blue);cursor:pointer;font-size:11px;font-family:var(--mono);}
   .detail-row td{background:var(--surface2);padding:10px 12px;}
@@ -1011,6 +1016,10 @@
     flex-shrink:0;transition:border-color .15s, color .15s;
   }
   .funnel-icon-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .funnel-icon-btn-open{
+    background:var(--blue);border-color:var(--blue);color:#fff;font-size:14px;font-weight:700;
+  }
+  .funnel-icon-btn-open:hover{background:var(--blue-bright);border-color:var(--blue-bright);color:#fff;}
 
   /* whatsapp message stage */
   .wa-stage-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
@@ -4215,7 +4224,7 @@ function funnelLinksHtml(links){
           <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
           <div class="funnel-link-url-row">
             <span class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</span>
-            ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
+            ${l.url ? `<button class="funnel-icon-btn funnel-icon-btn-open" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
           </div>
         </div>
         <div class="funnel-link-actions">
@@ -7480,17 +7489,65 @@ function setupDragHandlers(){
   attachSortable('phonesList', ids=>reorderArray('phones', ids));
 }
 
-// Cola sempre "limpo" no editor de notas: remove qualquer estilo escondido que vem
-// junto quando você copia texto de um site (cor de fundo, fonte, "destacado" etc.),
-// mantendo só o texto e as quebras de parágrafo — assim o texto colado já nasce no
-// padrão visual do resto da nota, sem precisar "consertar" depois com o pincel.
+// Cola na aba Notas preservando SÓ a formatação "de verdade" (negrito, itálico,
+// sublinhado, títulos — viram tamanho de fonte —, listas, links, código, tabelas),
+// que é o que vem ao copiar do ChatGPT/Claude ou de um documento. Qualquer coisa
+// "decorativa" do site de origem (cor de fundo, cor de fonte customizada, tipo de
+// fonte, classes) é descartada — por isso um texto colado nunca fica com aquele
+// "destacado" ou fundo colorido estranho vindo de outro lugar.
+const NOTE_PASTE_HEADING_SIZE = {H1:'22px', H2:'19px', H3:'17px', H4:'15px', H5:'14px', H6:'13px'};
+function noteSanitizePastedHtml(html){
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = html;
+  wrapper.querySelectorAll('script,style').forEach(n=>n.remove());
+  function walk(node){
+    let out = '';
+    node.childNodes.forEach(child=>{
+      if(child.nodeType === Node.TEXT_NODE){ out += escapeHtml(child.textContent); return; }
+      if(child.nodeType !== Node.ELEMENT_NODE) return;
+      const tag = child.tagName;
+      if(tag === 'BR'){ out += '<br>'; return; }
+      const inner = walk(child);
+      if(tag==='STRONG' || tag==='B') out += `<b>${inner}</b>`;
+      else if(tag==='EM' || tag==='I') out += `<i>${inner}</i>`;
+      else if(tag==='U') out += `<u>${inner}</u>`;
+      else if(tag==='CODE') out += `<span style="font-family:var(--mono);background:var(--surface3);padding:1px 5px;border-radius:4px;font-size:12.5px;">${inner}</span>`;
+      else if(tag==='A'){
+        const href = child.getAttribute('href')||'';
+        out += /^https?:\/\//i.test(href) ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener">${inner}</a>` : inner;
+      }
+      else if(NOTE_PASTE_HEADING_SIZE[tag]) out += `<p><span style="font-size:${NOTE_PASTE_HEADING_SIZE[tag]};font-weight:700;">${inner}</span></p>`;
+      else if(tag==='UL') out += `<ul>${inner}</ul>`;
+      else if(tag==='OL') out += `<ol>${inner}</ol>`;
+      else if(tag==='LI') out += `<li>${inner}</li>`;
+      else if(tag==='PRE') out += `<p><span style="font-family:var(--mono);font-size:12.5px;">${inner}</span></p>`;
+      else if(tag==='TABLE') out += `<table style="border-collapse:collapse;">${inner}</table>`;
+      else if(tag==='THEAD') out += `<thead>${inner}</thead>`;
+      else if(tag==='TBODY') out += `<tbody>${inner}</tbody>`;
+      else if(tag==='TR') out += `<tr>${inner}</tr>`;
+      else if(tag==='TD') out += `<td style="border:1px solid var(--border-strong);padding:4px 8px;">${inner}</td>`;
+      else if(tag==='TH') out += `<th style="border:1px solid var(--border-strong);padding:4px 8px;font-weight:700;">${inner}</th>`;
+      else if(tag==='P' || tag==='DIV' || tag==='BLOCKQUOTE') out += `<p>${inner}</p>`;
+      else out += inner;
+    });
+    return out;
+  }
+  return walk(wrapper);
+}
 document.addEventListener('paste', function(e){
   const editor = document.getElementById('noteContentEditor');
   if(!editor || !editor.contains(e.target)) return;
   e.preventDefault();
-  const raw = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
-  const html = raw.split(/\r\n|\r|\n/).map(line => line ? `<p>${escapeHtml(line)}</p>` : '<p><br></p>').join('');
-  document.execCommand('insertHTML', false, html);
+  const cd = e.clipboardData || window.clipboardData;
+  const html = cd.getData('text/html');
+  let finalHtml;
+  if(html && html.trim()){
+    finalHtml = noteSanitizePastedHtml(html);
+  } else {
+    const raw = cd.getData('text/plain') || '';
+    finalHtml = raw.split(/\r\n|\r|\n/).map(line => line ? `<p>${escapeHtml(line)}</p>` : '<p><br></p>').join('');
+  }
+  document.execCommand('insertHTML', false, finalHtml);
   onNoteContentInput();
 }, true);
 
