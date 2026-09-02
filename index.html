@@ -2606,6 +2606,10 @@ async function loadState(){
         state.contactsMigratedFromManagers = true;
       }
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
+      // Sempre abre no mês atual de verdade ao carregar o app — evita que a tela financeira
+      // fique "travada" num mês antigo só porque foi o último mês navegado/salvo antes.
+      // Durante a mesma sessão, navegar pra outro mês (changeMonth) continua funcionando normal.
+      state.finance.currentMonth = currentMonthKey();
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
       if(!state.phones) state.phones = [];
