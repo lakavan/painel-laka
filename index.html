@@ -992,6 +992,8 @@
 
   /* ---------- FUNNEL VISUAL ---------- */
   .funnel-wrap{display:flex;flex-direction:column;align-items:center;gap:0;}
+  #funnelLinksList.funnel-wrap{align-items:stretch;gap:8px;}
+  #funnelLinksList .funnel-stage{margin:0;}
   .funnel-stage{
     width:100%;max-width:100%;background:var(--surface2);border:1px solid var(--border);
     border-radius:12px;padding:12px 16px;margin:0 auto;position:relative;
@@ -1182,12 +1184,34 @@
   .status-badge.desenvolvimento{color:var(--blue-bright);background:var(--blue-soft);border:1px solid rgba(59,130,246,.3);}
   .status-badge.pausado{color:var(--warn);background:rgba(242,169,60,.12);border:1px solid rgba(242,169,60,.3);}
   .status-badge.finalizado{color:var(--green);background:var(--green-soft);border:1px solid rgba(34,197,94,.3);}
+  .status-badge.neutral{color:var(--text);background:var(--surface3);border:1px solid var(--border-strong);}
   .project-card-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
   .project-detail-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
   .project-detail-title{font-family:var(--display);font-size:22px;font-weight:800;}
   .project-detail-title-input{font-family:var(--display);font-size:22px;font-weight:800;color:var(--text);background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;margin:-4px -8px;flex:1;min-width:180px;transition:border-color .15s,background .15s;}
   .project-detail-title-input:hover{border-color:var(--border);}
   .project-detail-title-input:focus{outline:none;border-color:var(--blue);background:var(--surface2);}
+
+  /* cabeçalho da página de detalhe de produto */
+  .product-hero{
+    display:flex;align-items:center;gap:14px;background:linear-gradient(135deg, var(--surface), var(--surface2));
+    border:1px solid var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow-sm);
+  }
+  .product-hero-icon{
+    width:46px;height:46px;flex-shrink:0;border-radius:12px;background:var(--blue-soft);border:1px solid rgba(59,130,246,.3);
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+  }
+  .product-hero-main{flex:1;min-width:180px;}
+  .product-hero-title-input{
+    display:block;width:100%;font-family:var(--display);font-size:20px;font-weight:800;color:var(--text);
+    background:transparent;border:1px solid transparent;border-radius:8px;padding:3px 6px;margin:-3px -6px;transition:border-color .15s,background .15s;
+  }
+  .product-hero-title-input:hover{border-color:var(--border);}
+  .product-hero-title-input:focus{outline:none;border-color:var(--blue);background:var(--surface3);}
+  .product-hero-status{margin-top:4px;}
+  .product-hero-status .status-badge{font-size:10px;}
+  .product-hero-del{flex-shrink:0;border:1px solid var(--border);border-radius:9px;padding:7px 12px;color:var(--muted);}
+  .product-hero-del:hover{border-color:var(--neg);color:var(--neg);}
   .project-detail-tool{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:6px 12px;}
   .proj-info-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
   .proj-info-row:last-child{border-bottom:none;}
@@ -1694,7 +1718,7 @@
             <table class="fin-table">
               <thead id="finTableHead"><tr>
                 <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
-                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
+                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROI</th>
               </tr></thead>
               <tbody id="finTableBody"></tbody>
             </table>
@@ -1793,13 +1817,17 @@
 
       <div id="productDetail" style="display:none;">
         <button class="back-btn" onclick="selectProduct(null)">← voltar aos produtos</button>
-        <div class="project-detail-head">
-          <input type="text" id="prodDetailTitleInput" class="project-detail-title-input" placeholder="nome do produto" onchange="renameCurrentProduct(this.value)">
-          <button class="del-btn" onclick="deleteCurrentProduct()">✕ excluir produto</button>
+        <div class="product-hero">
+          <div class="product-hero-icon">📦</div>
+          <div class="product-hero-main">
+            <input type="text" id="prodDetailTitleInput" class="product-hero-title-input" placeholder="nome do produto" onchange="renameCurrentProduct(this.value)">
+            <div class="product-hero-status" id="productHeroStatus"></div>
+          </div>
+          <button class="del-btn product-hero-del" onclick="deleteCurrentProduct()">✕ excluir produto</button>
         </div>
 
         <div class="panel full">
-          <div class="panel-head"><h2>Status do produto</h2></div>
+          <div class="panel-head"><h2><span class="sub">🎯 defina em que etapa esse produto está agora</span>Status do produto</h2></div>
           <div class="add-row">
             <select id="productStatusSelect" onchange="handleProductStatusChange(this.value)"></select>
           </div>
@@ -1814,34 +1842,9 @@
           <div id="customStatusManageList" style="margin-top:10px;"></div>
         </div>
 
-        <div class="panel full" id="phonesPanel">
-          <div class="panel-head">
-            <h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
-            <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
-          </div>
-          <div id="phonesList"></div>
-          <div class="add-form" id="newPhoneRow">
-            <div class="add-row" style="flex-direction:column;">
-              <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
-              <div class="add-row" style="margin-top:0;">
-                <input type="text" id="phoneProduto" placeholder="produto/uso">
-                <select id="phoneStatus" style="flex:1;">
-                  <option value="ativo">ativo</option>
-                  <option value="atencao">atenção</option>
-                  <option value="queimado">queimado</option>
-                </select>
-              </div>
-              <div class="add-row" style="margin-top:0;">
-                <button class="add" style="flex:1;" onclick="addPhone()">+ adicionar número</button>
-                <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="panel full" id="funnelLinksPanel">
           <div class="panel-head">
-            <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
+            <h2><span class="sub">🔗 páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
             <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
           </div>
           <div id="funnelLinksList" class="funnel-wrap"></div>
@@ -1872,6 +1875,31 @@
           <div class="panel-head"><h2><span class="sub">🛡️ cada card é uma objeção diferente — nomeia, descreve, e monta a resposta em variações</span>Quebra de objeções</h2></div>
           <div id="objectionsStepsList" class="funnel-wrap"></div>
           <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
+        </div>
+
+        <div class="panel full" id="phonesPanel">
+          <div class="panel-head">
+            <h2><span class="sub">📱 números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
+            <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
+          </div>
+          <div id="phonesList"></div>
+          <div class="add-form" id="newPhoneRow">
+            <div class="add-row" style="flex-direction:column;">
+              <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
+              <div class="add-row" style="margin-top:0;">
+                <input type="text" id="phoneProduto" placeholder="produto/uso">
+                <select id="phoneStatus" style="flex:1;">
+                  <option value="ativo">ativo</option>
+                  <option value="atencao">atenção</option>
+                  <option value="queimado">queimado</option>
+                </select>
+              </div>
+              <div class="add-row" style="margin-top:0;">
+                <button class="add" style="flex:1;" onclick="addPhone()">+ adicionar número</button>
+                <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div id="productEmpty" class="empty-block">
@@ -4060,6 +4088,17 @@ function renderProductStatusSelect(){
   sel.innerHTML = '<option value="">sem status definido</option>'
     + allProductStatuses().map(s=>`<option value="${s.id}" ${p.status===s.id?'selected':''}>${s.emoji} ${escapeHtml(s.label)}</option>`).join('')
     + '<option value="__new__">+ criar novo status...</option>';
+  renderProductHeroStatus();
+}
+function renderProductHeroStatus(){
+  const el = document.getElementById('productHeroStatus');
+  if(!el) return;
+  const p = currentProduct();
+  if(!p) return;
+  const st = findProductStatus(p.status);
+  el.innerHTML = st
+    ? `<span class="status-badge neutral">${st.emoji} ${escapeHtml(st.label)}</span>`
+    : `<span class="status-badge neutral" style="opacity:.6;">sem status definido</span>`;
 }
 function handleProductStatusChange(value){
   if(value==='__new__'){
@@ -4204,10 +4243,9 @@ function copyFunnelLink(id, ev){
 function funnelLinksHtml(links){
   if(links.length===0) return '<div class="empty">nenhum link ainda.</div>';
   return links.map((l,idx)=>{
-    const w = funnelWidth(idx, links.length);
     let stage;
     if(funnelLinkEditingId === l.id){
-      stage = `<div class="funnel-stage funnel-link-stage editing" data-id="${l.id}" style="width:${w}%;" onclick="event.stopPropagation()">
+      stage = `<div class="funnel-stage funnel-link-stage editing" data-id="${l.id}" onclick="event.stopPropagation()">
         <div class="tool-edit-row" style="width:100%;">
           <input type="text" value="${escapeHtml(l.nome)}" placeholder="nome da página" onchange="updateFunnelLinkField('${l.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(l.url||'')}" placeholder="link da página" onchange="updateFunnelLinkField('${l.id}','url',this.value)">
@@ -4218,7 +4256,7 @@ function funnelLinksHtml(links){
         </div>
       </div>`;
     } else {
-      stage = `<div class="funnel-stage funnel-link-stage" data-id="${l.id}" style="width:${w}%;">
+      stage = `<div class="funnel-stage funnel-link-stage" data-id="${l.id}">
         <span class="drag-handle">⠿</span>
         <div style="flex:1;min-width:0;">
           <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
@@ -4234,8 +4272,7 @@ function funnelLinksHtml(links){
         </div>
       </div>`;
     }
-    const connector = idx < links.length-1 ? '<div class="funnel-connector"></div>' : '';
-    return stage + connector;
+    return stage;
   }).join('');
 }
 
@@ -5390,12 +5427,12 @@ function updateRowComputed(day){
   const fat = Number(d.faturamento)||0;
   const lucro = fat - gasto;
   const margem = fat>0 ? (lucro/fat*100) : null;
-  const roas = gasto>0 ? (fat/gasto) : null;
+  const roi = gasto>0 ? (lucro/gasto*100) : null;
   const totalCell = document.getElementById('fattotal-'+day);
   if(totalCell) totalCell.innerText = brl(fat);
   const lucroCell = document.getElementById('lucro-'+day);
   const margemCell = document.getElementById('margem-'+day);
-  const roasCell = document.getElementById('roas-'+day);
+  const roiCell = document.getElementById('roas-'+day);
   if(lucroCell){
     lucroCell.innerText = brl(lucro);
     lucroCell.className = 'fin-num ' + (lucro>=0?'pos':'neg');
@@ -5403,8 +5440,9 @@ function updateRowComputed(day){
   if(margemCell){
     margemCell.innerText = margem===null ? '—' : margem.toFixed(1)+'%';
   }
-  if(roasCell){
-    roasCell.innerText = roas===null ? '—' : roas.toFixed(2)+'x';
+  if(roiCell){
+    roiCell.innerText = roi===null ? '—' : roi.toFixed(1)+'%';
+    roiCell.className = 'fin-num ' + (roi===null ? '' : (roi>=0?'pos':'neg'));
   }
 }
 
@@ -5420,7 +5458,7 @@ function renderFinanceTableHeader(gateways){
   }
   head.innerHTML = `<tr>
     <th>Dia</th><th style="text-align:right;">Gasto</th>${fatHeaders}
-    <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
+    <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROI</th>
   </tr>`;
 }
 
@@ -5437,7 +5475,7 @@ function renderFinanceTable(){
     const d = getDay(monthObj, day);
     const lucro = (d.faturamento||0) - (d.gasto||0);
     const margem = d.faturamento>0 ? (lucro/d.faturamento*100) : null;
-    const roas = d.gasto>0 ? (d.faturamento/d.gasto) : null;
+    const roi = d.gasto>0 ? (lucro/d.gasto*100) : null;
     let fatCells;
     if(gateways.length){
       fatCells = gateways.map(g=>{
@@ -5453,7 +5491,7 @@ function renderFinanceTable(){
       ${fatCells}
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
-      <td class="fin-num" id="roas-${day}">${roas===null?'—':roas.toFixed(2)+'x'}</td>
+      <td class="fin-num ${roi===null?'':(roi>=0?'pos':'neg')}" id="roas-${day}">${roi===null?'—':roi.toFixed(1)+'%'}</td>
     </tr>`;
   }
   tbody.innerHTML = rows;
@@ -5510,6 +5548,7 @@ function updateMonthSummary(){
   let totalGasto=0, totalFat=0;
   Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
   const lucroPre = totalFat - totalGasto;
+  const margemMes = totalFat>0 ? (lucroPre/totalFat*100) : null;
   const imposto = Number(monthObj.imposto||0);
   const lucroReal = lucroPre - imposto;
   const el = document.getElementById('monthSummary');
@@ -5521,6 +5560,7 @@ function updateMonthSummary(){
       ${(monthObj.gateways && monthObj.gateways.length) ? `<div class="gateway-chip">💳 ${monthObj.gateways.map(escapeHtml).join(', ')}</div>` : `<div class="gateway-chip gateway-chip-empty">+ escolher gateways</div>`}
     </div>
     <div class="msum"><div class="l">Lucro pré-imposto</div><div class="v ${lucroPre>=0?'pos':'neg'}">${brl(lucroPre)}</div></div>
+    <div class="msum"><div class="l">Margem do mês</div><div class="v ${margemMes===null?'':(margemMes>=0?'pos':'neg')}">${margemMes===null?'—':margemMes.toFixed(1)+'%'}</div></div>
     <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="R$ 0" onchange="updateImposto(this.value)"></div>
     <div class="msum"><div class="l">Lucro real pós-imposto</div><div class="v ${lucroReal>=0?'pos':'neg'}">${brl(lucroReal)}</div></div>
   `;
