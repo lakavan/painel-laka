@@ -68,9 +68,10 @@
     letter-spacing:-0.005em;
   }
   .wrap{max-width:1600px;margin:0 auto;}
-  @media(min-width:1900px){ .wrap{ max-width:1880px; } }
-  @media(min-width:2400px){ .wrap{ max-width:2200px; } }
-  @media(min-width:3000px){ .wrap{ max-width:2600px; } }
+  @media(min-width:1800px){ .wrap{max-width:1740px;} }
+  @media(min-width:2100px){ .wrap{max-width:1980px;} }
+  @media(min-width:2600px){ .wrap{max-width:2320px;} }
+  @media(min-width:3200px){ .wrap{max-width:2680px;} }
   ::-webkit-scrollbar{width:10px;height:10px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
@@ -134,6 +135,10 @@
     display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;
   }
   .hide-values-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .period-switch{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px;}
+  .period-btn{background:transparent;border:none;color:var(--muted);font-family:var(--sans);font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .15s;}
+  .period-btn:hover{color:var(--text);}
+  .period-btn.active{background:var(--blue);color:#fff;box-shadow:var(--shadow-glow-blue);}
   .eye-icon{display:inline-flex;width:17px;height:17px;}
   .eye-icon svg{width:100%;height:100%;}
   .hide-values-btn.active{background:var(--blue-soft);border-color:var(--blue);color:var(--blue-bright);}
@@ -403,7 +408,7 @@
   .offer-card-body{margin-top:8px;padding-left:22px;display:flex;flex-direction:column;gap:5px;}
   .offer-row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
   .offer-label{font-family:var(--mono);font-size:9.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;min-width:78px;}
-  .offer-value{font-size:12.5px;color:var(--text);word-break:break-word;white-space:pre-wrap;}
+  .offer-value{font-size:12.5px;color:var(--text);word-break:break-word;}
   .offer-obs{color:var(--muted);}
   .offer-status-chip{
     display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;
@@ -454,13 +459,29 @@
   .cost-amount{font-family:var(--mono);font-size:13.5px;font-weight:600;min-width:90px;text-align:right;}
   .cost-freq{font-family:var(--mono);font-size:9.5px;color:var(--muted2);min-width:46px;}
 
+  /* ---------- ASSINATURAS ---------- */
+  .subs-panel{margin-top:16px;}
+  .subs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;}
+  .sub-card{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 10px;transition:border-color .15s;}
+  .sub-card:hover{border-color:var(--border-strong);}
+  .sub-drag-handle{cursor:grab;color:var(--muted2);font-size:12px;flex-shrink:0;}
+  .sub-ico{font-size:17px;flex-shrink:0;width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:var(--surface3);border-radius:8px;}
+  .sub-name{flex:1;min-width:0;background:transparent;border:none;color:var(--text);font-size:12.5px;font-weight:600;padding:2px 0;}
+  .sub-name:focus{outline:none;border-bottom:1px solid var(--border-strong);}
+  .sub-value-row{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0;}
+  .sub-amount{width:66px;background:transparent;border:none;color:var(--blue-bright);font-family:var(--mono);font-size:12px;font-weight:700;text-align:right;padding:0;}
+  .sub-amount:focus{outline:none;}
+  .sub-freq{background:transparent;border:none;color:var(--muted2);font-family:var(--mono);font-size:9px;text-align:right;padding:0;}
+  .sub-del{flex-shrink:0;opacity:0;transition:opacity .15s;}
+  .sub-card:hover .sub-del{opacity:1;}
+
   /* ---------- FINANCEIRO TABLE ---------- */
   .fin-table-wrap{overflow-x:auto;}
   .fin-table{width:100%;border-collapse:collapse;min-width:640px;}
   .fin-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border-strong);}
-  .fin-table td{font-size:13.5px;padding:9px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .fin-table td{font-size:13px;padding:8px;border-bottom:1px solid var(--border);vertical-align:top;}
   .fin-table tr:hover td{background:var(--surface2);}
-  .fin-num{font-family:var(--sans);font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;letter-spacing:0.1px;text-align:right;white-space:nowrap;}
+  .fin-num{font-family:var(--mono);text-align:right;white-space:nowrap;}
   .fin-num.pos{color:var(--ok);}
   .fin-num.neg{color:var(--neg);}
   .fin-breakdown{font-size:11px;color:var(--muted);margin-top:2px;}
@@ -495,22 +516,17 @@
   .month-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
   .msum{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:130px;}
   .msum .l{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:3px;}
-  .msum .v{font-family:var(--sans);font-variant-numeric:tabular-nums;font-size:17px;font-weight:700;}
+  .msum .v{font-family:var(--mono);font-size:16px;font-weight:700;}
   .msum .v.pos{color:var(--ok);}
   .msum .v.neg{color:var(--neg);}
   .msum.imposto-box input{width:100%;background:transparent;border:none;color:var(--warn);font-family:var(--mono);font-size:16px;font-weight:700;padding:0;}
 
   .day-cell-input{
     background:transparent;border:1px solid transparent;color:var(--text);
-    border-radius:6px;padding:6px 7px;font-family:var(--sans);font-variant-numeric:tabular-nums;
-    font-size:14px;font-weight:600;width:90px;text-align:right;
+    border-radius:6px;padding:5px 6px;font-family:var(--mono);font-size:12.5px;
+    width:90px;text-align:right;
   }
   .day-cell-input:hover, .day-cell-input:focus{background:var(--bg);border-color:var(--border-strong);}
-  /* remove as setinhas nativas de incrementar/decrementar dos campos numéricos da
-     tabela financeira — fica mais limpo, digitação direta sem clique acidental nelas */
-  .day-cell-input::-webkit-inner-spin-button,
-  .day-cell-input::-webkit-outer-spin-button{ -webkit-appearance:none; margin:0; }
-  .day-cell-input[type=number]{ -moz-appearance:textfield; }
   .fin-table tr.weekend td{background:rgba(59,130,246,0.04);}
   .detail-btn{background:none;border:none;color:var(--blue);cursor:pointer;font-size:11px;font-family:var(--mono);}
   .detail-row td{background:var(--surface2);padding:10px 12px;}
@@ -560,7 +576,7 @@
   .log-entry:hover{background:var(--surface2);}
   .log-meta{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-bottom:3px;}
   .log-edited-tag{color:var(--blue);}
-  .log-text{font-size:13px;line-height:1.5;white-space:pre-wrap;}
+  .log-text{font-size:13px;line-height:1.5;}
   .log-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:opacity .15s;}
   .log-entry:hover .log-actions{opacity:1;}
   .log-del-btn:hover{color:var(--urgent);border-color:var(--urgent);}
@@ -569,7 +585,22 @@
 
   .loading{color:var(--muted);font-family:var(--mono);font-size:12px;padding:40px;text-align:center;}
   .full{grid-column:1/-1;}
+  .product-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;margin-bottom:16px;}
+  .product-two-col > .panel{margin-bottom:0;}
+  @media(max-width:900px){ .product-two-col{grid-template-columns:1fr;gap:16px;} }
   .field-label{font-size:11px;color:var(--muted);margin-bottom:3px;display:block;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.5px;}
+
+  /* ---------- PRODUTO: menu de páginas do funil fixo/centralizado à esquerda ---------- */
+  .product-detail-layout{display:flex;gap:18px;align-items:flex-start;}
+  .product-side-col{width:320px;flex-shrink:0;position:sticky;top:16px;}
+  .product-side-col .panel{margin-bottom:0;}
+  .product-main-col{flex:1;min-width:0;}
+  .product-main-col > .panel{margin-bottom:16px;}
+  @media(max-width:1100px){
+    .product-detail-layout{flex-direction:column;}
+    .product-side-col{width:100%;position:static;}
+  }
+  @media(min-width:1900px){ .product-side-col{width:360px;} }
 
   /* ---------- FIX MOBILE OVERFLOW ---------- */
   html, body{ overflow-x:hidden; max-width:100vw; }
@@ -682,7 +713,26 @@
 
   /* ---------- ATIVOS / GERENTES ---------- */
   .asset-row{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
-  .mining-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:12px;transition:border-color .15s;}
+  .mining-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:9px;transition:border-color .15s;}
+  #miningList{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px;align-items:start;}
+  #miningList .mining-card{margin-bottom:0;}
+  .mining-group-card{grid-column:1/-1;}
+  .mining-group-card{background:var(--surface3);border:1px solid var(--border-strong);border-radius:14px;padding:6px;margin-bottom:12px;}
+  .mining-group-head{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;border-radius:10px;transition:background .15s;}
+  .mining-group-head:hover{background:var(--surface2);}
+  .mining-group-ico{font-size:18px;flex-shrink:0;}
+  .mining-group-title{flex:1;min-width:0;}
+  .mining-group-name{font-family:var(--display);font-weight:800;font-size:14.5px;}
+  .mining-group-count{font-weight:400;color:var(--muted);font-size:12.5px;}
+  .mining-group-sub{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:2px;}
+  .mining-group-toggle-ico{color:var(--muted);font-size:13px;flex-shrink:0;}
+  .mining-group-body{padding:10px 4px 4px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;}
+  .mining-group-body .mining-card{margin-bottom:0;}
+  .offer-group-card{transition:border-color .15s, box-shadow .15s;}
+  .offer-group-card.offer-drop-hover{border-color:var(--blue);box-shadow:0 0 0 2px rgba(59,130,246,0.25);}
+  .offer-group-body{padding:8px 4px 4px;}
+  .offer-card{transition:border-color .15s, box-shadow .15s, transform .1s;}
+  .offer-card.offer-drop-hover{border-color:var(--blue);box-shadow:0 0 0 2px rgba(59,130,246,0.25);transform:scale(0.99);}
   .mining-card:hover{border-color:var(--border-strong);}
   .mining-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;}
   .mining-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;}
@@ -730,6 +780,12 @@
   .mining-history-entry .hv{color:var(--green);}
   .mining-stats-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
   .mining-chart-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;}
+  .mining-summary-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;}
+  .mining-chart-toggle{
+    background:none;border:1px solid var(--border);color:var(--muted);border-radius:20px;
+    padding:4px 11px;font-size:11px;cursor:pointer;transition:border-color .15s, color .15s;
+  }
+  .mining-chart-toggle:hover{border-color:var(--blue);color:var(--blue-bright);}
   .mining-trend-badge{font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:20px;border:1px solid transparent;}
   .mining-trend-badge.trend-escalando, .mining-trend-badge.trend-forte{color:var(--ok);background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.3);}
   .mining-trend-badge.trend-estavel, .mining-trend-badge.trend-oscilando{color:var(--warn);background:rgba(242,169,60,0.12);border-color:rgba(242,169,60,0.3);}
@@ -810,18 +866,21 @@
   .empty-block-sub{font-size:12px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.5;}
   .video-thumb-preview{margin-top:8px;max-width:280px;border-radius:8px;overflow:hidden;background:var(--bg);}
   .video-thumb-preview:empty{display:none;}
-  .mining-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
-  .mining-name{font-family:var(--display);font-weight:700;font-size:14px;}
-  .mining-nicho{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:rgba(59,130,246,0.10);border:1px solid rgba(59,130,246,0.3);border-radius:4px;padding:2px 7px;color:var(--blue);}
-  .mining-ads-highlight{font-family:var(--mono);font-weight:800;font-size:15px;color:var(--green);margin-left:auto;}
-  .mining-desc{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
+  .mining-head{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap;}
+  .mining-name{font-family:var(--display);font-weight:700;font-size:13px;}
+  .mining-nicho{font-family:var(--mono);font-size:9px;text-transform:uppercase;background:rgba(59,130,246,0.10);border:1px solid rgba(59,130,246,0.3);border-radius:4px;padding:1px 6px;color:var(--blue);}
+  .mining-ads-highlight{font-family:var(--mono);font-weight:800;font-size:13px;color:var(--green);margin-left:auto;white-space:nowrap;}
+  .mining-desc{font-size:11.5px;color:var(--muted);margin-bottom:6px;line-height:1.4;}
   .mining-link{font-size:11.5px;color:var(--blue);word-break:break-all;display:inline-block;margin-bottom:0;}
   .mining-links{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
   .mining-sub{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-bottom:6px;}
-  .mining-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
-  .mining-chip{font-family:var(--mono);font-size:10.5px;background:var(--blue-soft);color:var(--blue);border-radius:6px;padding:3px 8px;}
-  .mining-chip-ticket{font-family:var(--mono);font-size:10.5px;background:rgba(34,197,94,0.12);color:var(--green);border-radius:6px;padding:3px 8px;font-weight:700;}
-  .mining-obs{background:rgba(245,166,35,0.12);border:1px solid rgba(245,166,35,0.35);color:var(--warn);border-radius:8px;padding:7px 10px;font-size:11.5px;margin-bottom:8px;}
+  .mining-meta-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center;}
+  .mining-chip{font-family:var(--mono);font-size:10px;background:var(--blue-soft);color:var(--blue);border-radius:6px;padding:3px 7px;white-space:nowrap;}
+  .mining-chip-page{background:var(--surface3);color:var(--muted);}
+  .mining-chip-link{text-decoration:none;background:var(--surface3);color:var(--muted);border:1px solid var(--border);transition:border-color .15s,color .15s;}
+  .mining-chip-link:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .mining-chip-ticket{font-family:var(--mono);font-size:10px;background:rgba(34,197,94,0.12);color:var(--green);border-radius:6px;padding:3px 7px;font-weight:700;white-space:nowrap;}
+  .mining-obs{background:rgba(245,166,35,0.12);border:1px solid rgba(245,166,35,0.35);color:var(--warn);border-radius:8px;padding:6px 9px;font-size:11px;margin-bottom:6px;}
   .mining-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:2px;}
   .mining-edit-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10.5px;border-radius:6px;padding:4px 9px;cursor:pointer;}
   .mining-edit-btn:hover{border-color:var(--blue);color:var(--blue);}
@@ -898,7 +957,7 @@
   .infra-account-body{flex:1;min-width:0;}
   .infra-account-name{font-size:12.5px;font-weight:600;}
   .infra-account-status{font-family:var(--mono);font-size:10px;margin-top:1px;}
-  .infra-account-note{font-size:11px;color:var(--muted);margin-top:2px;white-space:pre-wrap;}
+  .infra-account-note{font-size:11px;color:var(--muted);margin-top:2px;}
 
   .pages-linked-section{margin-bottom:20px;}
   .pages-linked-section h3{font-family:var(--display);font-weight:800;font-size:15px;margin:0 0 2px;}
@@ -992,8 +1051,6 @@
 
   /* ---------- FUNNEL VISUAL ---------- */
   .funnel-wrap{display:flex;flex-direction:column;align-items:center;gap:0;}
-  #funnelLinksList.funnel-wrap{align-items:stretch;gap:8px;}
-  #funnelLinksList .funnel-stage{margin:0;}
   .funnel-stage{
     width:100%;max-width:100%;background:var(--surface2);border:1px solid var(--border);
     border-radius:12px;padding:12px 16px;margin:0 auto;position:relative;
@@ -1018,10 +1075,6 @@
     flex-shrink:0;transition:border-color .15s, color .15s;
   }
   .funnel-icon-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
-  .funnel-icon-btn-open{
-    background:var(--blue);border-color:var(--blue);color:#fff;font-size:14px;font-weight:700;
-  }
-  .funnel-icon-btn-open:hover{background:var(--blue-bright);border-color:var(--blue-bright);color:#fff;}
 
   /* whatsapp message stage */
   .wa-stage-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
@@ -1184,34 +1237,12 @@
   .status-badge.desenvolvimento{color:var(--blue-bright);background:var(--blue-soft);border:1px solid rgba(59,130,246,.3);}
   .status-badge.pausado{color:var(--warn);background:rgba(242,169,60,.12);border:1px solid rgba(242,169,60,.3);}
   .status-badge.finalizado{color:var(--green);background:var(--green-soft);border:1px solid rgba(34,197,94,.3);}
-  .status-badge.neutral{color:var(--text);background:var(--surface3);border:1px solid var(--border-strong);}
   .project-card-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
   .project-detail-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
   .project-detail-title{font-family:var(--display);font-size:22px;font-weight:800;}
   .project-detail-title-input{font-family:var(--display);font-size:22px;font-weight:800;color:var(--text);background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;margin:-4px -8px;flex:1;min-width:180px;transition:border-color .15s,background .15s;}
   .project-detail-title-input:hover{border-color:var(--border);}
   .project-detail-title-input:focus{outline:none;border-color:var(--blue);background:var(--surface2);}
-
-  /* cabeçalho da página de detalhe de produto */
-  .product-hero{
-    display:flex;align-items:center;gap:14px;background:linear-gradient(135deg, var(--surface), var(--surface2));
-    border:1px solid var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow-sm);
-  }
-  .product-hero-icon{
-    width:46px;height:46px;flex-shrink:0;border-radius:12px;background:var(--blue-soft);border:1px solid rgba(59,130,246,.3);
-    display:flex;align-items:center;justify-content:center;font-size:22px;
-  }
-  .product-hero-main{flex:1;min-width:180px;}
-  .product-hero-title-input{
-    display:block;width:100%;font-family:var(--display);font-size:20px;font-weight:800;color:var(--text);
-    background:transparent;border:1px solid transparent;border-radius:8px;padding:3px 6px;margin:-3px -6px;transition:border-color .15s,background .15s;
-  }
-  .product-hero-title-input:hover{border-color:var(--border);}
-  .product-hero-title-input:focus{outline:none;border-color:var(--blue);background:var(--surface3);}
-  .product-hero-status{margin-top:4px;}
-  .product-hero-status .status-badge{font-size:10px;}
-  .product-hero-del{flex-shrink:0;border:1px solid var(--border);border-radius:9px;padding:7px 12px;color:var(--muted);}
-  .product-hero-del:hover{border-color:var(--neg);color:var(--neg);}
   .project-detail-tool{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:6px 12px;}
   .proj-info-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
   .proj-info-row:last-child{border-bottom:none;}
@@ -1299,7 +1330,6 @@
   .note-color-custom{width:22px;height:22px;padding:0;border:1px solid var(--border-strong);border-radius:50%;overflow:hidden;background:none;cursor:pointer;flex-shrink:0;}
   .note-color-custom::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;}
   .note-color-custom::-webkit-color-swatch{border:none;border-radius:50%;}
-  select#noteFontSizeSelect{font-family:var(--sans);}
   .notes-main{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);min-height:calc(100vh - 220px);display:flex;flex-direction:column;}
   .note-editor-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
   .note-title-input{
@@ -1317,11 +1347,10 @@
     transition:border-color .15s,color .15s,background .15s;line-height:1;
   }
   .note-tb-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
-  .note-tb-btn.active{border-color:var(--blue);color:var(--blue-bright);background:rgba(91,157,255,0.14);}
+  .note-tb-btn.active{background:var(--blue);border-color:var(--blue);color:#070A10;}
   .note-content-editor{
     flex:1;font-family:var(--sans);font-size:14px;line-height:1.7;color:var(--text);outline:none;min-height:320px;
   }
-  .note-content-editor.format-painting, .note-content-editor.format-painting *{cursor:copy !important;}
   .note-content-editor:empty:before{content:attr(data-placeholder);color:var(--muted2);}
   .note-content-editor h1{font-family:var(--display);font-size:22px;font-weight:800;margin:18px 0 8px;}
   .note-content-editor h1:first-child{margin-top:0;}
@@ -1529,7 +1558,12 @@
     <div class="today-panel">
       <div class="today-head">
         <div class="eyebrow">tráfego direto • infoprodutos</div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div class="period-switch" id="homePeriodSwitch">
+            <button class="period-btn" data-period="hoje" onclick="setHomePeriod('hoje')">Hoje</button>
+            <button class="period-btn" data-period="7dias" onclick="setHomePeriod('7dias')">7 dias</button>
+            <button class="period-btn" data-period="mes" onclick="setHomePeriod('mes')">Mês</button>
+          </div>
           <button class="hide-values-btn" id="hideValuesBtn" onclick="toggleHideValues()" title="ocultar valores financeiros">
             <span id="hideValuesIcon" class="eye-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1608,6 +1642,8 @@
               </select>
               <input type="text" id="offerProximaAcao" placeholder="próxima ação (ex: Verificar BM)" style="flex:1;">
             </div>
+            <input type="text" id="offerProduto" list="offerProdutoDatalistNew" placeholder="produto (opcional — ofertas do mesmo produto ficam agrupadas)">
+            <datalist id="offerProdutoDatalistNew"></datalist>
             <textarea id="offerObservacao" placeholder="observação rápida (opcional)"></textarea>
             <div class="add-row" style="margin-top:0;">
               <button class="add" style="flex:1;" onclick="addOffer()">+ adicionar oferta</button>
@@ -1716,9 +1752,9 @@
 
           <div class="fin-table-wrap">
             <table class="fin-table">
-              <thead id="finTableHead"><tr>
+              <thead><tr>
                 <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
-                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROI</th>
+                <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
               </tr></thead>
               <tbody id="finTableBody"></tbody>
             </table>
@@ -1756,6 +1792,7 @@
             </select>
             <select id="costCat">
               <option value="ferramenta">ferramenta</option>
+              <option value="assinatura">assinatura</option>
               <option value="imposto">imposto</option>
               <option value="contabilidade">contabilidade</option>
               <option value="hospedagem">hospedagem</option>
@@ -1767,6 +1804,31 @@
               <button class="add-cost-cancel-btn" onclick="closeCostAddForm()">cancelar</button>
             </div>
           </div>
+          </div>
+        </div>
+
+        <div class="panel full subs-panel" id="subscriptionsPanel">
+          <div class="panel-head">
+            <h2><span class="sub">ferramentas que você paga todo mês pra operação rodar</span>Minhas assinaturas</h2>
+            <div class="panel-total" id="subscriptionsTotal">—</div>
+          </div>
+          <div class="subs-grid" id="subscriptionsList"></div>
+          <button class="add-tool-btn" id="subAddToggleBtn" onclick="toggleSubAddForm()" style="margin-top:10px;">+ Adicionar assinatura</button>
+          <div class="add-form" id="subAddForm">
+            <div class="add-row">
+              <input type="text" id="subName" list="subNameDatalist" placeholder="nome (ex: Vturb, Hospedagem, UTMify)" style="flex:2;min-width:160px;">
+              <input type="number" id="subAmount" placeholder="R$ 0,00" style="flex:1;min-width:100px;">
+              <select id="subFreq" style="flex:1;min-width:90px;">
+                <option value="mensal">/mês</option>
+                <option value="anual">/ano</option>
+              </select>
+              <button class="add" onclick="addSubscription()">+ adicionar</button>
+              <button class="add-cost-cancel-btn" onclick="toggleSubAddForm()">cancelar</button>
+            </div>
+            <datalist id="subNameDatalist">
+              <option value="Vturb"><option value="Hospedagem"><option value="UTMify">
+              <option value="Domínio"><option value="Kirvano"><option value="Hotmart">
+            </datalist>
           </div>
         </div>
       </div>
@@ -1817,86 +1879,92 @@
 
       <div id="productDetail" style="display:none;">
         <button class="back-btn" onclick="selectProduct(null)">← voltar aos produtos</button>
-        <div class="product-hero">
-          <div class="product-hero-icon">📦</div>
-          <div class="product-hero-main">
-            <input type="text" id="prodDetailTitleInput" class="product-hero-title-input" placeholder="nome do produto" onchange="renameCurrentProduct(this.value)">
-            <div class="product-hero-status" id="productHeroStatus"></div>
-          </div>
-          <button class="del-btn product-hero-del" onclick="deleteCurrentProduct()">✕ excluir produto</button>
+        <div class="project-detail-head">
+          <input type="text" id="prodDetailTitleInput" class="project-detail-title-input" placeholder="nome do produto" onchange="renameCurrentProduct(this.value)">
+          <button class="del-btn" onclick="deleteCurrentProduct()">✕ excluir produto</button>
         </div>
 
-        <div class="panel full">
-          <div class="panel-head"><h2><span class="sub">🎯 defina em que etapa esse produto está agora</span>Status do produto</h2></div>
-          <div class="add-row">
-            <select id="productStatusSelect" onchange="handleProductStatusChange(this.value)"></select>
-          </div>
-          <div id="newStatusRow" style="display:none;margin-top:10px;">
-            <div class="add-row">
-              <input type="text" id="newStatusEmoji" placeholder="emoji (ex: 🚀)" style="max-width:90px;">
-              <input type="text" id="newStatusLabel" placeholder="nome do status (ex: Aguardando aprovação)">
-              <button class="add" onclick="createCustomProductStatus()">salvar status</button>
-              <button class="add-cost-cancel-btn" onclick="toggleNewStatusRow(false)">cancelar</button>
-            </div>
-          </div>
-          <div id="customStatusManageList" style="margin-top:10px;"></div>
-        </div>
-
-        <div class="panel full" id="funnelLinksPanel">
-          <div class="panel-head">
-            <h2><span class="sub">🔗 páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
-            <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
-          </div>
-          <div id="funnelLinksList" class="funnel-wrap"></div>
-          <div class="add-form" id="newFunnelLinkRow">
-            <div class="add-row" style="flex-direction:column;">
-              <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
-              <input type="text" id="funnelLinkUrl" placeholder="link/URL">
-              <div class="add-row" style="margin-top:0;">
-                <button class="add" style="flex:1;" onclick="addFunnelLink()">+ adicionar página</button>
-                <button class="add-cost-cancel-btn" onclick="toggleNewFunnelLinkForm(false)">cancelar</button>
+        <div class="product-detail-layout">
+          <div class="product-side-col">
+            <div class="panel" id="funnelLinksPanel">
+              <div class="panel-head">
+                <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
+                <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
+              </div>
+              <div id="funnelLinksList" class="funnel-wrap"></div>
+              <div class="add-form" id="newFunnelLinkRow">
+                <div class="add-row" style="flex-direction:column;">
+                  <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
+                  <input type="text" id="funnelLinkUrl" placeholder="link/URL">
+                  <div class="add-row" style="margin-top:0;">
+                    <button class="add" style="flex:1;" onclick="addFunnelLink()">+ adicionar página</button>
+                    <button class="add-cost-cancel-btn" onclick="toggleNewFunnelLinkForm(false)">cancelar</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="panel full wa-panel">
-          <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Recuperação de vendas</h2></div>
-          <div id="recoveryStepsList" class="funnel-wrap wa-wrap"></div>
-          <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('recovery')">+ nova etapa</button>
-        </div>
-        <div class="panel full wa-panel">
-          <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Entrega do entregável</h2></div>
-          <div id="deliveryStepsList" class="funnel-wrap wa-wrap"></div>
-          <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('delivery')">+ nova etapa</button>
-        </div>
-
-        <div class="panel full">
-          <div class="panel-head"><h2><span class="sub">🛡️ cada card é uma objeção diferente — nomeia, descreve, e monta a resposta em variações</span>Quebra de objeções</h2></div>
-          <div id="objectionsStepsList" class="funnel-wrap"></div>
-          <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
-        </div>
-
-        <div class="panel full" id="phonesPanel">
-          <div class="panel-head">
-            <h2><span class="sub">📱 números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
-            <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
-          </div>
-          <div id="phonesList"></div>
-          <div class="add-form" id="newPhoneRow">
-            <div class="add-row" style="flex-direction:column;">
-              <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
-              <div class="add-row" style="margin-top:0;">
-                <input type="text" id="phoneProduto" placeholder="produto/uso">
-                <select id="phoneStatus" style="flex:1;">
-                  <option value="ativo">ativo</option>
-                  <option value="atencao">atenção</option>
-                  <option value="queimado">queimado</option>
-                </select>
+          <div class="product-main-col">
+            <div class="panel">
+              <div class="panel-head"><h2>Status do produto</h2></div>
+              <div class="add-row">
+                <select id="productStatusSelect" onchange="handleProductStatusChange(this.value)"></select>
               </div>
-              <div class="add-row" style="margin-top:0;">
-                <button class="add" style="flex:1;" onclick="addPhone()">+ adicionar número</button>
-                <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
+              <div id="newStatusRow" style="display:none;margin-top:10px;">
+                <div class="add-row">
+                  <input type="text" id="newStatusEmoji" placeholder="emoji (ex: 🚀)" style="max-width:90px;">
+                  <input type="text" id="newStatusLabel" placeholder="nome do status (ex: Aguardando aprovação)">
+                  <button class="add" onclick="createCustomProductStatus()">salvar status</button>
+                  <button class="add-cost-cancel-btn" onclick="toggleNewStatusRow(false)">cancelar</button>
+                </div>
+              </div>
+              <div id="customStatusManageList" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="product-two-col">
+              <div class="panel wa-panel">
+                <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Recuperação de vendas</h2></div>
+                <div id="recoveryStepsList" class="funnel-wrap wa-wrap"></div>
+                <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('recovery')">+ nova etapa</button>
+              </div>
+              <div class="panel wa-panel">
+                <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Entrega do entregável</h2></div>
+                <div id="deliveryStepsList" class="funnel-wrap wa-wrap"></div>
+                <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('delivery')">+ nova etapa</button>
+              </div>
+            </div>
+
+            <div class="product-two-col">
+              <div class="panel" id="phonesPanel">
+                <div class="panel-head">
+                  <h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
+                  <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
+                </div>
+                <div id="phonesList"></div>
+                <div class="add-form" id="newPhoneRow">
+                  <div class="add-row" style="flex-direction:column;">
+                    <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
+                    <div class="add-row" style="margin-top:0;">
+                      <input type="text" id="phoneProduto" placeholder="produto/uso">
+                      <select id="phoneStatus" style="flex:1;">
+                        <option value="ativo">ativo</option>
+                        <option value="atencao">atenção</option>
+                        <option value="queimado">queimado</option>
+                      </select>
+                    </div>
+                    <div class="add-row" style="margin-top:0;">
+                      <button class="add" style="flex:1;" onclick="addPhone()">+ adicionar número</button>
+                      <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head"><h2><span class="sub">🛡️ cada card é uma objeção diferente — nomeia, descreve, e monta a resposta em variações</span>Quebra de objeções</h2></div>
+                <div id="objectionsStepsList" class="funnel-wrap"></div>
+                <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
               </div>
             </div>
           </div>
@@ -1926,6 +1994,8 @@
             <input type="number" id="miningAnuncios" placeholder="qtd anúncios ativos">
             <input type="number" id="miningTicket" placeholder="ticket do produto (R$)">
             <input type="text" id="miningCheckout" placeholder="checkout usado (ex: Kirvano)">
+            <input type="text" id="miningGrupo" list="miningGroupsDatalistNew" placeholder="grupo/pasta (opcional, ex: Método X)">
+            <datalist id="miningGroupsDatalistNew"></datalist>
           </div>
           <div class="add-row" style="flex-wrap:wrap;">
             <input type="text" id="miningLink" placeholder="link da biblioteca de anúncios (Meta)" style="flex:1;min-width:220px;">
@@ -2204,10 +2274,10 @@
 <div class="modal-overlay" id="gatewayModal" onclick="if(event.target===this) closeGatewayModal()">
   <div class="modal-box">
     <div class="modal-head">
-      <h3>Gateways do faturamento</h3>
+      <h3>Gateway do faturamento</h3>
       <button class="modal-close" onclick="closeGatewayModal()">✕</button>
     </div>
-    <p class="modal-sub">Marque um ou mais gateways usados neste mês. Cada um vira uma coluna na tabela de faturamento diário.</p>
+    <p class="modal-sub">Escolha por qual gateway o faturamento deste mês foi realizado.</p>
     <div class="gateway-modal-list" id="gatewayModalList"></div>
     <div class="add-row" style="margin-top:14px;">
       <input type="text" id="gatewayCustomInput" placeholder="cadastrar novo gateway...">
@@ -2307,31 +2377,7 @@ function currentMonthKey(){
 let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], contacts:[], contactsMigratedFromManagers:false, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes','contacts'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-// Escapa caracteres especiais de HTML sem tocar em quebras de linha (\n fica \n).
-// Antes isso era feito via truque innerText->innerHTML, que convertia \n em <br> de
-// verdade — o que ficava certo dentro de uma <div>, mas gerava o texto literal "<br>"
-// dentro de <textarea> (raw text, não interpreta tags). Por isso mensagens de
-// recuperação de vendas com mais de uma linha apareciam com "<br>" no meio ao copiar.
-function escapeHtml(s){
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-// Limpa texto colado/digitado em campos de texto puro (textareas): tira qualquer
-// "<br>", "<br/>", "<br />" literal (vira quebra de linha de verdade), remove outras
-// tags HTML que tenham vindo junto de uma colagem, e desfaz entidades comuns (&nbsp; etc).
-// Usado nos campos da aba de Produtos pra evitar que "<br>" apareça no meio do texto.
-function sanitizePlainText(s){
-  if(s === undefined || s === null) return '';
-  let out = String(s);
-  out = out.replace(/<br\s*\/?>/gi, '\n');
-  out = out.replace(/<\/?[a-z][^>]*>/gi, '');
-  out = out.replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;/gi, "'");
-  return out;
-}
+function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
 function brl(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
 function showToast(message, type){
   const container = document.getElementById('toastContainer');
@@ -2643,12 +2689,26 @@ async function loadState(){
         state.contactsMigratedFromManagers = true;
       }
       if(!state.finance) state.finance = {currentMonth:currentMonthKey(), months:{}};
-      // Sempre abre no mês atual de verdade ao carregar o app — evita que a tela financeira
-      // fique "travada" num mês antigo só porque foi o último mês navegado/salvo antes.
-      // Durante a mesma sessão, navegar pra outro mês (changeMonth) continua funcionando normal.
-      state.finance.currentMonth = currentMonthKey();
       if(!state.managers) state.managers = [];
       if(!state.assets) state.assets = [];
+      if(!state.brTagsCleanedUp){
+        // Versões antigas do editor de mensagens salvavam quebras de linha como a tag
+        // literal "<br>" dentro do próprio texto (em vez de uma quebra de linha de verdade).
+        // Isso fazia "<br>" aparecer no meio da mensagem e ir junto ao copiar. Limpa uma vez só.
+        const brRegex = /<br\s*\/?>/gi;
+        (state.products||[]).forEach(p=>{
+          ['recovery','delivery','objections'].forEach(key=>{
+            (p[key]||[]).forEach(step=>{
+              if(step.nome) step.nome = step.nome.replace(brRegex, '\n');
+              if(step.descricao) step.descricao = step.descricao.replace(brRegex, '\n');
+              (step.variations||[]).forEach(v=>{
+                if(v.texto) v.texto = v.texto.replace(brRegex, '\n');
+              });
+            });
+          });
+        });
+        state.brTagsCleanedUp = true;
+      }
       if(!state.phones) state.phones = [];
       if(!state.products) state.products = [];
       if(!state.mining) state.mining = [];
@@ -2657,6 +2717,7 @@ async function loadState(){
       if(!state.warmupGroups) state.warmupGroups = [];
       if(!state.customGateways) state.customGateways = [];
       if(!state.customProductStatuses) state.customProductStatuses = [];
+      if(!state.homePeriod) state.homePeriod = 'mes';
       if(!state.tabOrder || !Array.isArray(state.tabOrder)) state.tabOrder = ['finance','processos','products','mining','projects','tools','content','warmup','notes'];
       if(!state.tabOrder.includes('notes')) state.tabOrder.push('notes');
       if(!state.tabOrder.includes('contacts')) state.tabOrder.push('contacts');
@@ -2685,6 +2746,7 @@ async function loadState(){
         o.status = migrateOfferStatus(o.status);
         if(o.proximaAcao===undefined) o.proximaAcao = '';
         if(o.observacao===undefined) o.observacao = '';
+        if(o.produto===undefined) o.produto = '';
       });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
@@ -2697,10 +2759,6 @@ async function loadState(){
               delete step.texto;
             }
             if(!step.nome) step.nome = (type==='objections' ? 'Objeção ' : 'Etapa ') + (idx+1);
-            // limpeza única: remove "<br>" literal que ficou gravado em textos salvos anteriormente
-            step.nome = sanitizePlainText(step.nome);
-            if(step.descricao) step.descricao = sanitizePlainText(step.descricao);
-            (step.variations||[]).forEach(v=>{ v.texto = sanitizePlainText(v.texto); });
           });
         });
       });
@@ -2713,6 +2771,7 @@ async function loadState(){
       ], today:{date:'',doneIds:[]}};
       if(!state.planner) state.planner = {focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}};
       if(!state.planner.days) state.planner.days = {seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]};
+      rolloverPlannerTasks();
       Object.values(state.finance.months||{}).forEach(m=>{
         Object.values(m.days||{}).forEach(d=>{
           if(!d.adSpends){
@@ -3259,12 +3318,21 @@ function toggleNewOfferForm(show){
   document.getElementById('newOfferRow').classList.toggle('open', show);
   document.getElementById('newOfferToggleBtn').style.display = show ? 'none' : 'inline-flex';
   document.getElementById('offersPanel').classList.toggle('panel-editing', show);
-  if(show) document.getElementById('offerInput').focus();
+  if(show){
+    document.getElementById('offerInput').focus();
+    const dl = document.getElementById('offerProdutoDatalistNew');
+    if(dl){
+      const names = [...new Set([...state.products.map(p=>p.nome), ...state.offers.map(x=>(x.produto||'').trim())].filter(Boolean))];
+      dl.innerHTML = names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
+    }
+  }
   else{
     document.getElementById('offerInput').value = '';
     document.getElementById('offerProximaAcao').value = '';
     document.getElementById('offerObservacao').value = '';
     document.getElementById('offerStatus').value = 'validando';
+    const produtoEl = document.getElementById('offerProduto');
+    if(produtoEl) produtoEl.value = '';
   }
 }
 function sortOffersByPriority(){
@@ -3278,8 +3346,10 @@ function addOffer(){
   const status = document.getElementById('offerStatus').value;
   const proximaAcao = document.getElementById('offerProximaAcao').value.trim();
   const observacao = document.getElementById('offerObservacao').value.trim();
+  const produtoEl = document.getElementById('offerProduto');
+  const produto = produtoEl ? produtoEl.value.trim() : '';
   if(!input.value.trim()) return;
-  state.offers.push({id:uid(), text:input.value.trim(), status, proximaAcao, observacao});
+  state.offers.push({id:uid(), text:input.value.trim(), status, proximaAcao, observacao, produto});
   sortOffersByPriority();
   saveState(); renderOperacaoAtual();
   toggleNewOfferForm(false);
@@ -3311,6 +3381,113 @@ function removeOffer(id){
     showToast('Oferta excluída.');
   });
 }
+let offerGroupExpanded = {};
+function toggleOfferGroup(groupKey){
+  offerGroupExpanded[groupKey] = !(offerGroupExpanded[groupKey] !== false);
+  renderOperacaoAtual();
+}
+// ---------- arrastar oferta pra dentro da pasta do produto ----------
+// interação nativa (HTML5 drag), independente do motor de reordenação por pointer:
+// arrasta pela ÁREA DO CARD (não pelo ⠿, que continua livre pra reordenar a lista solta)
+// e solta em cima da pasta de um produto — ou de outra oferta que já tenha produto — pra agrupar.
+let offerDragProdutoId = null;
+function offerDragStart(ev, id){
+  offerDragProdutoId = id;
+  ev.dataTransfer.effectAllowed = 'move';
+  try{ ev.dataTransfer.setData('text/plain', id); }catch(err){}
+}
+function offerDragOverTarget(ev){
+  ev.preventDefault();
+  ev.currentTarget.classList.add('offer-drop-hover');
+}
+function offerDragLeaveTarget(ev){
+  ev.currentTarget.classList.remove('offer-drop-hover');
+}
+function assignOfferProduto(offerId, produto){
+  const o = state.offers.find(o=>o.id===offerId);
+  if(!o) return;
+  o.produto = produto;
+  saveState(); renderOperacaoAtual();
+  showToast(produto ? `Oferta movida pro grupo "${produto}".` : 'Oferta removida do grupo.');
+}
+function offerDropOnGroup(ev, groupName){
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('offer-drop-hover');
+  const id = offerDragProdutoId || ev.dataTransfer.getData('text/plain');
+  offerDragProdutoId = null;
+  if(!id) return;
+  assignOfferProduto(id, groupName);
+}
+function offerDropOnCard(ev, targetId){
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('offer-drop-hover');
+  const id = offerDragProdutoId || ev.dataTransfer.getData('text/plain');
+  offerDragProdutoId = null;
+  if(!id || id===targetId) return;
+  const target = state.offers.find(o=>o.id===targetId);
+  if(!target || !(target.produto||'').trim()){
+    showToast('Defina um produto nessa oferta primeiro (✎ editar) pra poder agrupar arrastando.');
+    return;
+  }
+  assignOfferProduto(id, target.produto.trim());
+}
+function renderOfferCard(o){
+  const st = OFFER_STATUS[o.status] || OFFER_STATUS.minerando;
+  if(offerEditingId===o.id){
+    const existingProdutos = [...new Set([...state.products.map(p=>p.nome), ...state.offers.map(x=>(x.produto||'').trim())].filter(Boolean))];
+    return `
+    <div class="offer-card" data-id="${o.id}" style="--offer-accent:${st.color};">
+      <div class="tool-edit-row" style="padding:14px;">
+        <input type="text" value="${escapeHtml(o.text)}" placeholder="nome da oferta" onchange="updateOfferField('${o.id}','text',this.value)">
+        <select onchange="updateOfferField('${o.id}','status',this.value)">
+          ${Object.entries(OFFER_STATUS).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${v.icon} ${v.label}</option>`).join('')}
+        </select>
+        <input type="text" list="offerProdutoDatalist" value="${escapeHtml(o.produto||'')}" placeholder="produto (ofertas do mesmo produto ficam agrupadas)" onchange="updateOfferField('${o.id}','produto',this.value)">
+        <input type="text" value="${escapeHtml(o.proximaAcao||'')}" placeholder="próxima ação (ex: Verificar BM)" onchange="updateOfferField('${o.id}','proximaAcao',this.value)">
+        <textarea placeholder="observação rápida (opcional)" onchange="updateOfferField('${o.id}','observacao',this.value)">${escapeHtml(o.observacao||'')}</textarea>
+        <datalist id="offerProdutoDatalist">${existingProdutos.map(p=>`<option value="${escapeHtml(p)}">`).join('')}</datalist>
+        <div class="mining-actions">
+          <button class="del-btn" onclick="removeOffer('${o.id}')">✕ excluir</button>
+          <button class="mining-save-btn" onclick="saveOfferEdit('${o.id}', event)"><span class="ico">✓</span> Concluir edição</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  return `
+  <div class="offer-card" data-id="${o.id}" style="--offer-accent:${st.color};"
+    draggable="true" ondragstart="offerDragStart(event,'${o.id}')"
+    ondragover="offerDragOverTarget(event)" ondragleave="offerDragLeaveTarget(event)" ondrop="offerDropOnCard(event,'${o.id}')">
+    <div class="offer-card-head">
+      <span class="drag-handle" draggable="false">⠿</span>
+      <span class="offer-dot">${st.dot}</span>
+      <div class="offer-name">${escapeHtml(o.text)}</div>
+      <button class="mining-edit-btn" onclick="toggleOfferEdit('${o.id}', event)">✎</button>
+      <button class="del-btn" onclick="removeOffer('${o.id}')">✕</button>
+    </div>
+    <div class="offer-card-body">
+      <div class="offer-row"><span class="offer-label">Status</span><span class="offer-status-chip" style="color:${st.color};border-color:${st.color}55;background:${st.color}1a;">${st.icon} ${st.label}</span></div>
+      ${o.proximaAcao ? `<div class="offer-row"><span class="offer-label">Próxima ação</span><span class="offer-value">${escapeHtml(o.proximaAcao)}</span></div>` : ''}
+      ${o.observacao ? `<div class="offer-row"><span class="offer-label">Observação</span><span class="offer-value offer-obs">${escapeHtml(o.observacao)}</span></div>` : ''}
+    </div>
+  </div>`;
+}
+function renderOfferGroupCard(groupName, members){
+  const expanded = offerGroupExpanded[groupName] !== false;
+  const onclickArg = escapeHtml(jsAttrEscape(groupName));
+  const escaping = members.some(m=>OFFER_STATUS[m.status] && m.status==='escalando');
+  return `
+  <div class="offer-group-card" ondragover="offerDragOverTarget(event)" ondragleave="offerDragLeaveTarget(event)" ondrop="offerDropOnGroup(event,'${onclickArg}')">
+    <div class="mining-group-head" onclick="toggleOfferGroup('${onclickArg}')">
+      <span class="mining-group-ico">🗂️</span>
+      <div class="mining-group-title">
+        <div class="mining-group-name">${escapeHtml(groupName)} <span class="mining-group-count">(${members.length} ofertas)</span></div>
+        <div class="mining-group-sub">${escaping ? '📈 tem oferta escalando neste produto' : 'arraste uma oferta aqui pra agrupar'}</div>
+      </div>
+      <span class="mining-group-toggle-ico">${expanded ? '▴' : '▾'}</span>
+    </div>
+    ${expanded ? `<div class="mining-group-body offer-group-body">${members.map(m=>renderOfferCard(m)).join('')}</div>` : ''}
+  </div>`;
+}
 function renderOperacaoAtual(){
   const el = document.getElementById('offersList');
   if(!el) return;
@@ -3323,41 +3500,25 @@ function renderOperacaoAtual(){
     </div>`;
     return;
   }
-  el.innerHTML = state.offers.map(o=>{
-    const st = OFFER_STATUS[o.status] || OFFER_STATUS.minerando;
-    if(offerEditingId===o.id){
-      return `
-      <div class="offer-card" data-id="${o.id}" style="--offer-accent:${st.color};">
-        <div class="tool-edit-row" style="padding:14px;">
-          <input type="text" value="${escapeHtml(o.text)}" placeholder="nome da oferta" onchange="updateOfferField('${o.id}','text',this.value)">
-          <select onchange="updateOfferField('${o.id}','status',this.value)">
-            ${Object.entries(OFFER_STATUS).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${v.icon} ${v.label}</option>`).join('')}
-          </select>
-          <input type="text" value="${escapeHtml(o.proximaAcao||'')}" placeholder="próxima ação (ex: Verificar BM)" onchange="updateOfferField('${o.id}','proximaAcao',this.value)">
-          <textarea placeholder="observação rápida (opcional)" onchange="updateOfferField('${o.id}','observacao',this.value)">${escapeHtml(o.observacao||'')}</textarea>
-          <div class="mining-actions">
-            <button class="del-btn" onclick="removeOffer('${o.id}')">✕ excluir</button>
-            <button class="mining-save-btn" onclick="saveOfferEdit('${o.id}', event)"><span class="ico">✓</span> Concluir edição</button>
-          </div>
-        </div>
-      </div>`;
+  const groupCounts = {};
+  state.offers.forEach(o=>{
+    const g = (o.produto||'').trim();
+    if(g) groupCounts[g] = (groupCounts[g]||0) + 1;
+  });
+  const renderedGroups = new Set();
+  const blocks = [];
+  state.offers.forEach(o=>{
+    const g = (o.produto||'').trim();
+    if(g && groupCounts[g] >= 2){
+      if(renderedGroups.has(g)) return;
+      renderedGroups.add(g);
+      const members = state.offers.filter(x=>(x.produto||'').trim()===g);
+      blocks.push(renderOfferGroupCard(g, members));
+    } else {
+      blocks.push(renderOfferCard(o));
     }
-    return `
-    <div class="offer-card" data-id="${o.id}" style="--offer-accent:${st.color};">
-      <div class="offer-card-head">
-        <span class="drag-handle">⠿</span>
-        <span class="offer-dot">${st.dot}</span>
-        <div class="offer-name">${escapeHtml(o.text)}</div>
-        <button class="mining-edit-btn" onclick="toggleOfferEdit('${o.id}', event)">✎</button>
-        <button class="del-btn" onclick="removeOffer('${o.id}')">✕</button>
-      </div>
-      <div class="offer-card-body">
-        <div class="offer-row"><span class="offer-label">Status</span><span class="offer-status-chip" style="color:${st.color};border-color:${st.color}55;background:${st.color}1a;">${st.icon} ${st.label}</span></div>
-        ${o.proximaAcao ? `<div class="offer-row"><span class="offer-label">Próxima ação</span><span class="offer-value">${escapeHtml(o.proximaAcao)}</span></div>` : ''}
-        ${o.observacao ? `<div class="offer-row"><span class="offer-label">Observação</span><span class="offer-value offer-obs">${escapeHtml(o.observacao)}</span></div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
+  });
+  el.innerHTML = blocks.join('');
 }
 
 /* ---------- GERENTES DE CONTA ---------- */
@@ -3880,6 +4041,42 @@ function todayKey(){
   const map = ['dom','seg','ter','qua','qui','sex','sab'];
   return map[idx];
 }
+function dateToWeekKey(d){
+  const map = ['dom','seg','ter','qua','qui','sex','sab'];
+  return map[d.getDay()];
+}
+// Toda tarefa do planejamento que não foi concluída no dia dela "vaza" pro dia seguinte
+// automaticamente — tarefa marcada como feita fica exatamente onde estava. Roda uma vez
+// por dia (comparando com a última data em que já rodou), avançando dia por dia até hoje
+// pra não perder nada mesmo se o painel ficar alguns dias sem ser aberto.
+function rolloverPlannerTasks(){
+  const todayISO = new Date().toISOString().slice(0,10);
+  if(state.planner.lastRolloverDate === todayISO) return;
+  if(!state.planner.lastRolloverDate){
+    state.planner.lastRolloverDate = todayISO;
+    return;
+  }
+  const lastDate = new Date(state.planner.lastRolloverDate+'T00:00:00');
+  const today = new Date(todayISO+'T00:00:00');
+  let daysPassed = Math.round((today - lastDate) / 86400000);
+  if(daysPassed <= 0){ state.planner.lastRolloverDate = todayISO; return; }
+  if(daysPassed > 7) daysPassed = 7; // evita empurrar mais de uma volta completa da semana
+  const WEEK_ORDER = ['seg','ter','qua','qui','sex','sab','dom'];
+  let cursorKey = dateToWeekKey(lastDate);
+  for(let i=0; i<daysPassed; i++){
+    const cursorIdx = WEEK_ORDER.indexOf(cursorKey);
+    const nextKey = WEEK_ORDER[(cursorIdx+1) % 7];
+    const fromList = state.planner.days[cursorKey] || [];
+    const pending = fromList.filter(it=>!it.done);
+    const stayed = fromList.filter(it=>it.done);
+    if(pending.length){
+      state.planner.days[cursorKey] = stayed;
+      state.planner.days[nextKey] = [...pending, ...(state.planner.days[nextKey]||[])];
+    }
+    cursorKey = nextKey;
+  }
+  state.planner.lastRolloverDate = todayISO;
+}
 function saveFocoSemana(value){
   state.planner.focoSemana = value;
   saveState();
@@ -4088,17 +4285,6 @@ function renderProductStatusSelect(){
   sel.innerHTML = '<option value="">sem status definido</option>'
     + allProductStatuses().map(s=>`<option value="${s.id}" ${p.status===s.id?'selected':''}>${s.emoji} ${escapeHtml(s.label)}</option>`).join('')
     + '<option value="__new__">+ criar novo status...</option>';
-  renderProductHeroStatus();
-}
-function renderProductHeroStatus(){
-  const el = document.getElementById('productHeroStatus');
-  if(!el) return;
-  const p = currentProduct();
-  if(!p) return;
-  const st = findProductStatus(p.status);
-  el.innerHTML = st
-    ? `<span class="status-badge neutral">${st.emoji} ${escapeHtml(st.label)}</span>`
-    : `<span class="status-badge neutral" style="opacity:.6;">sem status definido</span>`;
 }
 function handleProductStatusChange(value){
   if(value==='__new__'){
@@ -4243,9 +4429,10 @@ function copyFunnelLink(id, ev){
 function funnelLinksHtml(links){
   if(links.length===0) return '<div class="empty">nenhum link ainda.</div>';
   return links.map((l,idx)=>{
+    const w = funnelWidth(idx, links.length);
     let stage;
     if(funnelLinkEditingId === l.id){
-      stage = `<div class="funnel-stage funnel-link-stage editing" data-id="${l.id}" onclick="event.stopPropagation()">
+      stage = `<div class="funnel-stage funnel-link-stage editing" data-id="${l.id}" style="width:${w}%;" onclick="event.stopPropagation()">
         <div class="tool-edit-row" style="width:100%;">
           <input type="text" value="${escapeHtml(l.nome)}" placeholder="nome da página" onchange="updateFunnelLinkField('${l.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(l.url||'')}" placeholder="link da página" onchange="updateFunnelLinkField('${l.id}','url',this.value)">
@@ -4256,13 +4443,13 @@ function funnelLinksHtml(links){
         </div>
       </div>`;
     } else {
-      stage = `<div class="funnel-stage funnel-link-stage" data-id="${l.id}">
+      stage = `<div class="funnel-stage funnel-link-stage" data-id="${l.id}" style="width:${w}%;">
         <span class="drag-handle">⠿</span>
         <div style="flex:1;min-width:0;">
           <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
           <div class="funnel-link-url-row">
             <span class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</span>
-            ${l.url ? `<button class="funnel-icon-btn funnel-icon-btn-open" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
+            ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
           </div>
         </div>
         <div class="funnel-link-actions">
@@ -4272,7 +4459,8 @@ function funnelLinksHtml(links){
         </div>
       </div>`;
     }
-    return stage;
+    const connector = idx < links.length-1 ? '<div class="funnel-connector"></div>' : '';
+    return stage + connector;
   }).join('');
 }
 
@@ -4310,7 +4498,7 @@ function updateStepName(type, stepId, value){
   if(!product) return;
   const step = product[type].find(s=>s.id===stepId);
   if(!step) return;
-  step.nome = sanitizePlainText(value);
+  step.nome = value;
   saveState();
 }
 function updateStepDescricao(type, stepId, value){
@@ -4318,7 +4506,7 @@ function updateStepDescricao(type, stepId, value){
   if(!product) return;
   const step = product[type].find(s=>s.id===stepId);
   if(!step) return;
-  step.descricao = sanitizePlainText(value);
+  step.descricao = value;
   saveState();
 }
 function addVariation(type, stepId){
@@ -4347,7 +4535,7 @@ function updateVariationText(type, stepId, varId, value){
   if(!step) return;
   const v = step.variations.find(v=>v.id===varId);
   if(!v) return;
-  v.texto = sanitizePlainText(value);
+  v.texto = value;
   saveState();
 }
 function autoGrow(el){
@@ -4363,11 +4551,11 @@ function stepsHtml(steps, type){
     const varsHtml = (s.variations||[]).map((v,vi)=>`
       <div class="variation-row">
         <span class="variation-label">v${vi+1}</span>
-        <textarea oninput="autoGrow(this)" onblur="updateVariationText('${type}','${s.id}','${v.id}',this.value)" placeholder="texto dessa variação...">${escapeHtml(sanitizePlainText(v.texto||''))}</textarea>
+        <textarea oninput="autoGrow(this)" onblur="updateVariationText('${type}','${s.id}','${v.id}',this.value)" placeholder="texto dessa variação...">${escapeHtml(v.texto||'')}</textarea>
         <button class="del-btn" onclick="removeVariation('${type}','${s.id}','${v.id}')">✕</button>
       </div>
     `).join('');
-    const descHtml = isObjection ? `<textarea class="objection-desc" oninput="autoGrow(this)" onblur="updateStepDescricao('${type}','${s.id}',this.value)" placeholder="sobre o que é essa objeção (ex: preço, desconfiança, prazo de entrega)...">${escapeHtml(sanitizePlainText(s.descricao||''))}</textarea>` : '';
+    const descHtml = isObjection ? `<textarea class="objection-desc" oninput="autoGrow(this)" onblur="updateStepDescricao('${type}','${s.id}',this.value)" placeholder="sobre o que é essa objeção (ex: preço, desconfiança, prazo de entrega)...">${escapeHtml(s.descricao||'')}</textarea>` : '';
     const stage = `<div class="funnel-stage" data-id="${s.id}" style="width:${w}%;">
       <div class="wa-stage-head">
         <span class="drag-handle">⠿</span>
@@ -4375,7 +4563,7 @@ function stepsHtml(steps, type){
         <span style="font-family:var(--mono);font-size:10px;color:var(--muted2);">#${idx+1}</span>
         <button class="del-btn" style="margin-left:auto;" onclick="removeStep('${type}','${s.id}')">✕ remover</button>
       </div>
-      <div class="step-name-input" contenteditable="true" onblur="updateStepName('${type}','${s.id}',this.innerText)">${escapeHtml(sanitizePlainText(s.nome || ('Etapa '+(idx+1))))}</div>
+      <div class="step-name-input" contenteditable="true" onblur="updateStepName('${type}','${s.id}',this.innerText)">${escapeHtml(s.nome || ('Etapa '+(idx+1)))}</div>
       ${descHtml}
       ${varsHtml}
       <button class="add-variation-btn" onclick="addVariation('${type}','${s.id}')">+ variação${isObjection ? '' : ' (evita chip cair por copiar/colar igual)'}</button>
@@ -4783,7 +4971,11 @@ function toggleNewMiningForm(show){
   document.getElementById('newMiningRow').classList.toggle('open', show);
   document.getElementById('newMiningToggleBtn').style.display = show ? 'none' : 'inline-flex';
   document.getElementById('miningPanel').classList.toggle('panel-editing', show);
-  if(show) document.getElementById('miningNome').focus();
+  if(show){
+    document.getElementById('miningNome').focus();
+    const existingGroups = [...new Set(state.mining.map(x=>(x.grupo||'').trim()).filter(Boolean))];
+    document.getElementById('miningGroupsDatalistNew').innerHTML = existingGroups.map(g=>`<option value="${escapeHtml(g)}">`).join('');
+  }
 }
 function toggleMiningEdit(id){
   miningEditingId = (miningEditingId===id) ? null : id;
@@ -4796,6 +4988,7 @@ function addMiningEntry(){
   const anuncios = Number(document.getElementById('miningAnuncios').value)||0;
   const ticket = Number(document.getElementById('miningTicket').value)||0;
   const checkout = document.getElementById('miningCheckout').value;
+  const grupo = document.getElementById('miningGrupo').value.trim();
   const link = document.getElementById('miningLink').value;
   const funil = document.getElementById('miningFunil').value;
   const checkoutLink = document.getElementById('miningCheckoutLink').value;
@@ -4804,12 +4997,12 @@ function addMiningEntry(){
   if(!nome.value.trim()) return;
   const today = new Date().toLocaleDateString('pt-BR');
   state.mining.push({
-    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, checkout, link, funil, checkoutLink, descricao, observacao,
+    id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, checkout, grupo, link, funil, checkoutLink, descricao, observacao,
     origem: 'manual',
     history: anuncios ? [{date:today, anuncios, origem:'manual'}] : []
   });
   nome.value=''; document.getElementById('miningPagina').value=''; document.getElementById('miningNicho').value=''; document.getElementById('miningAnuncios').value='';
-  document.getElementById('miningTicket').value=''; document.getElementById('miningCheckout').value='';
+  document.getElementById('miningTicket').value=''; document.getElementById('miningCheckout').value=''; document.getElementById('miningGrupo').value='';
   document.getElementById('miningLink').value=''; document.getElementById('miningFunil').value=''; document.getElementById('miningCheckoutLink').value='';
   document.getElementById('miningDescricao').value=''; document.getElementById('miningObservacao').value='';
   toggleNewMiningForm(false);
@@ -5027,27 +5220,81 @@ function miningHideTooltip(){
   const tip = document.getElementById('miningTooltip');
   if(tip) tip.classList.remove('show');
 }
+let miningChartExpanded = {};
+function toggleMiningChart(id){
+  miningChartExpanded[id] = !miningChartExpanded[id];
+  renderMining();
+}
 function toggleMiningHistory(id){
   const el = document.getElementById('mining-hist-'+id);
   if(el) el.classList.toggle('open');
+}
+let miningGroupExpanded = {};
+function jsAttrEscape(s){
+  return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+function toggleMiningGroup(groupKey){
+  miningGroupExpanded[groupKey] = !(miningGroupExpanded[groupKey] !== false);
+  renderMining();
+}
+function renderMiningGroupCard(groupName, members){
+  const expanded = miningGroupExpanded[groupName] !== false;
+  const totalAnuncios = members.reduce((s,m)=>s+(Number(m.anuncios)||0), 0);
+  const onclickArg = escapeHtml(jsAttrEscape(groupName));
+  return `
+  <div class="mining-group-card">
+    <div class="mining-group-head" onclick="toggleMiningGroup('${onclickArg}')">
+      <span class="mining-group-ico">🗂️</span>
+      <div class="mining-group-title">
+        <div class="mining-group-name">${escapeHtml(groupName)} <span class="mining-group-count">(${members.length} páginas)</span></div>
+        <div class="mining-group-sub">${totalAnuncios} anúncios ativos no total</div>
+      </div>
+      <span class="mining-group-toggle-ico">${expanded ? '▴' : '▾'}</span>
+    </div>
+    ${expanded ? `<div class="mining-group-body">${members.map(m=>renderMiningCard(m)).join('')}</div>` : ''}
+  </div>`;
 }
 function renderMining(){
   const el = document.getElementById('miningList');
   if(!el) return;
   if(state.mining.length===0){ el.innerHTML = '<div class="empty">nenhuma oferta minerada ainda.</div>'; return; }
-  el.innerHTML = state.mining.map(m=>{
+  // agrupa por "grupo" (pasta) — só forma pasta de verdade quando 2+ ofertas compartilham o mesmo nome de grupo
+  const groupCounts = {};
+  state.mining.forEach(m=>{
+    const g = (m.grupo||'').trim();
+    if(g) groupCounts[g] = (groupCounts[g]||0) + 1;
+  });
+  const renderedGroups = new Set();
+  const blocks = [];
+  state.mining.forEach(m=>{
+    const g = (m.grupo||'').trim();
+    if(g && groupCounts[g] >= 2){
+      if(renderedGroups.has(g)) return;
+      renderedGroups.add(g);
+      const members = state.mining.filter(x=>(x.grupo||'').trim()===g);
+      blocks.push(renderMiningGroupCard(g, members));
+    } else {
+      blocks.push(renderMiningCard(m));
+    }
+  });
+  el.innerHTML = blocks.join('');
+  setTimeout(()=>growAllTextareas('miningList'), 0);
+}
+function renderMiningCard(m){
     const history = m.history || [];
     const historyHtml = history.length===0 ? '<div class="empty" style="padding:4px 0;">sem histórico ainda.</div>' :
       [...history].reverse().map(h=>`<div class="mining-history-entry"><span class="hd">${h.date}</span><span class="hv">${h.anuncios} anúncios ativos</span></div>`).join('');
     const stats = miningStats(history);
     const healthInfo = stats && stats.health!==null ? miningHealthLabel(stats.health) : null;
     const healthClass = healthInfo ? (healthInfo.emoji==='🟢'?'good':healthInfo.emoji==='🟡'?'mid':healthInfo.emoji==='🟠'?'warn':'bad') : '';
-    const statsBlock = (stats && history.length>=2) ? `
+    const summaryRow = stats ? `
+      <div class="mining-summary-row">
+        <span class="mining-trend-badge trend-${stats.classify.key}">${stats.classify.emoji} ${stats.classify.label}</span>
+        ${healthInfo ? `<span class="mining-health-badge health-${healthClass}">${healthInfo.emoji} Saúde ${stats.health}/100 — ${healthInfo.label}</span>` : ''}
+        ${history.length>=2 ? `<button class="mining-chart-toggle" onclick="toggleMiningChart('${m.id}')">📈 ver gráfico ${miningChartExpanded[m.id] ? '▴' : '▾'}</button>` : ''}
+      </div>` : '';
+    const statsBlock = (stats && history.length>=2 && miningChartExpanded[m.id]) ? `
       <div class="mining-stats-panel">
-        <div class="mining-chart-head">
-          <span class="mining-trend-badge trend-${stats.classify.key}">${stats.classify.emoji} ${stats.classify.label}</span>
-          ${healthInfo ? `<span class="mining-health-badge health-${healthClass}">Índice de Saúde ${healthInfo.emoji} ${stats.health}/100 — ${healthInfo.label}</span>` : ''}
-        </div>
         ${miningChartSVG(m)}
         <div class="mining-stats-grid">
           <div class="mining-stat"><span class="ms-label">máximo</span><span class="ms-value">${stats.max}</span></div>
@@ -5059,12 +5306,14 @@ function renderMining(){
       </div>` : '';
     const historyBlock = `
       <div class="mining-history">
+        ${summaryRow}
         ${statsBlock}
         <button class="mining-history-toggle" onclick="toggleMiningHistory('${m.id}')">📋 ver todos os registros (${history.length}) ▾</button>
         <div class="mining-history-list" id="mining-hist-${m.id}">${historyHtml}</div>
       </div>`;
 
     if(miningEditingId === m.id){
+      const existingGroups = [...new Set(state.mining.map(x=>(x.grupo||'').trim()).filter(Boolean))];
       return `
       <div class="mining-card" data-id="${m.id}">
         <div class="mining-anuncios-highlight">
@@ -5088,6 +5337,10 @@ function renderMining(){
             <div class="mining-field">
               <label>nicho</label>
               <input type="text" value="${escapeHtml(m.nicho||'')}" onchange="updateMiningField('${m.id}','nicho',this.value)">
+            </div>
+            <div class="mining-field">
+              <label>grupo/pasta (opcional — mesmas ofertas de um grupo aparecem juntas)</label>
+              <input type="text" list="miningGroupsDatalist" value="${escapeHtml(m.grupo||'')}" placeholder="ex: Método X" onchange="updateMiningField('${m.id}','grupo',this.value)">
             </div>
             <div class="mining-field">
               <label>ticket do produto</label>
@@ -5120,6 +5373,7 @@ function renderMining(){
           </div>
           <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
         </div>
+        <datalist id="miningGroupsDatalist">${existingGroups.map(g=>`<option value="${escapeHtml(g)}">`).join('')}</datalist>
         <div class="mining-actions">
           <button class="mining-save-btn" onclick="toggleMiningEdit('${m.id}')"><span class="ico">✓</span> Concluir edição</button>
         </div>
@@ -5135,38 +5389,72 @@ function renderMining(){
         ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
         <span class="mining-ads-highlight">${m.anuncios||0} anúncios ativos</span>
       </div>
-      ${m.pagina ? `<div class="mining-sub">página: ${escapeHtml(m.pagina)}</div>` : ''}
       <div class="mining-meta-row">
+        ${m.pagina ? `<span class="mining-chip mining-chip-page">📄 ${escapeHtml(m.pagina)}</span>` : ''}
         ${m.ticket ? `<span class="mining-chip-ticket">🎟 ${brl(m.ticket)}</span>` : ''}
         ${m.checkout ? `<span class="mining-chip">💳 ${escapeHtml(m.checkout)}</span>` : ''}
+        ${m.link ? `<a class="mining-chip mining-chip-link" href="${escapeHtml(m.link)}" target="_blank" rel="noopener">📚 biblioteca</a>` : ''}
+        ${m.funil ? `<a class="mining-chip mining-chip-link" href="${escapeHtml(m.funil)}" target="_blank" rel="noopener">🔗 funil</a>` : ''}
+        ${m.checkoutLink ? `<a class="mining-chip mining-chip-link" href="${escapeHtml(m.checkoutLink)}" target="_blank" rel="noopener">💳 checkout</a>` : ''}
       </div>
       ${m.observacao ? `<div class="mining-obs">⚠ ${escapeHtml(m.observacao)}</div>` : ''}
       ${m.descricao ? `<div class="mining-desc">${escapeHtml(m.descricao)}</div>` : ''}
-      <div class="mining-links">
-        ${m.link ? `<a class="mining-link" href="${escapeHtml(m.link)}" target="_blank" rel="noopener">📚 biblioteca de anúncios</a>` : ''}
-        ${m.funil ? `<a class="mining-link" href="${escapeHtml(m.funil)}" target="_blank" rel="noopener">🔗 funil/página de vendas</a>` : ''}
-        ${m.checkoutLink ? `<a class="mining-link" href="${escapeHtml(m.checkoutLink)}" target="_blank" rel="noopener">💳 link do checkout</a>` : ''}
-      </div>
       <div class="mining-actions">
         <button class="mining-edit-btn" onclick="toggleMiningEdit('${m.id}')">✎ editar</button>
         <button class="del-btn" onclick="removeMiningEntry('${m.id}')">✕</button>
       </div>
       ${historyBlock}
     </div>`;
-  }).join('');
-  setTimeout(()=>growAllTextareas('miningList'), 0);
 }
 
 /* ---------- RESUMO DO MÊS (home) ---------- */
-function renderResumoMes(){
-  const key = state.finance.currentMonth;
-  const labelEl = document.getElementById('resumoMesLabel');
-  if(labelEl) labelEl.innerText = monthLabel(key);
-  const monthObj = state.finance.months[key];
-  let totalGasto=0, totalFat=0;
-  if(monthObj){
-    Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
+function homePeriodLabel(period){
+  if(period==='hoje') return 'Hoje';
+  if(period==='7dias') return 'Últimos 7 dias';
+  return monthLabel(state.finance.currentMonth);
+}
+function getDayValue(monthKey, day){
+  const m = state.finance.months[monthKey];
+  if(!m) return {gasto:0, faturamento:0};
+  return m.days[String(day)] || {gasto:0, faturamento:0};
+}
+function ymKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+function computeHomePeriodTotals(period, offsetPeriods){
+  offsetPeriods = offsetPeriods || 0; // 0 = período atual, -1 = período anterior (pra comparação de tendência)
+  if(period==='mes'){
+    const key = offsetPeriods===0 ? state.finance.currentMonth : shiftMonthKey(state.finance.currentMonth, offsetPeriods);
+    return computeMonthTotalsSimple(key);
   }
+  if(period==='hoje'){
+    const base = new Date();
+    base.setDate(base.getDate() + offsetPeriods);
+    const day = getDayValue(ymKey(base), base.getDate());
+    const gasto = Number(day.gasto||0), fat = Number(day.faturamento||0);
+    return {gasto, fat, lucro: fat-gasto};
+  }
+  // 7dias
+  let gasto=0, fat=0;
+  const cursor = new Date();
+  cursor.setDate(cursor.getDate() + (offsetPeriods*7));
+  for(let i=0;i<7;i++){
+    const day = getDayValue(ymKey(cursor), cursor.getDate());
+    gasto += Number(day.gasto||0); fat += Number(day.faturamento||0);
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return {gasto, fat, lucro: fat-gasto};
+}
+function setHomePeriod(period){
+  state.homePeriod = period;
+  saveState();
+  renderResumoMes(); renderTodayPanel();
+}
+function renderResumoMes(){
+  const period = state.homePeriod || 'mes';
+  const labelEl = document.getElementById('resumoMesLabel');
+  if(labelEl) labelEl.innerText = homePeriodLabel(period);
+  const totals = computeHomePeriodTotals(period, 0);
+  const totalGasto = totals.gasto, totalFat = totals.fat;
+  const monthObj = period==='mes' ? state.finance.months[state.finance.currentMonth] : null;
   const imposto = monthObj ? Number(monthObj.imposto||0) : 0;
   const lucroReal = (totalFat - totalGasto) - imposto;
   const roi = totalGasto>0 ? (totalFat/totalGasto) : null;
@@ -5179,16 +5467,21 @@ function renderResumoMes(){
   if(lucroEl){ lucroEl.innerText = brl(lucroReal); lucroEl.className = 'v ' + (lucroReal>=0?'pos':'neg'); }
   if(roiEl) roiEl.innerText = roi===null ? '—' : roi.toFixed(2)+'x';
 
-  const series = computeMonthSeries(key);
+  const series = computeMonthSeries(state.finance.currentMonth);
   if(document.getElementById('desempenhoMesChart')) renderFinanceChart('desempenhoMesChart', series, series.totalDays, {height:240});
+  const finMonthTotals = computeMonthTotalsSimple(state.finance.currentMonth);
+  const finMonthObj = state.finance.months[state.finance.currentMonth];
+  const finImposto = finMonthObj ? Number(finMonthObj.imposto||0) : 0;
+  const finLucroReal = finMonthTotals.lucro - finImposto;
+  const finRoi = finMonthTotals.gasto>0 ? (finMonthTotals.fat/finMonthTotals.gasto) : null;
   const desInvestido = document.getElementById('desInvestido');
   const desFaturamento = document.getElementById('desFaturamento');
   const desLucro = document.getElementById('desLucro');
   const desRoi = document.getElementById('desRoi');
-  if(desInvestido) desInvestido.innerText = brl(totalGasto);
-  if(desFaturamento) desFaturamento.innerText = brl(totalFat);
-  if(desLucro){ desLucro.innerText = brl(lucroReal); desLucro.className = 'v ' + (lucroReal>=0?'pos':'neg'); }
-  if(desRoi) desRoi.innerText = roi===null ? '—' : roi.toFixed(2)+'x';
+  if(desInvestido) desInvestido.innerText = brl(finMonthTotals.gasto);
+  if(desFaturamento) desFaturamento.innerText = brl(finMonthTotals.fat);
+  if(desLucro){ desLucro.innerText = brl(finLucroReal); desLucro.className = 'v ' + (finLucroReal>=0?'pos':'neg'); }
+  if(desRoi) desRoi.innerText = finRoi===null ? '—' : finRoi.toFixed(2)+'x';
 }
 
 const EYE_OPEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -5291,8 +5584,9 @@ function costBaseLabel(base){
 }
 function renderCosts(){
   const el = document.getElementById('costsList');
-  if(state.costs.length===0){ el.innerHTML='<div class="empty">nenhum custo fixo cadastrado ainda — use o + adicionar custo abaixo pra começar.</div>'; return; }
-  el.innerHTML = state.costs.map(c=>{
+  const nonSubCosts = state.costs.filter(c=>c.cat!=='assinatura');
+  if(nonSubCosts.length===0){ el.innerHTML='<div class="empty">nenhum custo fixo cadastrado ainda — use o + adicionar custo abaixo pra começar.</div>'; renderSubscriptions(); return; }
+  el.innerHTML = nonSubCosts.map(c=>{
     const isPct = c.valueType==='percentual';
     const base = c.revenueBase || 'faturamento';
     const computed = costComputedValue(c);
@@ -5300,7 +5594,7 @@ function renderCosts(){
     <div class="cost-row" data-id="${c.id}">
       <span class="drag-handle">⠿</span>
       <select onchange="updateCostField('${c.id}','cat',this.value)">
-        ${['ferramenta','imposto','contabilidade','hospedagem','trafego','outro'].map(opt=>`<option value="${opt}" ${c.cat===opt?'selected':''}>${opt}</option>`).join('')}
+        ${['ferramenta','assinatura','imposto','contabilidade','hospedagem','trafego','outro'].map(opt=>`<option value="${opt}" ${c.cat===opt?'selected':''}>${opt}</option>`).join('')}
       </select>
       <input type="text" class="cost-name" value="${escapeHtml(c.name)}" onchange="updateCostField('${c.id}','name',this.value)">
       <select onchange="updateCostField('${c.id}','freq',this.value)">
@@ -5331,6 +5625,61 @@ function renderCosts(){
   const totalEl = document.getElementById('costTotal');
   totalEl.innerText = brl(monthly) + ' /mês';
   totalEl.classList.add('cost-total-highlight');
+  renderSubscriptions();
+}
+function subIcon(name){
+  const n = (name||'').toLowerCase();
+  if(n.includes('vturb')) return '🎥';
+  if(n.includes('hosped') || n.includes('host')) return '🌐';
+  if(n.includes('utmify') || n.includes('utm')) return '📊';
+  if(n.includes('kirvano')||n.includes('hotmart')||n.includes('checkout')||n.includes('pay')) return '💳';
+  if(n.includes('whatsapp')||n.includes('zap')) return '💬';
+  if(n.includes('domin')||n.includes('domain')) return '🔗';
+  if(n.includes('meta')||n.includes('ads')||n.includes('anúnc')||n.includes('anunc')) return '📣';
+  return '🧩';
+}
+function renderSubscriptions(){
+  const el = document.getElementById('subscriptionsList');
+  if(!el) return;
+  const subs = state.costs.filter(c=>c.cat==='assinatura');
+  if(subs.length===0){ el.innerHTML = '<div class="empty">nenhuma assinatura cadastrada ainda — adicione Vturb, hospedagem, UTMify etc.</div>'; }
+  else {
+    el.innerHTML = subs.map(c=>`
+    <div class="sub-card" data-id="${c.id}">
+      <span class="drag-handle sub-drag-handle">⠿</span>
+      <div class="sub-ico">${subIcon(c.name)}</div>
+      <input type="text" class="sub-name" value="${escapeHtml(c.name)}" onchange="updateCostField('${c.id}','name',this.value)">
+      <div class="sub-value-row">
+        <input type="number" class="sub-amount" value="${c.amount||''}" placeholder="R$ 0" onchange="updateCostField('${c.id}','amount',this.value)">
+        <select class="sub-freq" onchange="updateCostField('${c.id}','freq',this.value)">
+          <option value="mensal" ${c.freq!=='anual'?'selected':''}>/mês</option>
+          <option value="anual" ${c.freq==='anual'?'selected':''}>/ano</option>
+        </select>
+      </div>
+      <button class="del-btn sub-del" onclick="removeCost('${c.id}')" title="excluir assinatura">✕</button>
+    </div>`).join('');
+  }
+  const monthlySubs = subs.reduce((s,c)=> s + (c.freq==='anual' ? Number(c.amount||0)/12 : Number(c.amount||0)), 0);
+  const totalEl = document.getElementById('subscriptionsTotal');
+  if(totalEl) totalEl.innerText = brl(monthlySubs) + ' /mês';
+}
+function toggleSubAddForm(){
+  const form = document.getElementById('subAddForm');
+  const btn = document.getElementById('subAddToggleBtn');
+  const open = !form.classList.contains('open');
+  form.classList.toggle('open', open);
+  btn.style.display = open ? 'none' : 'inline-flex';
+}
+function addSubscription(){
+  const nameEl = document.getElementById('subName');
+  const amountEl = document.getElementById('subAmount');
+  const freqEl = document.getElementById('subFreq');
+  if(!nameEl.value.trim()) return;
+  state.costs.push({id:uid(), name:nameEl.value.trim(), valueType:'fixo', amount:Number(amountEl.value)||0, percent:0, revenueBase:'faturamento', freq:freqEl.value, cat:'assinatura'});
+  nameEl.value=''; amountEl.value='';
+  saveState(); render();
+  toggleSubAddForm();
+  showToast('Assinatura adicionada.');
 }
 function updateCostField(id, field, value){
   const c = state.costs.find(c=>c.id===id);
@@ -5391,7 +5740,7 @@ function changeMonth(delta){
 }
 
 function getDay(monthObj, day){
-  return monthObj.days[day] || {gasto:0, faturamento:0, contas:'', fatPorGateway:{}};
+  return monthObj.days[day] || {gasto:0, faturamento:0, contas:''};
 }
 
 function handleDayChange(day, field, value){
@@ -5406,33 +5755,17 @@ function handleDayChange(day, field, value){
   renderResumoMes(); renderTodayPanel();
 }
 
-function handleGatewayFatChange(day, gatewayName, value){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  if(!d.fatPorGateway) d.fatPorGateway = {};
-  d.fatPorGateway[gatewayName] = Number(value)||0;
-  d.faturamento = Object.values(d.fatPorGateway).reduce((a,b)=>a+b, 0);
-  monthObj.days[day] = d;
-  saveState();
-  updateRowComputed(day);
-  updateMonthSummary();
-  updateTopStats();
-  renderResumoMes(); renderTodayPanel();
-}
-
 function updateRowComputed(day){
-  const monthObj = ensureMonth(state.finance.currentMonth);
-  const d = getDay(monthObj, day);
-  const gasto = Number(d.gasto)||0;
-  const fat = Number(d.faturamento)||0;
+  const gastoInput = document.getElementById('gasto-'+day);
+  const fatInput = document.getElementById('fat-'+day);
+  if(!gastoInput || !fatInput) return;
+  const gasto = Number(gastoInput.value)||0;
+  const fat = Number(fatInput.value)||0;
   const lucro = fat - gasto;
   const margem = fat>0 ? (lucro/fat*100) : null;
-  const roi = gasto>0 ? (lucro/gasto*100) : null;
-  const totalCell = document.getElementById('fattotal-'+day);
-  if(totalCell) totalCell.innerText = brl(fat);
   const lucroCell = document.getElementById('lucro-'+day);
   const margemCell = document.getElementById('margem-'+day);
-  const roiCell = document.getElementById('roas-'+day);
+  const roasCell = document.getElementById('roas-'+day);
   if(lucroCell){
     lucroCell.innerText = brl(lucro);
     lucroCell.className = 'fin-num ' + (lucro>=0?'pos':'neg');
@@ -5440,26 +5773,10 @@ function updateRowComputed(day){
   if(margemCell){
     margemCell.innerText = margem===null ? '—' : margem.toFixed(1)+'%';
   }
-  if(roiCell){
-    roiCell.innerText = roi===null ? '—' : roi.toFixed(1)+'%';
-    roiCell.className = 'fin-num ' + (roi===null ? '' : (roi>=0?'pos':'neg'));
+  if(roasCell){
+    const roas = gasto>0 ? (fat/gasto) : null;
+    roasCell.innerText = roas===null ? '—' : roas.toFixed(2)+'x';
   }
-}
-
-function renderFinanceTableHeader(gateways){
-  const head = document.getElementById('finTableHead');
-  if(!head) return;
-  let fatHeaders;
-  if(gateways.length){
-    fatHeaders = gateways.map(g=>`<th style="text-align:right;">${escapeHtml(g)}</th>`).join('') +
-      `<th style="text-align:right;">Faturamento</th>`;
-  } else {
-    fatHeaders = `<th style="text-align:right;">Faturamento</th>`;
-  }
-  head.innerHTML = `<tr>
-    <th>Dia</th><th style="text-align:right;">Gasto</th>${fatHeaders}
-    <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROI</th>
-  </tr>`;
 }
 
 function renderFinanceTable(){
@@ -5468,53 +5785,37 @@ function renderFinanceTable(){
   document.getElementById('monthLabel').innerText = monthLabel(key);
   const totalDays = daysInMonth(key);
   const tbody = document.getElementById('finTableBody');
-  const gateways = monthObj.gateways || [];
-  renderFinanceTableHeader(gateways);
   let rows = '';
   for(let day=1; day<=totalDays; day++){
     const d = getDay(monthObj, day);
-    const lucro = (d.faturamento||0) - (d.gasto||0);
+    const lucro = d.faturamento - d.gasto;
     const margem = d.faturamento>0 ? (lucro/d.faturamento*100) : null;
-    const roi = d.gasto>0 ? (lucro/d.gasto*100) : null;
-    let fatCells;
-    if(gateways.length){
-      fatCells = gateways.map(g=>{
-        const val = (d.fatPorGateway && d.fatPorGateway[g]) || '';
-        return `<td class="fin-num"><input class="day-cell-input" type="number" value="${val||''}" placeholder="R$ 0" onchange="handleGatewayFatChange(${day},'${jsStr(g)}',this.value)"></td>`;
-      }).join('') + `<td class="fin-num" id="fattotal-${day}">${brl(d.faturamento||0)}</td>`;
-    } else {
-      fatCells = `<td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>`;
-    }
+    const roas = d.gasto>0 ? (d.faturamento/d.gasto) : null;
     rows += `<tr data-day="${day}">
       <td style="font-family:var(--mono);color:var(--muted);">${day}</td>
       <td class="fin-num"><input class="day-cell-input" type="number" id="gasto-${day}" value="${d.gasto||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'gasto',this.value)"></td>
-      ${fatCells}
+      <td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
-      <td class="fin-num ${roi===null?'':(roi>=0?'pos':'neg')}" id="roas-${day}">${roi===null?'—':roi.toFixed(1)+'%'}</td>
+      <td class="fin-num" id="roas-${day}">${roas===null?'—':roas.toFixed(2)+'x'}</td>
     </tr>`;
   }
   tbody.innerHTML = rows;
   updateMonthSummary();
 }
 
-const GATEWAY_LIST_BASE = ['Hotmart','Kiwify','PerfectPay','Monetizze','Braip','Pepper','BuckPay','iExperience/Doppus','Kirvano','Cakto','Eduzz'];
-function jsStr(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+const GATEWAY_LIST_BASE = ['Hotmart','Kiwify','PerfectPay','Monetizze','Braip','Pepper','iExperience/Doppus','Kirvano','Cakto','Eduzz'];
 function allGateways(){
   return [...GATEWAY_LIST_BASE, ...(state.customGateways||[])];
 }
 function openGatewayModal(){
-  const modal = document.getElementById('gatewayModal');
-  renderGatewayModalList();
-  modal.style.display = 'flex';
-}
-function renderGatewayModalList(){
   const monthObj = ensureMonth(state.finance.currentMonth);
-  const active = monthObj.gateways || [];
+  const modal = document.getElementById('gatewayModal');
   const list = document.getElementById('gatewayModalList');
   list.innerHTML = allGateways().map(g=>`
-    <button class="gateway-opt ${active.includes(g)?'selected':''}" onclick="toggleMonthGateway('${jsStr(g)}')">${active.includes(g)?'✓ ':''}${escapeHtml(g)}</button>
+    <button class="gateway-opt ${monthObj.gateway===g?'selected':''}" onclick="setMonthGateway('${escapeHtml(g)}')">${escapeHtml(g)}</button>
   `).join('');
+  modal.style.display = 'flex';
 }
 function closeGatewayModal(){
   document.getElementById('gatewayModal').style.display = 'none';
@@ -5527,20 +5828,14 @@ function addCustomGateway(){
   if(!allGateways().includes(val)) state.customGateways.push(val);
   input.value = '';
   saveState();
-  renderGatewayModalList();
+  openGatewayModal();
 }
-function toggleMonthGateway(name){
+function setMonthGateway(value){
   const monthObj = ensureMonth(state.finance.currentMonth);
-  if(!monthObj.gateways) monthObj.gateways = [];
-  const idx = monthObj.gateways.indexOf(name);
-  if(idx>=0){
-    monthObj.gateways.splice(idx,1);
-  } else {
-    monthObj.gateways.push(name);
-  }
+  monthObj.gateway = value;
   saveState();
-  renderGatewayModalList();
-  renderFinanceTable();
+  closeGatewayModal();
+  updateMonthSummary();
 }
 function updateMonthSummary(){
   const key = state.finance.currentMonth;
@@ -5548,19 +5843,17 @@ function updateMonthSummary(){
   let totalGasto=0, totalFat=0;
   Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
   const lucroPre = totalFat - totalGasto;
-  const margemMes = totalFat>0 ? (lucroPre/totalFat*100) : null;
   const imposto = Number(monthObj.imposto||0);
   const lucroReal = lucroPre - imposto;
   const el = document.getElementById('monthSummary');
   el.innerHTML = `
     <div class="msum"><div class="l">Gasto do mês</div><div class="v">${brl(totalGasto)}</div></div>
-    <div class="msum msum-gateway" onclick="openGatewayModal()" title="clique pra escolher os gateways do mês">
+    <div class="msum msum-gateway" onclick="openGatewayModal()" title="clique pra escolher o gateway do mês">
       <div class="l">Faturamento do mês</div>
       <div class="v">${brl(totalFat)}</div>
-      ${(monthObj.gateways && monthObj.gateways.length) ? `<div class="gateway-chip">💳 ${monthObj.gateways.map(escapeHtml).join(', ')}</div>` : `<div class="gateway-chip gateway-chip-empty">+ escolher gateways</div>`}
+      ${monthObj.gateway ? `<div class="gateway-chip">💳 ${escapeHtml(monthObj.gateway)}</div>` : `<div class="gateway-chip gateway-chip-empty">+ escolher gateway</div>`}
     </div>
     <div class="msum"><div class="l">Lucro pré-imposto</div><div class="v ${lucroPre>=0?'pos':'neg'}">${brl(lucroPre)}</div></div>
-    <div class="msum"><div class="l">Margem do mês</div><div class="v ${margemMes===null?'':(margemMes>=0?'pos':'neg')}">${margemMes===null?'—':margemMes.toFixed(1)+'%'}</div></div>
     <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="R$ 0" onchange="updateImposto(this.value)"></div>
     <div class="msum"><div class="l">Lucro real pós-imposto</div><div class="v ${lucroReal>=0?'pos':'neg'}">${brl(lucroReal)}</div></div>
   `;
@@ -5690,6 +5983,73 @@ function miniAreaSpark(values){
   </svg>`;
 }
 function renderTodayPanel(){
+  const period = state.homePeriod || 'mes';
+  const switchEl = document.getElementById('homePeriodSwitch');
+  if(switchEl) switchEl.querySelectorAll('.period-btn').forEach(b=>b.classList.toggle('active', b.dataset.period===period));
+
+  if(period!=='mes'){
+    const curr = computeHomePeriodTotals(period, 0);
+    const prev = computeHomePeriodTotals(period, -1);
+    const roi = curr.gasto>0 ? (curr.fat/curr.gasto) : null;
+    const prevRoi = prev.gasto>0 ? (prev.fat/prev.gasto) : null;
+    const dGasto = pctChange(curr.gasto, prev.gasto);
+    const dFat = pctChange(curr.fat, prev.fat);
+    const dLucro = pctChange(curr.lucro, prev.lucro);
+    const dRoi = (roi!==null && prevRoi!==null) ? (roi-prevRoi) : null;
+    const compareLabel = period==='hoje' ? 'vs ontem' : 'vs 7 dias anteriores';
+    let dateLabel;
+    if(period==='hoje'){
+      dateLabel = new Date().toLocaleDateString('pt-BR');
+    } else {
+      const end = new Date();
+      const start = new Date(); start.setDate(start.getDate()-6);
+      dateLabel = start.toLocaleDateString('pt-BR') + ' – ' + end.toLocaleDateString('pt-BR');
+    }
+    document.getElementById('todayDate').innerHTML = `<span style="margin:0 8px;">${dateLabel}</span>`;
+    const sparkArrs = {gasto:[],fat:[],lucro:[],roi:[]};
+    if(period==='7dias'){
+      const cursor = new Date(); cursor.setDate(cursor.getDate()-6);
+      for(let i=0;i<7;i++){
+        const day = getDayValue(ymKey(cursor), cursor.getDate());
+        const g = Number(day.gasto||0), f=Number(day.faturamento||0);
+        sparkArrs.gasto.push(g); sparkArrs.fat.push(f); sparkArrs.lucro.push(f-g); sparkArrs.roi.push(g>0?f/g:0);
+        cursor.setDate(cursor.getDate()+1);
+      }
+    }
+    const trendCustom = (val)=>{
+      if(val===null || !isFinite(val)) return `<span class="trend neutral">— ${compareLabel}</span>`;
+      const positive = val>=0; const cls = positive?'pos':'neg'; const arrow = positive?'▲':'▼';
+      return `<span class="trend ${cls}">${arrow} ${Math.abs(val).toFixed(0)}% ${compareLabel}</span>`;
+    };
+    const periodWord = period==='hoje' ? 'de hoje' : 'dos últimos 7 dias';
+    document.getElementById('todayStats').innerHTML = `
+      <div class="today-stat card-crit">
+        <div class="l">Gasto ${periodWord}</div>
+        <div class="v">${brl(curr.gasto)}</div>
+        ${trendCustom(dGasto)}
+        ${miniAreaSpark(sparkArrs.gasto)}
+      </div>
+      <div class="today-stat">
+        <div class="l">Faturamento ${periodWord}</div>
+        <div class="v">${brl(curr.fat)}</div>
+        ${trendCustom(dFat)}
+        ${miniAreaSpark(sparkArrs.fat)}
+      </div>
+      <div class="today-stat card-lime">
+        <div class="l">Lucro ${periodWord}</div>
+        <div class="v ${curr.lucro>=0?'pos':'neg'}">${brl(curr.lucro)}</div>
+        ${trendCustom(dLucro)}
+        ${miniAreaSpark(sparkArrs.lucro)}
+      </div>
+      <div class="today-stat card-warn">
+        <div class="l">ROI ${periodWord}</div>
+        <div class="v">${roi===null?'—':roi.toFixed(2)+'x'}</div>
+        ${dRoi===null ? `<span class="trend neutral">— ${compareLabel}</span>` : `<span class="trend ${dRoi>=0?'pos':'neg'}">${dRoi>=0?'▲':'▼'} ${Math.abs(dRoi).toFixed(2)} ${compareLabel}</span>`}
+        ${miniAreaSpark(sparkArrs.roi)}
+      </div>
+    `;
+    return;
+  }
   const key = state.finance.currentMonth;
   const prevKey = shiftMonthKey(key, -1);
   const curr = computeMonthTotalsSimple(key);
@@ -6272,13 +6632,11 @@ function createNote(){
   }, 0);
 }
 function openNote(id){
-  noteFormatPainterExit();
   state.currentNoteId = id;
   saveState();
   renderNotes();
 }
 function closeNoteDetail(){
-  noteFormatPainterExit();
   state.currentNoteId = null;
   saveState();
   renderNotes();
@@ -6409,6 +6767,70 @@ function undoNoteEdit(){
   document.execCommand('undo');
   onNoteContentInput();
 }
+// Pincel de formatação (igual ao "Format Painter" do Word): copia negrito/itálico/sublinhado/
+// cor/destaque de um trecho selecionado e aplica no próximo trecho que você selecionar.
+// Clique simples = usa uma vez só. Clique duplo = fica "travado" pintando até apertar Esc
+// ou clicar no botão de novo.
+let notePainterFormat = null;
+let notePainterLocked = false;
+function updateNotePainterBtn(){
+  const btn = document.getElementById('notePainterBtn');
+  if(btn) btn.classList.toggle('active', !!notePainterFormat);
+}
+function noteFormatPainterClick(ev){
+  if(notePainterFormat){
+    notePainterFormat = null;
+    notePainterLocked = false;
+    updateNotePainterBtn();
+    return;
+  }
+  const editor = document.getElementById('noteContentEditor');
+  const sel = window.getSelection();
+  if(!editor || !sel || sel.rangeCount===0 || sel.isCollapsed || !editor.contains(sel.anchorNode)){
+    showToast('Selecione um texto com a formatação que quer copiar primeiro.', 'error');
+    return;
+  }
+  notePainterFormat = {
+    bold: document.queryCommandState('bold'),
+    italic: document.queryCommandState('italic'),
+    underline: document.queryCommandState('underline'),
+    strikeThrough: document.queryCommandState('strikeThrough'),
+    foreColor: document.queryCommandValue('foreColor'),
+    hiliteColor: document.queryCommandValue('hiliteColor')
+  };
+  notePainterLocked = (ev && ev.detail >= 2);
+  updateNotePainterBtn();
+  showToast(notePainterLocked ? 'Pincel travado — selecione quantos textos quiser. Esc pra soltar.' : 'Agora selecione o texto que quer formatar.');
+}
+function setNoteCommandState(cmd, desired){
+  const current = document.queryCommandState(cmd);
+  if(current !== desired) document.execCommand(cmd, false, null);
+}
+function noteEditorMouseUp(){
+  if(!notePainterFormat) return;
+  const editor = document.getElementById('noteContentEditor');
+  const sel = window.getSelection();
+  if(!editor || !sel || sel.rangeCount===0 || sel.isCollapsed || !editor.contains(sel.anchorNode)) return;
+  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
+  setNoteCommandState('bold', notePainterFormat.bold);
+  setNoteCommandState('italic', notePainterFormat.italic);
+  setNoteCommandState('underline', notePainterFormat.underline);
+  setNoteCommandState('strikeThrough', notePainterFormat.strikeThrough);
+  if(notePainterFormat.foreColor) document.execCommand('foreColor', false, notePainterFormat.foreColor);
+  if(notePainterFormat.hiliteColor) document.execCommand('hiliteColor', false, notePainterFormat.hiliteColor);
+  onNoteContentInput();
+  if(!notePainterLocked){
+    notePainterFormat = null;
+    updateNotePainterBtn();
+  }
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && notePainterFormat){
+    notePainterFormat = null;
+    notePainterLocked = false;
+    updateNotePainterBtn();
+  }
+});
 function noteInsertLink(){
   noteFocusEditor();
   const url = window.prompt('Cole o link (URL):');
@@ -6447,27 +6869,8 @@ function toggleNoteCheck(el){
   if(text && text.classList) text.classList.toggle('checked', el.classList.contains('checked'));
   onNoteContentInput();
 }
-function noteClearFormatting(){
-  const editor = document.getElementById('noteContentEditor');
-  const sel = window.getSelection();
-  if(!noteEditorSelectionValid(sel, editor)){
-    showToast('Selecione o trecho que você quer limpar primeiro.', 'error');
-    return;
-  }
-  document.execCommand('removeFormat');
-  document.execCommand('hiliteColor', false, 'transparent');
-  onNoteContentInput();
-}
-function toggleNoteHighlightMenu(ev){
-  if(ev) ev.stopPropagation();
-  const menu = document.getElementById('noteHighlightMenu');
-  if(!menu) return;
-  menu.classList.toggle('open');
-}
-function applyNoteHighlight(color){
-  noteCmd('hiliteColor', color);
-  const menu = document.getElementById('noteHighlightMenu');
-  if(menu) menu.classList.remove('open');
+function noteHighlight(){
+  noteCmd('hiliteColor', 'rgba(242,169,60,0.35)');
 }
 function toggleNoteColorMenu(ev){
   if(ev) ev.stopPropagation();
@@ -6480,209 +6883,11 @@ function applyNoteColor(color){
   const menu = document.getElementById('noteColorMenu');
   if(menu) menu.classList.remove('open');
 }
-function applyNoteFontSize(px){
-  if(!px) return;
-  const editor = document.getElementById('noteContentEditor');
-  const sel = window.getSelection();
-  if(!noteEditorSelectionValid(sel, editor)){
-    showToast('Selecione o texto que você quer redimensionar.', 'error');
-    const select = document.getElementById('noteFontSizeSelect');
-    if(select) select.value = '';
-    return;
-  }
-  const range = sel.getRangeAt(0).cloneRange();
-  const { firstSpan, lastSpan } = noteWrapRangeTextNodes(editor, range, { fontSize: px + 'px' });
-  if(firstSpan && lastSpan){
-    const newRange = document.createRange();
-    newRange.setStartBefore(firstSpan);
-    newRange.setEndAfter(lastSpan);
-    sel.removeAllRanges();
-    sel.addRange(newRange);
-  }
-  onNoteContentInput();
-  const select = document.getElementById('noteFontSizeSelect');
-  if(select) select.value = '';
-}
-
-// Pincel de formatação (igual ao "pincel" do Word/Google Docs): copia TODA a formatação
-// visual de um trecho selecionado — negrito, itálico, sublinhado, cor do texto, cor de
-// destaque, tamanho da fonte, tipo/família da fonte, espaçamento entre letras, etc — e
-// aplica exatamente essa formatação no próximo trecho selecionado, SEM bagunçar parágrafos
-// (formata cada trecho de texto individualmente, preservando a estrutura da nota).
-// Clique simples: seleciona a origem → clica no pincel → seleciona o destino → aplica uma
-// vez e desativa. Clique duplo no pincel: fica "fixado" e aplica em quantos trechos você
-// selecionar seguido, até clicar no pincel de novo ou apertar Esc — igual ao Word.
-let notePaintedFormat = null;
-let noteFormatPainterMode = null; // null | 'once' | 'sticky'
-
-function noteEditorSelectionValid(sel, editor){
-  return !!(sel && !sel.isCollapsed && sel.rangeCount > 0 && editor && editor.contains(sel.anchorNode) && editor.contains(sel.focusNode));
-}
-
-function noteFormatPainterClick(ev){
-  if(ev && ev.detail >= 2) return; // clique duplo é tratado só pelo dblclick, abaixo
-  const editor = document.getElementById('noteContentEditor');
-  if(!editor) return;
-  // clicar de novo enquanto o pincel já está ativo cancela (igual ao Word)
-  if(noteFormatPainterMode){ noteFormatPainterExit(); return; }
-  const sel = window.getSelection();
-  if(!noteEditorSelectionValid(sel, editor)){
-    showToast('Selecione um trecho com a formatação que você quer copiar primeiro.', 'error');
-    return;
-  }
-  notePaintedFormat = noteCaptureFormat(sel);
-  noteFormatPainterArm('once');
-}
-
-function noteFormatPainterDblClick(ev){
-  if(ev) ev.preventDefault();
-  const editor = document.getElementById('noteContentEditor');
-  if(!editor) return;
-  // o primeiro clique do duplo-clique já deve ter armado o pincel em modo "once" — só
-  // precisamos "promover" pra sticky. Se por algum motivo não armou (seleção perdida entre
-  // os cliques), tenta capturar de novo a partir da seleção atual.
-  if(!noteFormatPainterMode){
-    const sel = window.getSelection();
-    if(!noteEditorSelectionValid(sel, editor)){
-      showToast('Selecione um trecho com a formatação que você quer copiar primeiro.', 'error');
-      return;
-    }
-    notePaintedFormat = noteCaptureFormat(sel);
-  }
-  noteFormatPainterArm('sticky');
-}
-
-function noteFormatPainterArm(mode){
-  const editor = document.getElementById('noteContentEditor');
-  noteFormatPainterMode = mode;
-  if(editor) editor.classList.add('format-painting');
-  const btn = document.getElementById('noteFormatPainterBtn');
-  if(btn) btn.classList.add('active');
-  showToast(mode === 'sticky'
-    ? 'Pincel fixado — selecione quantos trechos quiser (clique no pincel de novo pra parar).'
-    : 'Pincel ativo — selecione o trecho que vai receber essa formatação.');
-}
-
-// Propriedades CSS que definem a aparência de um trecho de texto — captura o valor
-// já computado (resultado final, depois de herança/tags/estilos inline) pra copiar
-// exatamente o que está na tela, com o que quer que tenha gerado aquela formatação.
-const NOTE_FORMAT_PROPS = [
-  'fontWeight','fontStyle','textDecorationLine','color','backgroundColor',
-  'fontSize','fontFamily','letterSpacing','wordSpacing','textTransform',
-  'verticalAlign'
-];
-function noteCaptureFormat(sel){
-  let node = sel.anchorNode;
-  if(node && node.nodeType === Node.TEXT_NODE) node = node.parentElement;
-  if(!node) return null;
-  const cs = window.getComputedStyle(node);
-  const format = {};
-  NOTE_FORMAT_PROPS.forEach(prop=>{ format[prop] = cs[prop]; });
-  return format;
-}
-
-function noteFormatPainterExit(){
-  noteFormatPainterMode = null;
-  notePaintedFormat = null;
-  const editor = document.getElementById('noteContentEditor');
-  if(editor) editor.classList.remove('format-painting');
-  const btn = document.getElementById('noteFormatPainterBtn');
-  if(btn) btn.classList.remove('active');
-}
-
-// Aplica o formato copiado em cada nó de texto que está dentro da seleção, dividindo os
-// nós exatamente nos limites da seleção — assim parágrafos, listas, links etc. continuam
-// intactos (só o texto selecionado ganha um <span> novo por cima, nunca a estrutura toda).
-function noteWrapRangeTextNodes(root, range, format){
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode(node){ return range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
-  });
-  const nodes = [];
-  let n;
-  while((n = walker.nextNode())) nodes.push(n);
-  let firstSpan = null, lastSpan = null;
-  nodes.forEach(node=>{
-    const isStart = node === range.startContainer;
-    const isEnd = node === range.endContainer;
-    const localStart = isStart ? range.startOffset : 0;
-    const localEnd = isEnd ? range.endOffset : node.length;
-    if(localStart >= localEnd) return;
-    let working = node;
-    if(localEnd < working.length) working.splitText(localEnd);
-    if(localStart > 0) working = working.splitText(localStart);
-    if(!working.textContent) return;
-    const span = document.createElement('span');
-    NOTE_FORMAT_PROPS.forEach(prop=>{
-      const value = format[prop];
-      if(!value) return;
-      if(prop === 'backgroundColor' && /transparent|rgba\(0,\s*0,\s*0,\s*0\)/i.test(value)) return;
-      if(prop === 'textTransform' && value === 'none') return;
-      span.style[prop] = value;
-    });
-    working.parentNode.insertBefore(span, working);
-    span.appendChild(working);
-    if(!firstSpan) firstSpan = span;
-    lastSpan = span;
-  });
-  return { firstSpan, lastSpan };
-}
-
-function noteApplyPaintedFormat(){
-  const editor = document.getElementById('noteContentEditor');
-  const sel = window.getSelection();
-  if(!notePaintedFormat || !noteEditorSelectionValid(sel, editor)) return;
-  const range = sel.getRangeAt(0).cloneRange();
-  const { firstSpan, lastSpan } = noteWrapRangeTextNodes(editor, range, notePaintedFormat);
-  if(firstSpan && lastSpan){
-    const newRange = document.createRange();
-    newRange.setStartBefore(firstSpan);
-    newRange.setEndAfter(lastSpan);
-    sel.removeAllRanges();
-    sel.addRange(newRange);
-  }
-  onNoteContentInput();
-  if(noteFormatPainterMode !== 'sticky') noteFormatPainterExit();
-}
-
-function noteExpandSelectionToWord(sel, editor){
-  const node = sel.anchorNode;
-  if(!node || node.nodeType !== Node.TEXT_NODE) return false;
-  if(!editor.contains(node)) return false;
-  const text = node.textContent;
-  const wordCharRe = /[A-Za-zÀ-ÖØ-öø-ÿ0-9_]/;
-  let start = sel.anchorOffset, end = sel.anchorOffset;
-  while(start > 0 && wordCharRe.test(text[start-1])) start--;
-  while(end < text.length && wordCharRe.test(text[end])) end++;
-  if(start === end) return false;
-  const range = document.createRange();
-  range.setStart(node, start);
-  range.setEnd(node, end);
-  sel.removeAllRanges();
-  sel.addRange(range);
-  return true;
-}
-
-function noteFormatPainterMaybeApply(target){
-  if(!noteFormatPainterMode) return;
-  const editor = document.getElementById('noteContentEditor');
-  if(!editor || !editor.contains(target)) return;
-  setTimeout(()=>{
-    const sel = window.getSelection();
-    if(!sel || sel.rangeCount === 0) return;
-    if(sel.isCollapsed) noteExpandSelectionToWord(sel, editor);
-    if(sel && !sel.isCollapsed && noteEditorSelectionValid(sel, editor)) noteApplyPaintedFormat();
-  }, 0);
-}
-document.addEventListener('mouseup', (e)=> noteFormatPainterMaybeApply(e.target));
-document.addEventListener('touchend', (e)=> noteFormatPainterMaybeApply(e.target));
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape' && noteFormatPainterMode) noteFormatPainterExit();
-});
 document.addEventListener('click', (e)=>{
-  document.querySelectorAll('.note-color-menu.open').forEach(menu=>{
-    const wrap = menu.closest('.note-color-wrap');
-    if(wrap && !wrap.contains(e.target)) menu.classList.remove('open');
-  });
+  const menu = document.getElementById('noteColorMenu');
+  if(menu && menu.classList.contains('open') && !e.target.closest('.note-color-wrap')){
+    menu.classList.remove('open');
+  }
 });
 let noteMenuOpenId = null;
 function toggleNoteCardMenu(id, ev){
@@ -6758,8 +6963,7 @@ function renderNoteEditor(){
     <div class="note-meta-date" id="noteMetaDate">editado ${fmtDateTime(n.atualizadoEm || n.criadoEm)}</div>
     <div class="note-toolbar">
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="undoNoteEdit()" title="desfazer última alteração">↩ desfazer</button>
-      <div class="note-tb-sep"></div>
-      <button type="button" class="note-tb-btn" id="noteFormatPainterBtn" onmousedown="event.preventDefault()" onclick="noteFormatPainterClick(event)" ondblclick="noteFormatPainterDblClick(event)" title="pincel de formatação — copia TODA a formatação (negrito, itálico, sublinhado, cor, destaque, tamanho e tipo de fonte) de um trecho selecionado. Depois, selecione um trecho OU apenas clique dentro de uma palavra (ela é formatada inteira, igual Word/Docs) pra aplicar — clique duplo no pincel mantém ativo pra aplicar várias vezes">🖌️ pincel</button>
+      <button type="button" class="note-tb-btn" id="notePainterBtn" onmousedown="event.preventDefault()" onclick="noteFormatPainterClick(event)" title="copia a formatação de um trecho selecionado e aplica em outro — clique duplo pra usar várias vezes seguidas">🖌 pincel</button>
       <div class="note-tb-sep"></div>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H1')">Título</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('formatBlock','H2')">Subtítulo</button>
@@ -6768,29 +6972,7 @@ function renderNoteEditor(){
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('bold')"><b>N</b></button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('italic')"><i>I</i></button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('underline')"><u>S</u></button>
-      <div class="note-color-wrap">
-        <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="toggleNoteHighlightMenu(event)" title="destacar — escolher cor">🖍 destacar</button>
-        <div class="note-color-menu" id="noteHighlightMenu">
-          <button type="button" class="note-color-swatch" style="background:rgba(242,169,60,0.35);" title="Laranja" onmousedown="event.preventDefault()" onclick="applyNoteHighlight('rgba(242,169,60,0.35)')"></button>
-          <button type="button" class="note-color-swatch" style="background:rgba(91,157,255,0.3);" title="Azul" onmousedown="event.preventDefault()" onclick="applyNoteHighlight('rgba(91,157,255,0.3)')"></button>
-          <button type="button" class="note-color-swatch" style="background:rgba(34,197,94,0.3);" title="Verde" onmousedown="event.preventDefault()" onclick="applyNoteHighlight('rgba(34,197,94,0.3)')"></button>
-          <button type="button" class="note-color-swatch" style="background:rgba(240,69,92,0.3);" title="Vermelho" onmousedown="event.preventDefault()" onclick="applyNoteHighlight('rgba(240,69,92,0.3)')"></button>
-          <button type="button" class="note-color-swatch" style="background:transparent;border:1px dashed var(--border-strong);" title="Remover destaque" onmousedown="event.preventDefault()" onclick="applyNoteHighlight('transparent')"></button>
-          <input type="color" id="noteHighlightCustom" class="note-color-custom" title="outras cores" onmousedown="event.preventDefault()" oninput="applyNoteHighlight(this.value)">
-        </div>
-      </div>
-      <select id="noteFontSizeSelect" class="note-tb-btn" title="tamanho da fonte" onmousedown="event.stopPropagation()" onchange="applyNoteFontSize(this.value)">
-        <option value="">tamanho</option>
-        <option value="12">12</option>
-        <option value="13">13</option>
-        <option value="14">14</option>
-        <option value="16">16</option>
-        <option value="18">18</option>
-        <option value="20">20</option>
-        <option value="24">24</option>
-        <option value="28">28</option>
-        <option value="32">32</option>
-      </select>
+      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteHighlight()" title="destacar">🖍 destacar</button>
       <div class="note-color-wrap">
         <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="toggleNoteColorMenu(event)" title="cor da fonte">🎨 cor</button>
         <div class="note-color-menu" id="noteColorMenu">
@@ -6807,12 +6989,10 @@ function renderNoteEditor(){
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertOrderedList')">1. lista</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteInsertChecklist()">☑ checklist</button>
       <div class="note-tb-sep"></div>
-      <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteClearFormatting()" title="limpar formatação — remove qualquer estilo colado (cor, fundo, fonte) do trecho selecionado, útil pra texto colado de sites antes desta atualização">🧹 limpar</button>
-      <div class="note-tb-sep"></div>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteInsertLink()">🔗 link</button>
       <button type="button" class="note-tb-btn" onmousedown="event.preventDefault()" onclick="noteCmd('insertHorizontalRule')">― divisor</button>
     </div>
-    <div class="note-content-editor" id="noteContentEditor" contenteditable="true" data-placeholder="Escreva aqui..." oninput="onNoteContentInput()" onblur="linkifyEditorOnBlur()">${n.conteudo || ''}</div>
+    <div class="note-content-editor" id="noteContentEditor" contenteditable="true" data-placeholder="Escreva aqui..." oninput="onNoteContentInput()" onblur="linkifyEditorOnBlur()" onmouseup="noteEditorMouseUp()">${n.conteudo || ''}</div>
   `;
 }
 function renderNotes(){
@@ -7511,7 +7691,7 @@ function setupDragHandlers(){
   attachSortableGrid('processosList', ids=>reorderArray('processos', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
-  attachSortable('miningList', ids=>reorderArray('mining', ids));
+  attachSortableGrid('miningList', ids=>reorderArray('mining', ids));
   attachSortableGrid('videosList', ids=>reorderArray('videos', ids));
   attachSortableGrid('toolsList', ids=>reorderArray('tools', ids));
   attachSortableGrid('projectsGrid', ids=>reorderArray('projects', ids));
@@ -7528,86 +7708,6 @@ function setupDragHandlers(){
   attachSortableGrid('projResourcesGrid', ids=>reorderProjectResources(ids));
   attachSortable('phonesList', ids=>reorderArray('phones', ids));
 }
-
-// Cola na aba Notas preservando SÓ a formatação "de verdade" (negrito, itálico,
-// sublinhado, títulos — viram tamanho de fonte —, listas, links, código, tabelas),
-// que é o que vem ao copiar do ChatGPT/Claude ou de um documento. Qualquer coisa
-// "decorativa" do site de origem (cor de fundo, cor de fonte customizada, tipo de
-// fonte, classes) é descartada — por isso um texto colado nunca fica com aquele
-// "destacado" ou fundo colorido estranho vindo de outro lugar.
-const NOTE_PASTE_HEADING_SIZE = {H1:'22px', H2:'19px', H3:'17px', H4:'15px', H5:'14px', H6:'13px'};
-function noteSanitizePastedHtml(html){
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = html;
-  wrapper.querySelectorAll('script,style').forEach(n=>n.remove());
-  function walk(node){
-    let out = '';
-    node.childNodes.forEach(child=>{
-      if(child.nodeType === Node.TEXT_NODE){ out += escapeHtml(child.textContent); return; }
-      if(child.nodeType !== Node.ELEMENT_NODE) return;
-      const tag = child.tagName;
-      if(tag === 'BR'){ out += '<br>'; return; }
-      const inner = walk(child);
-      if(tag==='STRONG' || tag==='B') out += `<b>${inner}</b>`;
-      else if(tag==='EM' || tag==='I') out += `<i>${inner}</i>`;
-      else if(tag==='U') out += `<u>${inner}</u>`;
-      else if(tag==='CODE') out += `<span style="font-family:var(--mono);background:var(--surface3);padding:1px 5px;border-radius:4px;font-size:12.5px;">${inner}</span>`;
-      else if(tag==='A'){
-        const href = child.getAttribute('href')||'';
-        out += /^https?:\/\//i.test(href) ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener">${inner}</a>` : inner;
-      }
-      else if(NOTE_PASTE_HEADING_SIZE[tag]) out += `<p><span style="font-size:${NOTE_PASTE_HEADING_SIZE[tag]};font-weight:700;">${inner}</span></p>`;
-      else if(tag==='UL') out += `<ul>${inner}</ul>`;
-      else if(tag==='OL') out += `<ol>${inner}</ol>`;
-      else if(tag==='LI') out += `<li>${inner}</li>`;
-      else if(tag==='PRE') out += `<p><span style="font-family:var(--mono);font-size:12.5px;">${inner}</span></p>`;
-      else if(tag==='TABLE') out += `<table style="border-collapse:collapse;">${inner}</table>`;
-      else if(tag==='THEAD') out += `<thead>${inner}</thead>`;
-      else if(tag==='TBODY') out += `<tbody>${inner}</tbody>`;
-      else if(tag==='TR') out += `<tr>${inner}</tr>`;
-      else if(tag==='TD') out += `<td style="border:1px solid var(--border-strong);padding:4px 8px;">${inner}</td>`;
-      else if(tag==='TH') out += `<th style="border:1px solid var(--border-strong);padding:4px 8px;font-weight:700;">${inner}</th>`;
-      else if(tag==='P' || tag==='DIV' || tag==='BLOCKQUOTE') out += `<p>${inner}</p>`;
-      else out += inner;
-    });
-    return out;
-  }
-  return walk(wrapper);
-}
-document.addEventListener('paste', function(e){
-  const editor = document.getElementById('noteContentEditor');
-  if(!editor || !editor.contains(e.target)) return;
-  e.preventDefault();
-  const cd = e.clipboardData || window.clipboardData;
-  const html = cd.getData('text/html');
-  let finalHtml;
-  if(html && html.trim()){
-    finalHtml = noteSanitizePastedHtml(html);
-  } else {
-    const raw = cd.getData('text/plain') || '';
-    finalHtml = raw.split(/\r\n|\r|\n/).map(line => line ? `<p>${escapeHtml(line)}</p>` : '<p><br></p>').join('');
-  }
-  document.execCommand('insertHTML', false, finalHtml);
-  onNoteContentInput();
-}, true);
-
-// Cola sempre como texto puro nas caixas de texto da aba Produtos (recuperação de vendas,
-// entrega do entregável, quebra de objeções): evita que "<br>" ou qualquer outra formatação
-// escondida no que foi copiado apareça junto no meio do texto.
-document.addEventListener('paste', function(e){
-  const el = e.target;
-  if(!el || el.tagName !== 'TEXTAREA') return;
-  const productsView = document.getElementById('productsView');
-  if(!productsView || !productsView.contains(el)) return;
-  e.preventDefault();
-  const text = sanitizePlainText((e.clipboardData || window.clipboardData).getData('text/plain'));
-  const start = el.selectionStart, end = el.selectionEnd;
-  const before = el.value.slice(0, start), after = el.value.slice(end);
-  el.value = before + text + after;
-  const pos = start + text.length;
-  el.selectionStart = el.selectionEnd = pos;
-  autoGrow(el);
-}, true);
 
 // inicialização controlada por sb.auth.onAuthStateChange (ver acima)
 applyHideValuesPreference();
