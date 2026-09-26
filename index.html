@@ -517,9 +517,20 @@
   .msum{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:130px;}
   .msum .l{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:3px;}
   .msum .v{font-family:var(--mono);font-size:16px;font-weight:700;}
-  .msum .v.pos{color:var(--ok);}
-  .msum .v.neg{color:var(--neg);}
+  .msum .v.pos{color:var(--ok);}  .msum .v.neg{color:var(--neg);}
   .msum.imposto-box input{width:100%;background:transparent;border:none;color:var(--warn);font-family:var(--mono);font-size:16px;font-weight:700;padding:0;}
+
+  .month-summary-gateways:empty{margin-bottom:0;}
+  .msum-gw .v{color:var(--blue-bright);}
+  .msum-gw-total{border-color:var(--border-strong);}
+  .msum-gw-total .v{color:var(--green);}
+  .gateway-manage-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+  .gw-tag{font-family:var(--mono);font-size:10.5px;background:var(--blue-soft);color:var(--blue);border-radius:6px;padding:3px 8px;}
+  .gateway-manage-row input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:12px;min-width:160px;}
+  .fin-gw-th{position:relative;}
+  .fin-gw-remove{background:none;border:none;color:var(--muted2);font-size:9px;cursor:pointer;margin-left:4px;padding:0;}
+  .fin-gw-remove:hover{color:var(--neg);}
+  .fin-num-total{font-weight:700;color:var(--blue-bright);}
 
   .day-cell-input{
     background:transparent;border:1px solid transparent;color:var(--text);
@@ -590,17 +601,12 @@
   @media(max-width:900px){ .product-two-col{grid-template-columns:1fr;gap:16px;} }
   .field-label{font-size:11px;color:var(--muted);margin-bottom:3px;display:block;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.5px;}
 
-  /* ---------- PRODUTO: menu de páginas do funil fixo/centralizado à esquerda ---------- */
-  .product-detail-layout{display:flex;gap:18px;align-items:flex-start;}
-  .product-side-col{width:320px;flex-shrink:0;position:sticky;top:16px;}
-  .product-side-col .panel{margin-bottom:0;}
-  .product-main-col{flex:1;min-width:0;}
-  .product-main-col > .panel{margin-bottom:16px;}
-  @media(max-width:1100px){
-    .product-detail-layout{flex-direction:column;}
-    .product-side-col{width:100%;position:static;}
-  }
-  @media(min-width:1900px){ .product-side-col{width:360px;} }
+  /* ---------- PRODUTO: links do funil centralizados ---------- */
+  .funnel-links-panel{display:flex;flex-direction:column;}
+  .funnel-links-head{align-self:stretch;}
+  .funnel-links-center{width:100%;display:flex;flex-direction:column;align-items:center;}
+  .funnel-links-center #funnelLinksList{width:100%;max-width:560px;}
+  .funnel-links-center .add-form{width:100%;max-width:560px;}
 
   /* ---------- FIX MOBILE OVERFLOW ---------- */
   html, body{ overflow-x:hidden; max-width:100vw; }
@@ -714,9 +720,6 @@
   /* ---------- ATIVOS / GERENTES ---------- */
   .asset-row{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
   .mining-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:9px;transition:border-color .15s;}
-  #miningList{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px;align-items:start;}
-  #miningList .mining-card{margin-bottom:0;}
-  .mining-group-card{grid-column:1/-1;}
   .mining-group-card{background:var(--surface3);border:1px solid var(--border-strong);border-radius:14px;padding:6px;margin-bottom:12px;}
   .mining-group-head{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;border-radius:10px;transition:background .15s;}
   .mining-group-head:hover{background:var(--surface2);}
@@ -726,8 +729,9 @@
   .mining-group-count{font-weight:400;color:var(--muted);font-size:12.5px;}
   .mining-group-sub{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:2px;}
   .mining-group-toggle-ico{color:var(--muted);font-size:13px;flex-shrink:0;}
-  .mining-group-body{padding:10px 4px 4px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;}
-  .mining-group-body .mining-card{margin-bottom:0;}
+  .mining-group-body{padding:10px 4px 4px;}
+  .mining-group-body .mining-card{margin-bottom:9px;}
+  .mining-group-body .mining-card:last-child{margin-bottom:0;}
   .offer-group-card{transition:border-color .15s, box-shadow .15s;}
   .offer-group-card.offer-drop-hover{border-color:var(--blue);box-shadow:0 0 0 2px rgba(59,130,246,0.25);}
   .offer-group-body{padding:8px 4px 4px;}
@@ -1750,9 +1754,10 @@
             <div id="desempenhoMesChart" class="fin-chart-wrap"></div>
           </div>
 
+          <div class="gateway-manage-row" id="gatewayManageRow"></div>
           <div class="fin-table-wrap">
             <table class="fin-table">
-              <thead><tr>
+              <thead><tr id="finTableHeadRow">
                 <th>Dia</th><th style="text-align:right;">Gasto</th><th style="text-align:right;">Faturamento</th>
                 <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
               </tr></thead>
@@ -1761,6 +1766,7 @@
           </div>
 
           <div class="month-summary" id="monthSummary"></div>
+          <div class="month-summary month-summary-gateways" id="monthSummaryGateways"></div>
         </div>
 
         <div class="panel full costs-panel" id="costsPanel">
@@ -1884,89 +1890,85 @@
           <button class="del-btn" onclick="deleteCurrentProduct()">✕ excluir produto</button>
         </div>
 
-        <div class="product-detail-layout">
-          <div class="product-side-col">
-            <div class="panel" id="funnelLinksPanel">
-              <div class="panel-head">
-                <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
-                <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
+        <div class="panel">
+          <div class="panel-head"><h2>Status do produto</h2></div>
+          <div class="add-row">
+            <select id="productStatusSelect" onchange="handleProductStatusChange(this.value)"></select>
+          </div>
+          <div id="newStatusRow" style="display:none;margin-top:10px;">
+            <div class="add-row">
+              <input type="text" id="newStatusEmoji" placeholder="emoji (ex: 🚀)" style="max-width:90px;">
+              <input type="text" id="newStatusLabel" placeholder="nome do status (ex: Aguardando aprovação)">
+              <button class="add" onclick="createCustomProductStatus()">salvar status</button>
+              <button class="add-cost-cancel-btn" onclick="toggleNewStatusRow(false)">cancelar</button>
+            </div>
+          </div>
+          <div id="customStatusManageList" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="panel funnel-links-panel" id="funnelLinksPanel">
+          <div class="panel-head funnel-links-head">
+            <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
+            <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
+          </div>
+          <div class="funnel-links-center">
+            <div id="funnelLinksList" class="funnel-wrap"></div>
+            <div class="add-form" id="newFunnelLinkRow">
+              <div class="add-row" style="flex-direction:column;">
+                <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
+                <input type="text" id="funnelLinkUrl" placeholder="link/URL">
+                <div class="add-row" style="margin-top:0;">
+                  <button class="add" style="flex:1;" onclick="addFunnelLink()">+ adicionar página</button>
+                  <button class="add-cost-cancel-btn" onclick="toggleNewFunnelLinkForm(false)">cancelar</button>
+                </div>
               </div>
-              <div id="funnelLinksList" class="funnel-wrap"></div>
-              <div class="add-form" id="newFunnelLinkRow">
-                <div class="add-row" style="flex-direction:column;">
-                  <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
-                  <input type="text" id="funnelLinkUrl" placeholder="link/URL">
-                  <div class="add-row" style="margin-top:0;">
-                    <button class="add" style="flex:1;" onclick="addFunnelLink()">+ adicionar página</button>
-                    <button class="add-cost-cancel-btn" onclick="toggleNewFunnelLinkForm(false)">cancelar</button>
-                  </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-two-col">
+          <div class="panel wa-panel">
+            <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Recuperação de vendas</h2></div>
+            <div id="recoveryStepsList" class="funnel-wrap wa-wrap"></div>
+            <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('recovery')">+ nova etapa</button>
+          </div>
+          <div class="panel wa-panel">
+            <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Entrega do entregável</h2></div>
+            <div id="deliveryStepsList" class="funnel-wrap wa-wrap"></div>
+            <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('delivery')">+ nova etapa</button>
+          </div>
+        </div>
+
+        <div class="product-two-col">
+          <div class="panel" id="phonesPanel">
+            <div class="panel-head">
+              <h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
+              <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
+            </div>
+            <div id="phonesList"></div>
+            <div class="add-form" id="newPhoneRow">
+              <div class="add-row" style="flex-direction:column;">
+                <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
+                <div class="add-row" style="margin-top:0;">
+                  <input type="text" id="phoneProduto" placeholder="produto/uso">
+                  <select id="phoneStatus" style="flex:1;">
+                    <option value="ativo">ativo</option>
+                    <option value="atencao">atenção</option>
+                    <option value="queimado">queimado</option>
+                  </select>
+                </div>
+                <div class="add-row" style="margin-top:0;">
+                  <button class="add" style="flex:1;" onclick="addPhone()">+ adicionar número</button>
+                  <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="product-main-col">
-            <div class="panel">
-              <div class="panel-head"><h2>Status do produto</h2></div>
-              <div class="add-row">
-                <select id="productStatusSelect" onchange="handleProductStatusChange(this.value)"></select>
-              </div>
-              <div id="newStatusRow" style="display:none;margin-top:10px;">
-                <div class="add-row">
-                  <input type="text" id="newStatusEmoji" placeholder="emoji (ex: 🚀)" style="max-width:90px;">
-                  <input type="text" id="newStatusLabel" placeholder="nome do status (ex: Aguardando aprovação)">
-                  <button class="add" onclick="createCustomProductStatus()">salvar status</button>
-                  <button class="add-cost-cancel-btn" onclick="toggleNewStatusRow(false)">cancelar</button>
-                </div>
-              </div>
-              <div id="customStatusManageList" style="margin-top:10px;"></div>
-            </div>
-
-            <div class="product-two-col">
-              <div class="panel wa-panel">
-                <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Recuperação de vendas</h2></div>
-                <div id="recoveryStepsList" class="funnel-wrap wa-wrap"></div>
-                <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('recovery')">+ nova etapa</button>
-              </div>
-              <div class="panel wa-panel">
-                <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Entrega do entregável</h2></div>
-                <div id="deliveryStepsList" class="funnel-wrap wa-wrap"></div>
-                <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('delivery')">+ nova etapa</button>
-              </div>
-            </div>
-
-            <div class="product-two-col">
-              <div class="panel" id="phonesPanel">
-                <div class="panel-head">
-                  <h2><span class="sub">números de whatsapp usados pra recuperar venda perdida</span>Números de recuperação</h2>
-                  <button class="add-tool-btn" id="newPhoneToggleBtn" onclick="toggleNewPhoneForm(true)">+ Adicionar número</button>
-                </div>
-                <div id="phonesList"></div>
-                <div class="add-form" id="newPhoneRow">
-                  <div class="add-row" style="flex-direction:column;">
-                    <input type="text" id="phoneNumero" placeholder="número (ex: +55 11 9xxxx-xxxx)">
-                    <div class="add-row" style="margin-top:0;">
-                      <input type="text" id="phoneProduto" placeholder="produto/uso">
-                      <select id="phoneStatus" style="flex:1;">
-                        <option value="ativo">ativo</option>
-                        <option value="atencao">atenção</option>
-                        <option value="queimado">queimado</option>
-                      </select>
-                    </div>
-                    <div class="add-row" style="margin-top:0;">
-                      <button class="add" style="flex:1;" onclick="addPhone()">+ adicionar número</button>
-                      <button class="add-cost-cancel-btn" onclick="toggleNewPhoneForm(false)">cancelar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="panel">
-                <div class="panel-head"><h2><span class="sub">🛡️ cada card é uma objeção diferente — nomeia, descreve, e monta a resposta em variações</span>Quebra de objeções</h2></div>
-                <div id="objectionsStepsList" class="funnel-wrap"></div>
-                <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
-              </div>
-            </div>
+          <div class="panel">
+            <div class="panel-head"><h2><span class="sub">🛡️ cada card é uma objeção diferente — nomeia, descreve, e monta a resposta em variações</span>Quebra de objeções</h2></div>
+            <div id="objectionsStepsList" class="funnel-wrap"></div>
+            <button class="add" style="margin-top:10px;width:100%;" onclick="addStep('objections')">+ nova objeção</button>
           </div>
         </div>
       </div>
@@ -2351,6 +2353,7 @@ const defaultState = {
   tools: [],
   warmupGroups: [],
   customGateways: [],
+  dailyGateways: ['Pepper','Buckpay'],
   customProductStatuses: [],
   projects: [],
   currentProjectId: null,
@@ -2374,7 +2377,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], contacts:[], contactsMigratedFromManagers:false, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes','contacts'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], dailyGateways:['Pepper','Buckpay'], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], contacts:[], contactsMigratedFromManagers:false, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes','contacts'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -2673,7 +2676,8 @@ async function loadState(){
     if(error) throw error;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,avisos:[],contacts:[],contactsMigratedFromManagers:false,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],dailyGateways:['Pepper','Buckpay'],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,avisos:[],contacts:[],contactsMigratedFromManagers:false,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      if(!state.dailyGateways || !Array.isArray(state.dailyGateways)) state.dailyGateways = ['Pepper','Buckpay'];
       if(!state.avisos) state.avisos = [];
       if(!state.contacts) state.contacts = [];
       if(!state.contactsMigratedFromManagers){
@@ -5740,7 +5744,48 @@ function changeMonth(delta){
 }
 
 function getDay(monthObj, day){
-  return monthObj.days[day] || {gasto:0, faturamento:0, contas:''};
+  const d = monthObj.days[day] || {gasto:0, faturamento:0, contas:''};
+  if(!d.gatewayFat) d.gatewayFat = {};
+  return d;
+}
+function gatewayFatValue(d, name){
+  return Number((d.gatewayFat && d.gatewayFat[name]) || 0);
+}
+function recalcDayFaturamento(d){
+  const gw = d.gatewayFat || {};
+  d.faturamento = Object.values(gw).reduce((s,v)=> s + (Number(v)||0), 0);
+}
+function handleGatewayFatChange(day, gatewayName, value){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
+  if(!d.gatewayFat) d.gatewayFat = {};
+  d.gatewayFat[gatewayName] = Number(value)||0;
+  recalcDayFaturamento(d);
+  monthObj.days[day] = d;
+  saveState();
+  const totalCell = document.getElementById('fat-total-'+day);
+  if(totalCell) totalCell.innerText = brl(d.faturamento);
+  updateRowComputed(day);
+  updateMonthSummary();
+  updateTopStats();
+  renderResumoMes(); renderTodayPanel();
+}
+function addDailyGateway(){
+  const input = document.getElementById('newDailyGatewayInput');
+  const name = input.value.trim();
+  if(!name) return;
+  if(!state.dailyGateways) state.dailyGateways = [];
+  if(!state.dailyGateways.includes(name)) state.dailyGateways.push(name);
+  input.value = '';
+  saveState();
+  renderFinanceTable();
+}
+function removeDailyGateway(name){
+  openConfirmModal(`Parar de acompanhar "${name}" separadamente? Os valores já lançados continuam somados no faturamento total, só a coluna some da tabela.`, ()=>{
+    state.dailyGateways = (state.dailyGateways||[]).filter(g=>g!==name);
+    saveState();
+    renderFinanceTable();
+  });
 }
 
 function handleDayChange(day, field, value){
@@ -5756,11 +5801,12 @@ function handleDayChange(day, field, value){
 }
 
 function updateRowComputed(day){
+  const monthObj = ensureMonth(state.finance.currentMonth);
+  const d = getDay(monthObj, day);
   const gastoInput = document.getElementById('gasto-'+day);
-  const fatInput = document.getElementById('fat-'+day);
-  if(!gastoInput || !fatInput) return;
+  if(!gastoInput) return;
   const gasto = Number(gastoInput.value)||0;
-  const fat = Number(fatInput.value)||0;
+  const fat = Number(d.faturamento)||0;
   const lucro = fat - gasto;
   const margem = fat>0 ? (lucro/fat*100) : null;
   const lucroCell = document.getElementById('lucro-'+day);
@@ -5784,6 +5830,18 @@ function renderFinanceTable(){
   const monthObj = ensureMonth(key);
   document.getElementById('monthLabel').innerText = monthLabel(key);
   const totalDays = daysInMonth(key);
+  const gateways = state.dailyGateways || [];
+  const theadRow = document.getElementById('finTableHeadRow');
+  if(theadRow){
+    theadRow.innerHTML = `
+      <th>Dia</th><th style="text-align:right;">Gasto</th>
+      ${gateways.length>0
+        ? gateways.map(g=>`<th style="text-align:right;" class="fin-gw-th"><span>${escapeHtml(g)}</span><button class="fin-gw-remove" onclick="removeDailyGateway('${jsAttrEscape(g)}')" title="parar de acompanhar ${escapeHtml(g)} separadamente">✕</button></th>`).join('')
+          + `<th style="text-align:right;">Faturamento total</th>`
+        : `<th style="text-align:right;">Faturamento</th>`}
+      <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
+    `;
+  }
   const tbody = document.getElementById('finTableBody');
   let rows = '';
   for(let day=1; day<=totalDays; day++){
@@ -5791,20 +5849,32 @@ function renderFinanceTable(){
     const lucro = d.faturamento - d.gasto;
     const margem = d.faturamento>0 ? (lucro/d.faturamento*100) : null;
     const roas = d.gasto>0 ? (d.faturamento/d.gasto) : null;
+    const fatCells = gateways.length>0
+      ? gateways.map(g=>`<td class="fin-num"><input class="day-cell-input" type="number" id="gw-${jsAttrEscape(g)}-${day}" value="${gatewayFatValue(d,g)||''}" placeholder="R$ 0" onchange="handleGatewayFatChange(${day},'${jsAttrEscape(g)}',this.value)"></td>`).join('')
+        + `<td class="fin-num fin-num-total" id="fat-total-${day}">${brl(d.faturamento)}</td>`
+      : `<td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>`;
     rows += `<tr data-day="${day}">
       <td style="font-family:var(--mono);color:var(--muted);">${day}</td>
       <td class="fin-num"><input class="day-cell-input" type="number" id="gasto-${day}" value="${d.gasto||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'gasto',this.value)"></td>
-      <td class="fin-num"><input class="day-cell-input" type="number" id="fat-${day}" value="${d.faturamento||''}" placeholder="R$ 0" onchange="handleDayChange(${day},'faturamento',this.value)"></td>
+      ${fatCells}
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
       <td class="fin-num" id="roas-${day}">${roas===null?'—':roas.toFixed(2)+'x'}</td>
     </tr>`;
   }
   tbody.innerHTML = rows;
+  const gwManageEl = document.getElementById('gatewayManageRow');
+  if(gwManageEl){
+    gwManageEl.innerHTML = `
+      ${gateways.map(g=>`<span class="gw-tag">${escapeHtml(g)}</span>`).join('')}
+      <input type="text" id="newDailyGatewayInput" placeholder="+ gateway (ex: Buckpay)" onkeydown="if(event.key==='Enter') addDailyGateway()">
+      <button class="add-tool-btn" onclick="addDailyGateway()">+ adicionar</button>
+    `;
+  }
   updateMonthSummary();
 }
 
-const GATEWAY_LIST_BASE = ['Hotmart','Kiwify','PerfectPay','Monetizze','Braip','Pepper','iExperience/Doppus','Kirvano','Cakto','Eduzz'];
+const GATEWAY_LIST_BASE = ['Hotmart','Kiwify','PerfectPay','Monetizze','Braip','Pepper','Buckpay','iExperience/Doppus','Kirvano','Cakto','Eduzz'];
 function allGateways(){
   return [...GATEWAY_LIST_BASE, ...(state.customGateways||[])];
 }
@@ -5841,7 +5911,14 @@ function updateMonthSummary(){
   const key = state.finance.currentMonth;
   const monthObj = ensureMonth(key);
   let totalGasto=0, totalFat=0;
-  Object.values(monthObj.days).forEach(d=>{ totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0); });
+  const gwTotals = {};
+  (state.dailyGateways||[]).forEach(g=> gwTotals[g] = 0);
+  Object.values(monthObj.days).forEach(d=>{
+    totalGasto += Number(d.gasto||0); totalFat += Number(d.faturamento||0);
+    if(d.gatewayFat){
+      Object.entries(d.gatewayFat).forEach(([g,v])=>{ gwTotals[g] = (gwTotals[g]||0) + (Number(v)||0); });
+    }
+  });
   const lucroPre = totalFat - totalGasto;
   const imposto = Number(monthObj.imposto||0);
   const lucroReal = lucroPre - imposto;
@@ -5857,6 +5934,15 @@ function updateMonthSummary(){
     <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="R$ 0" onchange="updateImposto(this.value)"></div>
     <div class="msum"><div class="l">Lucro real pós-imposto</div><div class="v ${lucroReal>=0?'pos':'neg'}">${brl(lucroReal)}</div></div>
   `;
+  const gwEl = document.getElementById('monthSummaryGateways');
+  if(gwEl){
+    const names = Object.keys(gwTotals);
+    if(names.length===0){ gwEl.innerHTML = ''; }
+    else {
+      gwEl.innerHTML = names.map(g=>`<div class="msum msum-gw"><div class="l">${escapeHtml(g)} no mês</div><div class="v">${brl(gwTotals[g])}</div></div>`).join('')
+        + `<div class="msum msum-gw msum-gw-total"><div class="l">Soma dos gateways</div><div class="v">${brl(totalFat)}</div></div>`;
+    }
+  }
   return lucroReal;
 }
 function updateImposto(value){
@@ -7691,7 +7777,7 @@ function setupDragHandlers(){
   attachSortableGrid('processosList', ids=>reorderArray('processos', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
-  attachSortableGrid('miningList', ids=>reorderArray('mining', ids));
+  attachSortable('miningList', ids=>reorderArray('mining', ids));
   attachSortableGrid('videosList', ids=>reorderArray('videos', ids));
   attachSortableGrid('toolsList', ids=>reorderArray('tools', ids));
   attachSortableGrid('projectsGrid', ids=>reorderArray('projects', ids));
