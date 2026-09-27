@@ -619,16 +619,6 @@
   }
   .funnel-link-row:hover{border-color:var(--border-strong);}
   .funnel-link-row.editing{align-items:stretch;}
-  .funnel-link-avatar{
-    width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-    font-size:14px;flex-shrink:0;
-  }
-  .funnel-avatar-c0{background:rgba(59,130,246,0.18);}
-  .funnel-avatar-c1{background:rgba(139,92,246,0.18);}
-  .funnel-avatar-c2{background:rgba(20,184,166,0.18);}
-  .funnel-avatar-c3{background:rgba(34,197,94,0.18);}
-  .funnel-avatar-c4{background:rgba(245,166,35,0.18);}
-  .funnel-avatar-c5{background:rgba(236,72,153,0.18);}
   .funnel-link-info{flex:1;min-width:0;}
   .funnel-links-flat .funnel-link-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .funnel-links-flat .funnel-link-url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:100%;}
@@ -1105,6 +1095,7 @@
   
   .funnel-link-actions{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;opacity:0;transition:opacity .15s;}
   .funnel-link-stage:hover .funnel-link-actions{opacity:1;}
+  .funnel-link-row .funnel-link-actions{opacity:1;}
   .funnel-icon-btn{
     background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;
     width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
@@ -4518,17 +4509,6 @@ function toggleFunnelLinkAtivo(id, ev){
   l.ativo = !(l.ativo !== false);
   saveState(); renderProducts();
 }
-const FUNNEL_LINK_ICONS = ['🔗','▶️','🎯','📄','🛒','💬','⚙️','📈'];
-function funnelLinkAvatar(l, idx){
-  const n = (l.nome||'').toLowerCase();
-  let icon = FUNNEL_LINK_ICONS[idx % FUNNEL_LINK_ICONS.length];
-  if(n.includes('vsl') || n.startsWith('av') || n.includes('video')) icon = '▶️';
-  else if(n.includes('check')) icon = '🛒';
-  else if(n.includes('login') || n.includes('app')) icon = '⚙️';
-  else if(n.includes('back')) icon = '↩️';
-  else if(n.includes('ppc') || n.includes('anális') || n.includes('analise')) icon = '🎯';
-  return `<div class="funnel-link-avatar funnel-avatar-c${idx % 6}">${icon}</div>`;
-}
 function funnelLinksHtml(links){
   if(links.length===0) return '<div class="empty">nenhum link ainda.</div>';
   return links.map((l,idx)=>{
@@ -4547,7 +4527,6 @@ function funnelLinksHtml(links){
     const ativo = l.ativo !== false;
     return `<div class="funnel-link-row" data-id="${l.id}">
       <span class="drag-handle">⠿</span>
-      ${funnelLinkAvatar(l, idx)}
       <div class="funnel-link-info">
         <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
         <div class="funnel-link-url-row">
