@@ -607,19 +607,38 @@
   /* ---------- PRODUTO: links do funil centralizados ---------- */
   .funnel-links-panel{display:flex;flex-direction:column;}
   .funnel-links-head{align-self:stretch;}
-  .funnel-links-center{width:100%;display:flex;flex-direction:column;align-items:center;}
-  .funnel-links-center #funnelLinksList{width:100%;max-width:680px;}
-  .funnel-links-center .add-form{width:100%;max-width:680px;}
-  @media(min-width:1900px){ .funnel-links-center #funnelLinksList{max-width:760px;} }
-  #funnelLinksList .funnel-stage{padding:11px 16px;}
-  #funnelLinksList .funnel-link-name{font-size:13.5px;}
-  #funnelLinksList .funnel-link-url-row{margin-top:2px;}
-  #funnelLinksList .funnel-link-url{font-size:11.5px;}
-  #funnelLinksList .funnel-icon-btn{width:24px;height:24px;font-size:12px;}
-  #funnelLinksList .funnel-link-url-row .funnel-icon-btn{width:22px;height:22px;}
-  #funnelLinksList .funnel-connector{height:10px;}
-  #funnelLinksList .funnel-connector::after{font-size:11px;margin-top:5px;}
-  #funnelLinksList .drag-handle{font-size:13px;}
+  .funnel-links-count{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;margin-left:6px;}
+  .funnel-add-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;transition:background .15s;white-space:nowrap;}
+  .funnel-add-btn:hover{background:var(--blue-bright);}
+  .funnel-links-center{width:100%;}
+  .funnel-links-center .add-form{width:100%;max-width:680px;margin:10px auto 0;}
+  .funnel-links-flat{align-items:stretch !important;gap:6px;}
+  .funnel-link-row{
+    display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);
+    border-radius:10px;padding:9px 12px;width:100%;transition:border-color .15s;
+  }
+  .funnel-link-row:hover{border-color:var(--border-strong);}
+  .funnel-link-row.editing{align-items:stretch;}
+  .funnel-link-avatar{
+    width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-size:14px;flex-shrink:0;
+  }
+  .funnel-avatar-c0{background:rgba(59,130,246,0.18);}
+  .funnel-avatar-c1{background:rgba(139,92,246,0.18);}
+  .funnel-avatar-c2{background:rgba(20,184,166,0.18);}
+  .funnel-avatar-c3{background:rgba(34,197,94,0.18);}
+  .funnel-avatar-c4{background:rgba(245,166,35,0.18);}
+  .funnel-avatar-c5{background:rgba(236,72,153,0.18);}
+  .funnel-link-info{flex:1;min-width:0;}
+  .funnel-links-flat .funnel-link-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .funnel-links-flat .funnel-link-url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:100%;}
+  .funnel-link-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+  .funnel-status-pill{
+    font-family:var(--mono);font-size:10px;font-weight:700;border-radius:20px;padding:4px 11px;
+    border:none;cursor:pointer;white-space:nowrap;
+  }
+  .funnel-status-pill.is-on{background:rgba(34,197,94,0.16);color:var(--green);}
+  .funnel-status-pill.is-off{background:rgba(148,163,184,0.16);color:var(--muted);}
 
   /* ---------- FIX MOBILE OVERFLOW ---------- */
   html, body{ overflow-x:hidden; max-width:100vw; }
@@ -1921,11 +1940,11 @@
 
         <div class="panel funnel-links-panel" id="funnelLinksPanel">
           <div class="panel-head funnel-links-head">
-            <h2><span class="sub">páginas do funil, em ordem — clica pra abrir</span>Links do funil</h2>
-            <button class="add-tool-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
+            <h2><span class="sub">ARRASTE PARA REORGANIZAR</span>Links do funil <span class="funnel-links-count" id="funnelLinksCount"></span></h2>
+            <button class="funnel-add-btn" id="newFunnelLinkToggleBtn" onclick="toggleNewFunnelLinkForm(true)">+ Adicionar página</button>
           </div>
           <div class="funnel-links-center">
-            <div id="funnelLinksList" class="funnel-wrap"></div>
+            <div id="funnelLinksList" class="funnel-wrap funnel-links-flat"></div>
             <div class="add-form" id="newFunnelLinkRow">
               <div class="add-row" style="flex-direction:column;">
                 <input type="text" id="funnelLinkNome" placeholder="nome (ex: Pressel, VSL, Checkout, Upsell)">
@@ -4490,13 +4509,31 @@ function copyFunnelLink(id, ev){
     finish(ok);
   }
 }
+function toggleFunnelLinkAtivo(id, ev){
+  if(ev) ev.stopPropagation();
+  const product = currentProduct();
+  if(!product) return;
+  const l = product.funnelLinks.find(l=>l.id===id);
+  if(!l) return;
+  l.ativo = !(l.ativo !== false);
+  saveState(); renderProducts();
+}
+const FUNNEL_LINK_ICONS = ['🔗','▶️','🎯','📄','🛒','💬','⚙️','📈'];
+function funnelLinkAvatar(l, idx){
+  const n = (l.nome||'').toLowerCase();
+  let icon = FUNNEL_LINK_ICONS[idx % FUNNEL_LINK_ICONS.length];
+  if(n.includes('vsl') || n.startsWith('av') || n.includes('video')) icon = '▶️';
+  else if(n.includes('check')) icon = '🛒';
+  else if(n.includes('login') || n.includes('app')) icon = '⚙️';
+  else if(n.includes('back')) icon = '↩️';
+  else if(n.includes('ppc') || n.includes('anális') || n.includes('analise')) icon = '🎯';
+  return `<div class="funnel-link-avatar funnel-avatar-c${idx % 6}">${icon}</div>`;
+}
 function funnelLinksHtml(links){
   if(links.length===0) return '<div class="empty">nenhum link ainda.</div>';
   return links.map((l,idx)=>{
-    const w = funnelWidth(idx, links.length);
-    let stage;
     if(funnelLinkEditingId === l.id){
-      stage = `<div class="funnel-stage funnel-link-stage editing" data-id="${l.id}" style="width:${w}%;" onclick="event.stopPropagation()">
+      return `<div class="funnel-link-row editing" data-id="${l.id}" onclick="event.stopPropagation()">
         <div class="tool-edit-row" style="width:100%;">
           <input type="text" value="${escapeHtml(l.nome)}" placeholder="nome da página" onchange="updateFunnelLinkField('${l.id}','nome',this.value)">
           <input type="text" value="${escapeHtml(l.url||'')}" placeholder="link da página" onchange="updateFunnelLinkField('${l.id}','url',this.value)">
@@ -4506,25 +4543,25 @@ function funnelLinksHtml(links){
           </div>
         </div>
       </div>`;
-    } else {
-      stage = `<div class="funnel-stage funnel-link-stage" data-id="${l.id}" style="width:${w}%;">
-        <span class="drag-handle">⠿</span>
-        <div style="flex:1;min-width:0;">
-          <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
-          <div class="funnel-link-url-row">
-            <span class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</span>
-            ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
-          </div>
-        </div>
-        <div class="funnel-link-actions">
-          ${l.url ? `<button class="funnel-icon-btn" onclick="copyFunnelLink('${l.id}', event)" title="copiar link">📋</button>` : ''}
-          <button class="funnel-icon-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)" title="editar">✏️</button>
-          <button class="funnel-icon-btn" onclick="removeFunnelLink('${l.id}')" title="excluir">🗑️</button>
-        </div>
-      </div>`;
     }
-    const connector = idx < links.length-1 ? '<div class="funnel-connector"></div>' : '';
-    return stage + connector;
+    const ativo = l.ativo !== false;
+    return `<div class="funnel-link-row" data-id="${l.id}">
+      <span class="drag-handle">⠿</span>
+      ${funnelLinkAvatar(l, idx)}
+      <div class="funnel-link-info">
+        <div class="funnel-link-name">${escapeHtml(l.nome)}</div>
+        <div class="funnel-link-url-row">
+          <span class="funnel-link-url">${escapeHtml(l.url||'sem link ainda')}</span>
+        </div>
+      </div>
+      <div class="funnel-link-actions">
+        ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
+        ${l.url ? `<button class="funnel-icon-btn" onclick="copyFunnelLink('${l.id}', event)" title="copiar link">📋</button>` : ''}
+        <button class="funnel-icon-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)" title="editar">✏️</button>
+        <button class="funnel-status-pill ${ativo?'is-on':'is-off'}" onclick="toggleFunnelLinkAtivo('${l.id}', event)" title="clique pra alternar">${ativo?'Ativo':'Inativo'}</button>
+        <button class="funnel-icon-btn" onclick="removeFunnelLink('${l.id}')" title="excluir">🗑️</button>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -4661,6 +4698,11 @@ function renderProducts(){
   renderProductStatusSelect();
   renderCustomStatusManageList();
   document.getElementById('funnelLinksList').innerHTML = funnelLinksHtml(product.funnelLinks||[]);
+  const countEl = document.getElementById('funnelLinksCount');
+  if(countEl){
+    const n = (product.funnelLinks||[]).length;
+    countEl.innerText = n===0 ? '' : (n===1 ? '1 página' : n+' páginas');
+  }
   document.getElementById('recoveryStepsList').innerHTML = stepsHtml(product.recovery, 'recovery');
   document.getElementById('deliveryStepsList').innerHTML = stepsHtml(product.delivery, 'delivery');
   document.getElementById('objectionsStepsList').innerHTML = stepsHtml(product.objections, 'objections');
