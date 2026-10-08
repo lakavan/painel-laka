@@ -141,3 +141,7 @@ git push
 - **Busca na Mineração**: barra fixa no topo; digite nome, nicho, checkout ou nome da pasta. Esc limpa. Botões para recolher/expandir pastas.
 - **Imposto do Meta (12%)** na planilha do Financeiro mensal: coluna com o imposto de cada dia (editável por dia). Use o ✕ no cabeçalho ou o checkbox para tirar a coluna (conta gringa); a taxa também é editável. É informativo: não altera o lucro.
 - **Recuperação automática das pastas**: o app guarda uma cópia local das pastas e, se elas sumirem do banco, restaura e salva de volta.
+
+## Novidades (08/10/2026 — parte 3)
+- **Gasto total** no Financeiro mensal: coluna (gasto + imposto do Meta) e caixa no resumo. Some junto com a coluna de imposto (✕ ou checkbox).
+- **Idioma da oferta** na Mineração: campo no cadastro e na edição, aparece como etiqueta 🌐 no card e entra na busca.
