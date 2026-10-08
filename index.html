@@ -694,7 +694,7 @@
   }
   .tab-btn{
     background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:600;
-    font-size:13px;padding:9px 16px;cursor:pointer;border-radius:9px;white-space:nowrap;flex-shrink:0;
+    font-size:13px;padding:9px 12px;cursor:pointer;border-radius:9px;white-space:nowrap;flex-shrink:0;
     transition:color .15s, background .15s;
   }
   .tab-btn:hover{color:var(--text);background:var(--surface2);}
@@ -1484,6 +1484,96 @@
     border-radius:9px;padding:6px 12px;font-size:11.5px;cursor:pointer;display:flex;align-items:center;gap:5px;
   }
   .logout-btn:hover{color:var(--urgent);border-color:var(--urgent);}
+
+  /* ---------- DESTAQUE DAS LINHAS DO FUNIL (produtos) ---------- */
+  .funnel-link-row{position:relative;cursor:default;transition:border-color .15s, background .15s, box-shadow .15s;}
+  .funnel-link-row:not(.editing):hover{
+    background:rgba(59,130,246,0.11);border-color:var(--blue);
+    box-shadow:0 0 0 1px var(--blue), 0 8px 20px -10px rgba(59,130,246,0.55);
+  }
+  .funnel-link-row:not(.editing):hover::before{
+    content:'';position:absolute;left:0;top:7px;bottom:7px;width:3px;border-radius:3px;background:var(--blue-bright);
+  }
+  .funnel-link-row:not(.editing):hover .funnel-link-name{color:#fff;}
+  .funnel-link-row:not(.editing):hover .funnel-link-url{color:var(--blue-bright);}
+  .funnel-link-row.flash-ok{animation:funnelRowFlash 1.3s ease-out;}
+  @keyframes funnelRowFlash{
+    0%{background:rgba(34,197,94,0.38);border-color:var(--green);box-shadow:0 0 0 2px var(--green);}
+    100%{background:var(--surface2);border-color:var(--border);box-shadow:none;}
+  }
+
+  /* ---------- MINERAÇÃO: pastas ---------- */
+  .mining-folder-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+  .mining-folder-input{background:var(--bg);border:1px solid var(--blue);border-radius:8px;color:var(--text);padding:6px 10px;font-family:var(--display);font-weight:800;font-size:14px;width:100%;max-width:320px;}
+  .mining-folder-empty{padding:16px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px;border:1px dashed var(--border-strong);border-radius:10px;margin:4px;}
+  .mining-loose{border:1px solid transparent;border-radius:14px;padding:2px;margin-top:6px;transition:border-color .15s, box-shadow .15s;}
+  .mining-loose-head{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:8px 6px 6px;}
+  .mining-drop-hover{border-color:var(--blue) !important;box-shadow:0 0 0 2px rgba(59,130,246,0.28);}
+  .mining-card.mining-dragging-html5{opacity:.4;}
+  .mining-drag-hint{font-family:var(--mono);font-size:11px;color:var(--muted2);margin:-4px 0 12px;}
+
+  /* ---------- CONVERSÃO DO FUNIL ---------- */
+  .fm-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:12px;}
+  .fm-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+  .fm-title{flex:1 1 200px;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-family:var(--display);font-weight:800;font-size:14.5px;}
+  .fm-period{flex:2 1 240px;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:13px;}
+  .fm-head-actions{display:flex;gap:6px;align-items:center;}
+  .fm-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap;}
+  .fm-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .fm-row{display:grid;grid-template-columns:34px minmax(140px,1.6fr) 110px minmax(150px,1fr) minmax(170px,1.3fr) 30px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--border);}
+  .fm-row-head{border-top:none;color:var(--muted);font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;padding-top:0;}
+  .fm-row input,.fm-row select{width:100%;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 9px;font-size:13px;}
+  .fm-row input[type=number]{font-family:var(--mono);text-align:right;}
+  .fm-move{display:flex;flex-direction:column;gap:2px;}
+  .fm-move button{background:none;border:none;color:var(--muted2);font-size:10px;line-height:1;cursor:pointer;padding:2px 4px;}
+  .fm-move button:hover{color:var(--blue-bright);}
+  .fm-conv{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .fm-conv-top{display:flex;align-items:baseline;gap:8px;}
+  .fm-conv b{font-family:var(--mono);font-size:15px;}
+  .fm-conv small{color:var(--muted);font-size:11px;}
+  .fm-bar{height:6px;background:var(--bg);border-radius:6px;overflow:hidden;}
+  .fm-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:6px;transition:width .25s;}
+  .fm-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;}
+  .fm-hint{color:var(--muted2);font-size:11.5px;}
+  @media(max-width:860px){
+    .fm-row{grid-template-columns:1fr 1fr;grid-template-areas:"name name" "val ref" "conv conv" "mv del";gap:6px;padding:10px 0;}
+    .fm-row-head{display:none;}
+    .fm-row .fm-move{grid-area:mv;flex-direction:row;}
+    .fm-row .fm-name{grid-area:name;} .fm-row .fm-val{grid-area:val;} .fm-row .fm-ref{grid-area:ref;}
+    .fm-row .fm-conv{grid-area:conv;} .fm-row .fm-del{grid-area:del;justify-self:end;}
+  }
+
+  /* ---------- MINHAS INFORMAÇÕES ---------- */
+  .info-warn{background:rgba(234,179,8,0.10);border:1px solid rgba(234,179,8,0.35);color:var(--text);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-bottom:14px;}
+  .info-section{margin-bottom:16px;}
+  .info-section-title{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:4px 0 8px;}
+  .info-row{display:grid;grid-template-columns:minmax(120px,0.8fr) minmax(160px,2fr) 32px 32px;gap:8px;align-items:center;margin-bottom:6px;}
+  .info-row input,.info-input{width:100%;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:13px;}
+  .info-row input.info-label{color:var(--muted);font-size:12.5px;}
+  .info-row input.info-value{font-family:var(--mono);}
+  .info-row input:focus,.info-input:focus{outline:none;border-color:var(--blue);}
+  .emails-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-top:14px;}
+  .email-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:14px;}
+  .email-head{display:grid;grid-template-columns:1fr 32px 32px;gap:8px;align-items:center;margin-bottom:8px;}
+  .email-head input{font-family:var(--mono);font-weight:600;}
+  .email-link-row{display:grid;grid-template-columns:130px 1fr 32px;gap:6px;align-items:center;margin-top:6px;}
+  .email-link-row select,.email-link-row input{width:100%;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 9px;font-size:12.5px;}
+  .email-link-obs{grid-column:2 / 4;}
+  .email-add-link{display:grid;grid-template-columns:130px 1fr auto;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-strong);}
+  .email-add-link select,.email-add-link input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 9px;font-size:12.5px;min-width:0;}
+  .email-count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:6px;font-weight:400;}
+  .email-map-group{margin-bottom:14px;}
+  .email-map-item{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:7px 10px;border:1px solid var(--border);border-radius:9px;margin-bottom:5px;background:var(--surface2);}
+  .email-map-name{font-weight:700;}
+  .email-map-mail{font-family:var(--mono);font-size:12px;color:var(--blue-bright);margin-left:auto;word-break:break-all;}
+  @media(max-width:600px){
+    .info-row{grid-template-columns:1fr 32px 32px;}
+    .info-row input.info-label{grid-column:1 / 4;}
+    .emails-grid{grid-template-columns:1fr;}
+    .email-link-row,.email-add-link{grid-template-columns:1fr 32px;}
+    .email-link-row select,.email-add-link select{grid-column:1 / 3;}
+    .email-link-obs{grid-column:1 / 3;}
+  }
 </style>
 </head>
 <body>
@@ -1949,6 +2039,17 @@
           </div>
         </div>
 
+        <div class="panel" id="funnelMetricsPanel">
+          <div class="panel-head">
+            <h2><span class="sub">do clique no anúncio até o upsell — crie um funil por período, criativo ou página e ajuste as etapas como quiser</span>Conversão do funil <span class="funnel-links-count" id="funnelMetricsCount"></span></h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="funnel-add-btn" onclick="addFunnelMetric(true)">+ Novo funil (com modelo)</button>
+              <button class="fm-btn" onclick="addFunnelMetric(false)">+ em branco</button>
+            </div>
+          </div>
+          <div id="funnelMetricsList"></div>
+        </div>
+
         <div class="product-two-col">
           <div class="panel wa-panel">
             <div class="panel-head"><h2><span class="sub">💬 mensagens de whatsapp, em ordem — crie variações pra não repetir texto igual</span>Recuperação de vendas</h2></div>
@@ -2006,8 +2107,17 @@
       <div class="panel full" id="miningPanel">
         <div class="panel-head">
           <h2><span class="sub">ofertas de concorrentes pra analisar e modelar</span>Mineração de ofertas</h2>
-          <button class="add-tool-btn" id="newMiningToggleBtn" onclick="toggleNewMiningForm(true)">+ Cadastrar oferta</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="add-tool-btn" id="newMiningFolderBtn" onclick="toggleNewMiningFolderForm(true)">🗂️ + Nova pasta</button>
+            <button class="add-tool-btn" id="newMiningToggleBtn" onclick="toggleNewMiningForm(true)">+ Cadastrar oferta</button>
+          </div>
         </div>
+        <div class="add-row" id="newMiningFolderRow" style="display:none;margin:0 0 12px;">
+          <input type="text" id="newMiningFolderName" placeholder="nome da nova pasta (ex: shein, gcap, CNP)" onkeydown="if(event.key==='Enter')addMiningFolder()">
+          <button class="add" onclick="addMiningFolder()">+ criar pasta</button>
+          <button class="add-cost-cancel-btn" onclick="toggleNewMiningFolderForm(false)">cancelar</button>
+        </div>
+        <div class="mining-drag-hint">💡 arraste uma oferta pelo card pra dentro de uma pasta (ou pra fora dela). Use o ⠿ pra mudar a ordem.</div>
         <div id="miningList"></div>
 
         <div class="add-form" id="newMiningRow">
@@ -2048,6 +2158,40 @@
           </div>
         </div>
         </div>
+      </div>
+    </div>
+
+    <div class="tab-view" id="infoView">
+      <div class="panel full" id="infoCompanyPanel">
+        <div class="panel-head">
+          <h2><span class="sub">dados que você usa direto pra preencher cadastros — clique em 📋 pra copiar</span>Minhas informações</h2>
+        </div>
+        <div class="info-warn">🔒 Não guarde senhas, códigos de verificação nem dados de cartão aqui. Use só pra informações de cadastro (CNPJ, endereço, Pix...).</div>
+        <div id="infoCompanyList"></div>
+        <div class="add-row" style="align-items:center;">
+          <select id="infoNewGroup" class="info-input" style="max-width:170px;"></select>
+          <input type="text" id="infoNewLabel" class="info-input" style="flex:1;min-width:180px;" placeholder="novo campo (ex: Nome da mãe, Inscrição municipal)" onkeydown="if(event.key==='Enter')addInfoField()">
+          <button class="add" onclick="addInfoField()">+ campo</button>
+        </div>
+      </div>
+
+      <div class="panel full" id="infoEmailsPanel">
+        <div class="panel-head">
+          <h2><span class="sub">em qual e-mail está cada gateway, conta de anúncio, banco...</span>Gestão de e-mails <span class="email-count" id="emailsCount"></span></h2>
+        </div>
+        <div class="add-row" style="align-items:center;">
+          <input type="text" id="emailNewInput" class="info-input" style="flex:1;min-width:220px;" placeholder="novo e-mail (ex: contato@minhaempresa.com)" onkeydown="if(event.key==='Enter')addEmail()">
+          <button class="add" onclick="addEmail()">+ adicionar e-mail</button>
+        </div>
+        <input type="text" id="infoSearch" class="info-input" style="margin-top:12px;" placeholder="🔎 buscar (ex: pepper, nubank, BM, hostinger)" oninput="setInfoSearch(this.value)">
+        <div id="emailsList" class="emails-grid"></div>
+      </div>
+
+      <div class="panel full" id="infoMapPanel">
+        <div class="panel-head">
+          <h2><span class="sub">visão rápida: tudo que você cadastrou, agrupado por tipo, com o e-mail de cada um</span>Onde está cada coisa</h2>
+        </div>
+        <div id="emailMap"></div>
       </div>
     </div>
 
@@ -2391,7 +2535,9 @@ const defaultState = {
   currentProjectId: null,
   notes: [],
   currentNoteId: null,
-  tabOrder: ['finance','processos','products','mining','projects','tools','content','warmup','notes'],
+  tabOrder: ['finance','processos','products','mining','projects','tools','content','warmup','notes','contacts','info'],
+  miningGroups: [],
+  emails: [],
   checklist: {
     template: [
       {id:'ck1', text:'Subir criativo novo'},
@@ -2409,7 +2555,7 @@ function currentMonthKey(){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
 
-let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], dailyGateways:['Pepper','Buckpay'], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], contacts:[], contactsMigratedFromManagers:false, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes','contacts'], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
+let state = { tasks:[], infra:[], offers:[], costs:[], logs:[], finance:{currentMonth:currentMonthKey(), months:{}}, managers:[], assets:[], phones:[], products:[], currentProductId:null, mining:[], videos:[], tools:[], warmupGroups:[], customGateways:[], dailyGateways:['Pepper','Buckpay'], customProductStatuses:[], projects:[], currentProjectId:null, notes:[], currentNoteId:null, avisos:[], contacts:[], contactsMigratedFromManagers:false, tabOrder:['finance','processos','products','mining','projects','tools','content','warmup','notes','contacts','info'], miningGroups:[], emails:[], processos:[], checklist:{template:[],today:{date:'',doneIds:[]}}, planner:{focoSemana:'', days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}} };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
@@ -2704,13 +2850,16 @@ sb.auth.onAuthStateChange((event, session)=>{
   }
 });
 
+let dbVersion = null;      // updated_at da versão do banco que esta aba viu por último
+let saveBlocked = false;   // true quando outra aba/aparelho salvou antes (evita sobrescrever)
 async function loadState(){
   try{
-    const { data, error } = await sb.from('app_state').select('data').eq('id', ROW_ID).single();
+    const { data, error } = await sb.from('app_state').select('data, updated_at').eq('id', ROW_ID).single();
     if(error) throw error;
+    dbVersion = (data && data.updated_at) || null;
     if(data && data.data){
       const loaded = data.data;
-      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],dailyGateways:['Pepper','Buckpay'],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,avisos:[],contacts:[],contactsMigratedFromManagers:false,checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
+      state = Object.assign({tasks:[],infra:[],offers:[],costs:[],logs:[],finance:{currentMonth:currentMonthKey(),months:{}},managers:[],assets:[],phones:[],products:[],currentProductId:null,mining:[],videos:[],tools:[],customGateways:[],dailyGateways:['Pepper','Buckpay'],customProductStatuses:[],projects:[],currentProjectId:null,notes:[],currentNoteId:null,avisos:[],contacts:[],contactsMigratedFromManagers:false,miningGroups:[],emails:[],checklist:{template:[],today:{date:'',doneIds:[]}},planner:{focoSemana:'',days:{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]}}}, loaded);
       if(!state.dailyGateways || !Array.isArray(state.dailyGateways)) state.dailyGateways = ['Pepper','Buckpay'];
       if(!state.avisos) state.avisos = [];
       if(!state.contacts) state.contacts = [];
@@ -2750,6 +2899,14 @@ async function loadState(){
       if(!state.phones) state.phones = [];
       if(!state.products) state.products = [];
       if(!state.mining) state.mining = [];
+      if(!Array.isArray(state.miningGroups)) state.miningGroups = [];
+      // pastas da Mineração agora são guardadas numa lista própria (assim uma pasta não some quando fica com 0 ou 1 oferta)
+      state.mining.forEach(m=>{
+        const g = (m.grupo||'').trim();
+        if(g && !state.miningGroups.includes(g)) state.miningGroups.push(g);
+      });
+      if(!Array.isArray(state.emails)) state.emails = [];
+      ensureMyInfo();
       if(!state.videos) state.videos = [];
       if(!state.tools) state.tools = [];
       if(!state.warmupGroups) state.warmupGroups = [];
@@ -2759,6 +2916,7 @@ async function loadState(){
       if(!state.tabOrder || !Array.isArray(state.tabOrder)) state.tabOrder = ['finance','processos','products','mining','projects','tools','content','warmup','notes'];
       if(!state.tabOrder.includes('notes')) state.tabOrder.push('notes');
       if(!state.tabOrder.includes('contacts')) state.tabOrder.push('contacts');
+      if(!state.tabOrder.includes('info')) state.tabOrder.push('info');
       if(!state.projects) state.projects = [];
       if(state.currentProjectId===undefined) state.currentProjectId = null;
       if(!state.notes) state.notes = [];
@@ -2788,6 +2946,7 @@ async function loadState(){
       });
       state.products.forEach(p=>{
         if(!p.funnelLinks) p.funnelLinks = [];
+        if(!Array.isArray(p.funnels)) p.funnels = [];
         if(!p.objections) p.objections = [];
         ['recovery','delivery','objections'].forEach(type=>{
           if(!p[type]) p[type] = [];
@@ -2845,22 +3004,48 @@ async function loadState(){
 let saveTimeout = null;
 let saveInFlight = null;
 let lastSaveErrorToastAt = 0;
-function doSaveNow(){
+// Proteção contra versão antiga: guarda o "updated_at" que esta aba viu por último e só grava
+// se o banco ainda estiver nessa versão. Se outra aba/aparelho salvou antes, o salvamento é
+// pausado (em vez de sobrescrever os dados mais novos) e o usuário é avisado pra recarregar.
+function showSaveConflictBanner(){
+  if(document.getElementById('saveConflictBanner')) return;
+  const b = document.createElement('div');
+  b.id = 'saveConflictBanner';
+  b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b3261e;color:#fff;padding:14px 16px;text-align:center;font-size:14px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.4);';
+  b.innerHTML = '<strong>Salvamento pausado.</strong> Este painel foi alterado em outra aba ou aparelho, e salvar agora apagaria dados mais novos. '
+    + '<button onclick="location.reload()" style="margin-left:10px;padding:6px 12px;border:0;border-radius:6px;background:#fff;color:#b3261e;font-weight:600;cursor:pointer;">Recarregar</button>';
+  document.body.appendChild(b);
+}
+async function runSave(){
+  if(saveBlocked) return;
   const indicator = document.getElementById('saveIndicator');
   if(indicator){ indicator.classList.add('saving'); indicator.innerText = 'salvando…'; }
-  saveInFlight = sb.from('app_state').update({ data: state, updated_at: new Date().toISOString() }).eq('id', ROW_ID)
-    .then(()=>{
-      if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'salvo'; setTimeout(()=>{ if(indicator) indicator.innerText=''; }, 1500); }
-    })
-    .catch(e=>{
-      console.error('erro ao salvar no Supabase', e);
-      if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'erro ao salvar'; }
-      const now = Date.now();
-      if(now - lastSaveErrorToastAt > 5000){
-        lastSaveErrorToastAt = now;
-        showToast('Falha ao salvar — suas últimas alterações podem não ter sido guardadas. Verifique sua internet e tente de novo.', 'error');
-      }
-    });
+  try{
+    let q = sb.from('app_state').update({ data: state, updated_at: new Date().toISOString() }).eq('id', ROW_ID);
+    if(dbVersion) q = q.eq('updated_at', dbVersion);
+    const { data: rows, error } = await q.select('updated_at');
+    if(error) throw error;
+    if(!rows || rows.length === 0){
+      saveBlocked = true;
+      if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'não salvo'; }
+      showSaveConflictBanner();
+      return;
+    }
+    dbVersion = rows[0].updated_at;
+    if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'salvo'; setTimeout(()=>{ if(indicator) indicator.innerText=''; }, 1500); }
+  }catch(e){
+    console.error('erro ao salvar no Supabase', e);
+    if(indicator){ indicator.classList.remove('saving'); indicator.innerText = 'erro ao salvar'; }
+    const now = Date.now();
+    if(now - lastSaveErrorToastAt > 5000){
+      lastSaveErrorToastAt = now;
+      showToast('Falha ao salvar — suas últimas alterações podem não ter sido guardadas. Verifique sua internet e tente de novo.', 'error');
+    }
+  }
+}
+function doSaveNow(){
+  // salvamentos em fila, um de cada vez, pra não conflitar com a própria aba
+  saveInFlight = (saveInFlight || Promise.resolve()).then(runSave);
   return saveInFlight;
 }
 async function saveState(){
@@ -4326,7 +4511,7 @@ function addProduct(){
   const input = document.getElementById('newProductName');
   if(!input.value.trim()) return;
   const id = uid();
-  state.products.push({id, nome:input.value.trim(), status:'pendente', funnelLinks:[], recovery:[], delivery:[], objections:[]});
+  state.products.push({id, nome:input.value.trim(), status:'pendente', funnelLinks:[], funnels:[], recovery:[], delivery:[], objections:[]});
   input.value = '';
   state.currentProductId = id;
   toggleNewProductRow(false);
@@ -4482,12 +4667,31 @@ function updateFunnelLinkField(id, field, value){
   l[field] = value;
   saveState(); renderProducts();
 }
+function flashFunnelRow(id){
+  const row = document.querySelector('.funnel-link-row[data-id="'+id+'"]');
+  if(!row) return;
+  row.classList.remove('flash-ok');
+  void row.offsetWidth;
+  row.classList.add('flash-ok');
+  setTimeout(()=>row.classList.remove('flash-ok'), 1400);
+}
+function openFunnelLink(id, ev){
+  if(ev) ev.stopPropagation();
+  const product = currentProduct();
+  const l = product && product.funnelLinks.find(l=>l.id===id);
+  if(!l || !l.url) return;
+  flashFunnelRow(id);
+  window.open(l.url, '_blank');
+}
 function copyFunnelLink(id, ev){
   if(ev) ev.stopPropagation();
   const product = currentProduct();
   const l = product && product.funnelLinks.find(l=>l.id===id);
   if(!l || !l.url) return;
-  const finish = (ok)=> showToast(ok ? 'Link copiado!' : 'Não deu pra copiar — copia manualmente.', ok?undefined:'error');
+  const finish = (ok)=>{
+    showToast(ok ? ('Link copiado: ' + (l.nome||'')) : 'Não deu pra copiar — copia manualmente.', ok?undefined:'error');
+    if(ok) flashFunnelRow(id);
+  };
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(l.url).then(()=>finish(true)).catch(()=>finish(false));
   } else {
@@ -4534,7 +4738,7 @@ function funnelLinksHtml(links){
         </div>
       </div>
       <div class="funnel-link-actions">
-        ${l.url ? `<button class="funnel-icon-btn" onclick="window.open('${escapeHtml(l.url)}','_blank')" title="abrir link">↗</button>` : ''}
+        ${l.url ? `<button class="funnel-icon-btn" onclick="openFunnelLink('${l.id}', event)" title="abrir link">↗</button>` : ''}
         ${l.url ? `<button class="funnel-icon-btn" onclick="copyFunnelLink('${l.id}', event)" title="copiar link">📋</button>` : ''}
         <button class="funnel-icon-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)" title="editar">✏️</button>
         <button class="funnel-status-pill ${ativo?'is-on':'is-off'}" onclick="toggleFunnelLinkAtivo('${l.id}', event)" title="clique pra alternar">${ativo?'Ativo':'Inativo'}</button>
@@ -4682,6 +4886,7 @@ function renderProducts(){
     const n = (product.funnelLinks||[]).length;
     countEl.innerText = n===0 ? '' : (n===1 ? '1 página' : n+' páginas');
   }
+  renderFunnelMetrics();
   document.getElementById('recoveryStepsList').innerHTML = stepsHtml(product.recovery, 'recovery');
   document.getElementById('deliveryStepsList').innerHTML = stepsHtml(product.delivery, 'delivery');
   document.getElementById('objectionsStepsList').innerHTML = stepsHtml(product.objections, 'objections');
@@ -5058,7 +5263,7 @@ function toggleNewMiningForm(show){
   document.getElementById('miningPanel').classList.toggle('panel-editing', show);
   if(show){
     document.getElementById('miningNome').focus();
-    const existingGroups = [...new Set(state.mining.map(x=>(x.grupo||'').trim()).filter(Boolean))];
+    const existingGroups = miningGroupNames();
     const sel = document.getElementById('miningGrupo');
     sel.innerHTML = `<option value="">— sem grupo/pasta —</option>`
       + existingGroups.map(g=>`<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join('')
@@ -5103,6 +5308,7 @@ function addMiningEntry(){
   const observacao = document.getElementById('miningObservacao').value;
   if(!nome.value.trim()) return;
   const today = new Date().toLocaleDateString('pt-BR');
+  if(grupo && !(state.miningGroups||[]).includes(grupo)){ if(!state.miningGroups) state.miningGroups = []; state.miningGroups.push(grupo); }
   state.mining.push({
     id:uid(), nome:nome.value.trim(), pagina, nicho, anuncios, ticket, ticketMoeda, checkout, grupo, link, funil, checkoutLink, descricao, observacao,
     origem: 'manual',
@@ -5137,6 +5343,13 @@ function updateMiningField(id, field, value){
     }
     item.anuncios = newVal;
     item.origem = 'manual';
+  } else if(field==='grupo'){
+    const g = (value||'').trim();
+    item.grupo = g;
+    if(g){
+      if(!state.miningGroups) state.miningGroups = [];
+      if(!state.miningGroups.includes(g)) state.miningGroups.push(g);
+    }
   } else {
     item[field] = value;
   }
@@ -5341,52 +5554,201 @@ let miningGroupExpanded = {};
 function jsAttrEscape(s){
   return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 }
+function escA(x){ return escapeHtml(String(x==null?'':x)).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function miningGroupNames(){
+  // nomes de pasta: lista salva (persistente) + qualquer grupo que alguma oferta ainda use
+  const names = [];
+  (state.miningGroups||[]).forEach(g=>{ const t=(g||'').trim(); if(t && !names.includes(t)) names.push(t); });
+  (state.mining||[]).forEach(m=>{ const t=(m.grupo||'').trim(); if(t && !names.includes(t)) names.push(t); });
+  return names;
+}
 function toggleMiningGroup(groupKey){
   miningGroupExpanded[groupKey] = !(miningGroupExpanded[groupKey] !== false);
   renderMining();
 }
-function renderMiningGroupCard(groupName, members){
+let miningFolderEditing = null;
+function toggleNewMiningFolderForm(show){
+  const row = document.getElementById('newMiningFolderRow');
+  if(!row) return;
+  row.style.display = show ? 'flex' : 'none';
+  const inp = document.getElementById('newMiningFolderName');
+  if(show){ inp.focus(); } else { inp.value = ''; }
+}
+function addMiningFolder(){
+  const inp = document.getElementById('newMiningFolderName');
+  const nome = (inp.value||'').trim();
+  if(!nome) return;
+  if(miningGroupNames().some(g=>g.toLowerCase()===nome.toLowerCase())){
+    showToast('Já existe uma pasta com esse nome.', 'error');
+    return;
+  }
+  if(!state.miningGroups) state.miningGroups = [];
+  state.miningGroups.push(nome);
+  saveState(); renderMining();
+  toggleNewMiningFolderForm(false);
+  showToast('Pasta "'+nome+'" criada. Arraste ofertas pra dentro dela.');
+}
+function startRenameMiningFolder(name){
+  miningFolderEditing = name;
+  renderMining();
+  const inp = document.querySelector('.mining-folder-input');
+  if(inp){ inp.focus(); inp.select(); }
+}
+function renameMiningFolder(old, novo){
+  if(miningFolderEditing !== old) return;
+  miningFolderEditing = null;
+  novo = (novo||'').trim();
+  if(!novo || novo===old){ renderMining(); return; }
+  if(miningGroupNames().some(g=>g.toLowerCase()===novo.toLowerCase() && g!==old)){
+    showToast('Já existe uma pasta com esse nome.', 'error');
+    renderMining(); return;
+  }
+  if(!state.miningGroups) state.miningGroups = [];
+  if(!state.miningGroups.includes(old)) state.miningGroups.push(old);
+  state.miningGroups = state.miningGroups.map(g=>g===old ? novo : g);
+  state.mining.forEach(m=>{ if((m.grupo||'').trim()===old) m.grupo = novo; });
+  if(miningGroupExpanded[old] !== undefined){ miningGroupExpanded[novo] = miningGroupExpanded[old]; delete miningGroupExpanded[old]; }
+  saveState(); renderMining();
+  showToast('Pasta renomeada.');
+}
+function deleteMiningFolder(name){
+  const n = state.mining.filter(m=>(m.grupo||'').trim()===name).length;
+  openConfirmModal(
+    n>0 ? `Excluir a pasta "${name}"? As ${n} ofertas dentro dela NÃO serão apagadas, só ficam sem pasta.`
+        : `Excluir a pasta vazia "${name}"?`,
+    ()=>{
+      state.miningGroups = (state.miningGroups||[]).filter(g=>g!==name);
+      state.mining.forEach(m=>{ if((m.grupo||'').trim()===name) m.grupo = ''; });
+      saveState(); renderMining();
+      showToast('Pasta excluída.');
+    }
+  );
+}
+// ---------- arrastar ofertas entre pastas (HTML5 drag, igual ao das ofertas da operação) ----------
+let miningDragId = null;
+function miningDragStart(ev, id){
+  miningDragId = id;
+  ev.dataTransfer.effectAllowed = 'move';
+  try{ ev.dataTransfer.setData('text/plain', id); }catch(err){}
+  setTimeout(()=>{ const c = document.querySelector('.mining-card[data-id="'+id+'"]'); if(c) c.classList.add('mining-dragging-html5'); }, 0);
+}
+function miningDragEnd(){
+  miningDragId = null;
+  document.querySelectorAll('.mining-drop-hover').forEach(x=>x.classList.remove('mining-drop-hover'));
+  document.querySelectorAll('.mining-dragging-html5').forEach(x=>x.classList.remove('mining-dragging-html5'));
+}
+function miningDragOver(ev){
+  if(!miningDragId) return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  ev.dataTransfer.dropEffect = 'move';
+  ev.currentTarget.classList.add('mining-drop-hover');
+}
+function miningDragLeave(ev){
+  if(ev.relatedTarget && ev.currentTarget.contains(ev.relatedTarget)) return;
+  ev.currentTarget.classList.remove('mining-drop-hover');
+}
+function miningDraggedId(ev){
+  let id = miningDragId;
+  if(!id){ try{ id = ev.dataTransfer.getData('text/plain'); }catch(err){} }
+  return id;
+}
+function miningDropOnGroup(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  const name = ev.currentTarget.dataset.g;
+  const id = miningDraggedId(ev);
+  miningDragEnd();
+  if(id) moveMiningCard(id, name, null);
+}
+function miningDropOnLoose(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  const id = miningDraggedId(ev);
+  miningDragEnd();
+  if(id) moveMiningCard(id, '', null);
+}
+function miningDropOnCard(ev, targetId){
+  ev.preventDefault(); ev.stopPropagation();
+  const id = miningDraggedId(ev);
+  miningDragEnd();
+  if(!id || id===targetId) return;
+  const t = state.mining.find(m=>m.id===targetId);
+  if(!t) return;
+  moveMiningCard(id, (t.grupo||'').trim(), targetId);
+}
+function moveMiningCard(id, groupName, beforeId){
+  const idx = state.mining.findIndex(m=>m.id===id);
+  if(idx < 0) return;
+  const item = state.mining.splice(idx, 1)[0];
+  const before = (item.grupo||'').trim();
+  item.grupo = groupName || '';
+  if(groupName){
+    if(!state.miningGroups) state.miningGroups = [];
+    if(!state.miningGroups.includes(groupName)) state.miningGroups.push(groupName);
+  }
+  let at;
+  if(beforeId){
+    at = state.mining.findIndex(m=>m.id===beforeId);
+    if(at < 0) at = state.mining.length;
+  } else {
+    let last = -1;
+    state.mining.forEach((m,i)=>{ if((m.grupo||'').trim()===(groupName||'')) last = i; });
+    at = last >= 0 ? last+1 : state.mining.length;
+  }
+  state.mining.splice(at, 0, item);
+  saveState(); renderMining();
+  if(before !== (groupName||'')) showToast(groupName ? `"${item.nome}" movida pra pasta "${groupName}".` : `"${item.nome}" saiu da pasta.`);
+}
+function renderMiningGroupCard(groupName, members, idx){
   const expanded = miningGroupExpanded[groupName] !== false;
-  const totalAnuncios = members.reduce((s,m)=>s+(Number(m.anuncios)||0), 0);
-  const onclickArg = escapeHtml(jsAttrEscape(groupName));
+  const totalAnuncios = members.reduce((sum,m)=>sum+(Number(m.anuncios)||0), 0);
+  const g = escA(groupName);
+  const editing = miningFolderEditing === groupName;
+  const nameHtml = editing
+    ? `<input type="text" class="mining-folder-input" value="${g}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter'){this.blur();} if(event.key==='Escape'){miningFolderEditing=null;renderMining();}" onblur="renameMiningFolder(this.closest('[data-g]').dataset.g, this.value)">`
+    : `<div class="mining-group-name">${escapeHtml(groupName)} <span class="mining-group-count">(${members.length} ${members.length===1?'oferta':'ofertas'})</span></div>`;
+  const body = !expanded ? '' : `<div class="mining-group-body" id="mgb-${idx}">${
+    members.length ? members.map(m=>renderMiningCard(m)).join('') : '<div class="mining-folder-empty">pasta vazia — arraste ofertas pra cá</div>'
+  }</div>`;
   return `
-  <div class="mining-group-card">
-    <div class="mining-group-head" onclick="toggleMiningGroup('${onclickArg}')">
+  <div class="mining-group-card" data-g="${g}" ondragover="miningDragOver(event)" ondragleave="miningDragLeave(event)" ondrop="miningDropOnGroup(event)">
+    <div class="mining-group-head" onclick="toggleMiningGroup(this.closest('[data-g]').dataset.g)">
       <span class="mining-group-ico">🗂️</span>
       <div class="mining-group-title">
-        <div class="mining-group-name">${escapeHtml(groupName)} <span class="mining-group-count">(${members.length} páginas)</span></div>
+        ${nameHtml}
         <div class="mining-group-sub">${totalAnuncios} anúncios ativos no total</div>
+      </div>
+      <div class="mining-folder-actions" onclick="event.stopPropagation()">
+        <button class="funnel-icon-btn" title="renomear pasta" onclick="startRenameMiningFolder(this.closest('[data-g]').dataset.g)">✏️</button>
+        <button class="funnel-icon-btn" title="excluir pasta (as ofertas não são apagadas)" onclick="deleteMiningFolder(this.closest('[data-g]').dataset.g)">🗑️</button>
       </div>
       <span class="mining-group-toggle-ico">${expanded ? '▴' : '▾'}</span>
     </div>
-    ${expanded ? `<div class="mining-group-body">${members.map(m=>renderMiningCard(m)).join('')}</div>` : ''}
+    ${body}
   </div>`;
 }
 function renderMining(){
   const el = document.getElementById('miningList');
   if(!el) return;
-  if(state.mining.length===0){ el.innerHTML = '<div class="empty">nenhuma oferta minerada ainda.</div>'; return; }
-  // agrupa por "grupo" (pasta) — só forma pasta de verdade quando 2+ ofertas compartilham o mesmo nome de grupo
-  const groupCounts = {};
-  state.mining.forEach(m=>{
-    const g = (m.grupo||'').trim();
-    if(g) groupCounts[g] = (groupCounts[g]||0) + 1;
-  });
-  const renderedGroups = new Set();
-  const blocks = [];
-  state.mining.forEach(m=>{
-    const g = (m.grupo||'').trim();
-    if(g && groupCounts[g] >= 2){
-      if(renderedGroups.has(g)) return;
-      renderedGroups.add(g);
-      const members = state.mining.filter(x=>(x.grupo||'').trim()===g);
-      blocks.push(renderMiningGroupCard(g, members));
-    } else {
-      blocks.push(renderMiningCard(m));
-    }
-  });
-  el.innerHTML = blocks.join('');
+  const groups = miningGroupNames();
+  if(state.mining.length===0 && groups.length===0){ el.innerHTML = '<div class="empty">nenhuma oferta minerada ainda.</div>'; return; }
+  // pastas SEMPRE aparecem (mesmo vazias ou com 1 oferta); ofertas sem pasta ficam logo abaixo
+  const loose = state.mining.filter(m=>!(m.grupo||'').trim());
+  let html = groups.map((g,i)=>renderMiningGroupCard(g, state.mining.filter(m=>(m.grupo||'').trim()===g), i)).join('');
+  if(groups.length>0){
+    html += `<div class="mining-loose" ondragover="miningDragOver(event)" ondragleave="miningDragLeave(event)" ondrop="miningDropOnLoose(event)">
+      <div class="mining-loose-head">Sem pasta (${loose.length})</div>
+      <div id="miningLooseList">${loose.length ? loose.map(m=>renderMiningCard(m)).join('') : '<div class="mining-folder-empty">nenhuma oferta solta — arraste uma oferta pra cá pra tirar da pasta</div>'}</div>
+    </div>`;
+  } else {
+    html += `<div id="miningLooseList">${loose.map(m=>renderMiningCard(m)).join('')}</div>`;
+  }
+  el.innerHTML = html;
+  attachMiningSortables(groups.length);
   setTimeout(()=>growAllTextareas('miningList'), 0);
+}
+function attachMiningSortables(nGroups){
+  attachSortable('miningLooseList', ids=>reorderArray('mining', ids));
+  for(let i=0;i<nGroups;i++) attachSortable('mgb-'+i, ids=>reorderArray('mining', ids));
 }
 function renderMiningCard(m){
     const history = m.history || [];
@@ -5422,7 +5784,7 @@ function renderMiningCard(m){
 
     if(miningEditingId === m.id){
       const currentGroup = (m.grupo||'').trim();
-      const existingGroups = [...new Set(state.mining.map(x=>(x.grupo||'').trim()).filter(g=>g && g!==currentGroup))];
+      const existingGroups = miningGroupNames().filter(g=>g!==currentGroup);
       const isKnownOption = currentGroup==='' || existingGroups.includes(currentGroup);
       return `
       <div class="mining-card" data-id="${m.id}">
@@ -5503,9 +5865,11 @@ function renderMiningCard(m){
     }
 
     return `
-    <div class="mining-card" data-id="${m.id}">
+    <div class="mining-card" data-id="${m.id}" draggable="true"
+      ondragstart="miningDragStart(event,'${m.id}')" ondragend="miningDragEnd()"
+      ondragover="miningDragOver(event)" ondragleave="miningDragLeave(event)" ondrop="miningDropOnCard(event,'${m.id}')">
       <div class="mining-head">
-        <span class="drag-handle">⠿</span>
+        <span class="drag-handle" draggable="false">⠿</span>
         <span class="mining-name">${escapeHtml(m.nome)}</span>
         ${m.nicho ? `<span class="mining-nicho">${escapeHtml(m.nicho)}</span>` : ''}
         <span class="mining-ads-highlight">${m.anuncios||0} anúncios ativos</span>
@@ -5526,6 +5890,408 @@ function renderMiningCard(m){
       </div>
       ${historyBlock}
     </div>`;
+}
+
+/* ---------- CONVERSÃO DO FUNIL (por produto) ---------- */
+const FUNNEL_METRIC_TEMPLATE = [
+  {nome:'Cliques no anúncio', ref:'prev'},
+  {nome:'Pageviews (visualizações na página de destino)', ref:'prev'},
+  {nome:'Retenção até o pitch da VSL', ref:'prev'},
+  {nome:'Initiate Checkout (IC)', ref:'prev'},
+  {nome:'Pix gerado', ref:'prev'},
+  {nome:'Vendas (Pix pago)', ref:'prev'},
+  {nome:'Upsell 1', ref:'sales'},
+  {nome:'Upsell 2', ref:'sales'},
+  {nome:'Upsell 3', ref:'sales'}
+];
+function fmUid(){ return uid() + Math.random().toString(36).slice(2,5); }
+function fmNum(v){
+  if(v===''||v===null||v===undefined) return null;
+  const n = Number(v);
+  return isFinite(n) ? n : null;
+}
+function newFunnelMetric(nome, withTemplate){
+  const etapas = withTemplate ? FUNNEL_METRIC_TEMPLATE.map(t=>({id:fmUid(), nome:t.nome, valor:'', ref:t.ref})) : [];
+  const sales = etapas.find(e=>/^vendas/i.test(e.nome));
+  etapas.forEach(e=>{ if(e.ref==='sales') e.ref = sales ? sales.id : 'prev'; });
+  return {id:fmUid(), nome:nome||'Funil', periodo:'', etapas};
+}
+function currentFunnels(){
+  const p = currentProduct();
+  if(!p) return null;
+  if(!Array.isArray(p.funnels)) p.funnels = [];
+  return p.funnels;
+}
+function findFunnelMetric(fid){
+  const list = currentFunnels();
+  return list ? list.find(f=>f.id===fid) : null;
+}
+function fmRefValue(f, idx){
+  const e = f.etapas[idx];
+  if(idx===0) return null;
+  if(!e.ref || e.ref==='prev') return fmNum(f.etapas[idx-1].valor);
+  if(e.ref==='top') return fmNum(f.etapas[0].valor);
+  const r = f.etapas.find(x=>x.id===e.ref);
+  return (r && r!==e) ? fmNum(r.valor) : fmNum(f.etapas[idx-1].valor);
+}
+function fmCalc(f, idx){
+  const e = f.etapas[idx];
+  const val = fmNum(e.valor);
+  const ref = fmRefValue(f, idx);
+  const top = fmNum(f.etapas[0].valor);
+  const conv = (val!==null && ref!==null && ref>0) ? (val/ref*100) : null;
+  const fromTop = (idx>0 && val!==null && top!==null && top>0) ? (val/top*100) : null;
+  const lost = (val!==null && ref!==null && ref>val) ? (ref-val) : null;
+  return {val, ref, conv, fromTop, lost};
+}
+function fmPct(n){ return n===null ? '—' : (n>=100 ? n.toFixed(0) : n.toFixed(n>=10?1:2)).replace('.',',') + '%'; }
+function fmInt(n){ return n===null ? '' : Number(n).toLocaleString('pt-BR'); }
+function fmSubText(c, idx){
+  if(idx===0) return 'topo do funil';
+  const parts = [];
+  if(c.fromTop!==null) parts.push(fmPct(c.fromTop)+' do topo');
+  if(c.lost!==null) parts.push('perdeu '+fmInt(c.lost));
+  return parts.join(' · ');
+}
+function refreshFunnelMetricCalc(fid){
+  const f = findFunnelMetric(fid);
+  if(!f) return;
+  f.etapas.forEach((e, idx)=>{
+    const c = fmCalc(f, idx);
+    const convEl = document.getElementById('fm-conv-'+e.id);
+    const subEl = document.getElementById('fm-sub-'+e.id);
+    const barEl = document.getElementById('fm-bar-'+e.id);
+    if(convEl) convEl.innerText = idx===0 ? '' : fmPct(c.conv);
+    if(subEl) subEl.innerText = fmSubText(c, idx);
+    if(barEl) barEl.style.width = (idx===0 ? 100 : Math.max(0, Math.min(100, c.conv===null ? 0 : c.conv))) + '%';
+  });
+}
+function renderFunnelMetrics(){
+  const el = document.getElementById('funnelMetricsList');
+  const countEl = document.getElementById('funnelMetricsCount');
+  const list = currentFunnels();
+  if(!el || !list) return;
+  if(countEl) countEl.innerText = list.length===0 ? '' : (list.length===1 ? '1 funil' : list.length+' funis');
+  if(list.length===0){
+    el.innerHTML = `<div class="empty-block" style="padding:24px 12px;"><div class="empty-block-icon">📊</div><div class="empty-block-title">Nenhum funil acompanhado ainda</div><div class="empty-block-sub">Clique em "+ Novo funil (com modelo)" pra começar com as etapas: cliques, pageviews, retenção do pitch, IC, Pix gerado, vendas e upsells. Dá pra renomear, remover e criar etapas livremente.</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(f=>{
+    const rows = f.etapas.map((e, idx)=>{
+      const c = fmCalc(f, idx);
+      const refOpts = idx===0 ? '<option>—</option>' :
+        `<option value="prev" ${(!e.ref||e.ref==='prev')?'selected':''}>etapa anterior</option>
+         <option value="top" ${e.ref==='top'?'selected':''}>topo (1ª etapa)</option>` +
+        f.etapas.map((o,oi)=> (o.id===e.id || oi===0 && false) ? '' : `<option value="${o.id}" ${e.ref===o.id?'selected':''}>${escA(o.nome||('etapa '+(oi+1)))}</option>`).join('');
+      return `<div class="fm-row" data-sid="${e.id}">
+        <div class="fm-move"><button title="subir" onclick="moveFunnelMetricStep('${f.id}','${e.id}',-1)">▲</button><button title="descer" onclick="moveFunnelMetricStep('${f.id}','${e.id}',1)">▼</button></div>
+        <input class="fm-name" type="text" value="${escA(e.nome)}" placeholder="nome da etapa" onchange="updateFunnelMetricStep('${f.id}','${e.id}','nome',this.value)">
+        <input class="fm-val" type="number" min="0" step="any" inputmode="decimal" value="${e.valor===''||e.valor==null?'':escA(e.valor)}" placeholder="0" onchange="updateFunnelMetricStep('${f.id}','${e.id}','valor',this.value)">
+        <select class="fm-ref" ${idx===0?'disabled':''} onchange="updateFunnelMetricStep('${f.id}','${e.id}','ref',this.value)" title="a conversão é calculada sobre qual etapa">${refOpts}</select>
+        <div class="fm-conv">
+          <div class="fm-conv-top"><b id="fm-conv-${e.id}">${idx===0 ? '' : fmPct(c.conv)}</b><small id="fm-sub-${e.id}">${escapeHtml(fmSubText(c, idx))}</small></div>
+          <div class="fm-bar"><span id="fm-bar-${e.id}" style="width:${idx===0 ? 100 : Math.max(0,Math.min(100,c.conv===null?0:c.conv))}%"></span></div>
+        </div>
+        <button class="del-btn fm-del" title="remover etapa" onclick="removeFunnelMetricStep('${f.id}','${e.id}')">✕</button>
+      </div>`;
+    }).join('');
+    return `<div class="fm-card" data-fid="${f.id}">
+      <div class="fm-head">
+        <input class="fm-title" type="text" value="${escA(f.nome)}" placeholder="nome do funil" onchange="updateFunnelMetric('${f.id}','nome',this.value)">
+        <input class="fm-period" type="text" value="${escA(f.periodo||'')}" placeholder="período / observação (ex: 01–07/out · criativo 12)" onchange="updateFunnelMetric('${f.id}','periodo',this.value)">
+        <div class="fm-head-actions">
+          <button class="fm-btn" title="copia este funil (útil pra comparar outro período)" onclick="duplicateFunnelMetric('${f.id}')">⧉ duplicar</button>
+          <button class="del-btn" title="excluir funil" onclick="removeFunnelMetric('${f.id}')">✕</button>
+        </div>
+      </div>
+      ${f.etapas.length ? `<div class="fm-row fm-row-head"><span></span><span>etapa</span><span>quantidade</span><span>conversão sobre</span><span>conversão</span><span></span></div>${rows}` : '<div class="empty">sem etapas — adicione abaixo.</div>'}
+      <div class="fm-foot">
+        <button class="fm-btn" onclick="addFunnelMetricStep('${f.id}')">+ etapa</button>
+        <span class="fm-hint">Escolha em "conversão sobre" qual etapa serve de base (ex: Upsell 1 sobre Vendas, Vendas sobre Pix gerado).</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function addFunnelMetric(withTemplate){
+  const list = currentFunnels();
+  if(!list) return;
+  list.push(newFunnelMetric('Funil ' + (list.length+1), withTemplate));
+  saveState(); renderFunnelMetrics();
+}
+function updateFunnelMetric(fid, field, value){
+  const f = findFunnelMetric(fid);
+  if(!f) return;
+  f[field] = value;
+  saveState();
+}
+function duplicateFunnelMetric(fid){
+  const list = currentFunnels();
+  const f = findFunnelMetric(fid);
+  if(!list || !f) return;
+  const map = {};
+  const copy = {id:fmUid(), nome:(f.nome||'Funil')+' (cópia)', periodo:f.periodo||'', etapas:f.etapas.map(e=>{ const id = fmUid(); map[e.id]=id; return {id, nome:e.nome, valor:e.valor, ref:e.ref}; })};
+  copy.etapas.forEach(e=>{ if(e.ref && e.ref!=='prev' && e.ref!=='top') e.ref = map[e.ref] || 'prev'; });
+  list.splice(list.indexOf(f)+1, 0, copy);
+  saveState(); renderFunnelMetrics();
+  showToast('Funil duplicado.');
+}
+function removeFunnelMetric(fid){
+  const f = findFunnelMetric(fid);
+  if(!f) return;
+  openConfirmModal(`Excluir o funil "${f.nome}" e todos os números dele? Esta ação não poderá ser desfeita.`, ()=>{
+    const p = currentProduct();
+    p.funnels = p.funnels.filter(x=>x.id!==fid);
+    saveState(); renderFunnelMetrics();
+    showToast('Funil excluído.');
+  });
+}
+function addFunnelMetricStep(fid){
+  const f = findFunnelMetric(fid);
+  if(!f) return;
+  f.etapas.push({id:fmUid(), nome:'Nova etapa', valor:'', ref:'prev'});
+  saveState(); renderFunnelMetrics();
+}
+function updateFunnelMetricStep(fid, sid, field, value){
+  const f = findFunnelMetric(fid);
+  if(!f) return;
+  const e = f.etapas.find(x=>x.id===sid);
+  if(!e) return;
+  if(field==='valor'){
+    const n = fmNum(value);
+    e.valor = n===null ? '' : n;
+    saveState(); refreshFunnelMetricCalc(fid);
+    return;
+  }
+  e[field] = value;
+  saveState();
+  if(field==='nome') renderFunnelMetrics(); else refreshFunnelMetricCalc(fid);
+}
+function removeFunnelMetricStep(fid, sid){
+  const f = findFunnelMetric(fid);
+  if(!f) return;
+  f.etapas = f.etapas.filter(e=>e.id!==sid);
+  f.etapas.forEach(e=>{ if(e.ref===sid) e.ref = 'prev'; });
+  saveState(); renderFunnelMetrics();
+}
+function moveFunnelMetricStep(fid, sid, dir){
+  const f = findFunnelMetric(fid);
+  if(!f) return;
+  const i = f.etapas.findIndex(e=>e.id===sid);
+  const j = i + dir;
+  if(i<0 || j<0 || j>=f.etapas.length) return;
+  const tmp = f.etapas[i]; f.etapas[i] = f.etapas[j]; f.etapas[j] = tmp;
+  saveState(); renderFunnelMetrics();
+}
+
+/* ---------- MINHAS INFORMAÇÕES (empresa + e-mails) ---------- */
+const INFO_GROUPS = ['Empresa','Endereço','Contato','Bancário','Outros'];
+const INFO_DEFAULT_FIELDS = [
+  ['Empresa','Razão social'],['Empresa','Nome fantasia'],['Empresa','CNPJ'],['Empresa','Inscrição estadual'],
+  ['Empresa','CNAE principal'],['Empresa','Natureza jurídica'],['Empresa','Data de abertura'],
+  ['Empresa','Responsável / sócio'],['Empresa','CPF do responsável'],
+  ['Endereço','CEP'],['Endereço','Endereço (rua e número)'],['Endereço','Complemento'],['Endereço','Bairro'],['Endereço','Cidade / UF'],
+  ['Contato','Telefone / WhatsApp'],['Contato','E-mail da empresa'],['Contato','Site'],
+  ['Bancário','Banco'],['Bancário','Agência'],['Bancário','Conta'],['Bancário','Chave Pix']
+];
+const EMAIL_LINK_TYPES = ['Gateway','Conta de anúncio','Banco','Checkout','Hospedagem / domínio','Rede social','Ferramenta','Outro'];
+let infoSearchTerm = '';
+function ensureMyInfo(){
+  if(!state.myInfo || !Array.isArray(state.myInfo.campos)){
+    state.myInfo = { campos: INFO_DEFAULT_FIELDS.map(([grupo,label])=>({id:fmUid(), grupo, label, valor:''})) };
+  }
+}
+function copyToClipboard(text, okMsg){
+  const finish = (ok)=> showToast(ok ? (okMsg||'Copiado!') : 'Não deu pra copiar — copia manualmente.', ok?undefined:'error');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>finish(true)).catch(()=>finish(false));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    finish(ok);
+  }
+}
+function renderMinhasInfo(){
+  ensureMyInfo();
+  renderInfoCompany();
+  renderEmails();
+}
+function renderInfoCompany(){
+  const el = document.getElementById('infoCompanyList');
+  if(!el) return;
+  const sel = document.getElementById('infoNewGroup');
+  if(sel && !sel.options.length) sel.innerHTML = INFO_GROUPS.map(g=>`<option value="${g}">${g}</option>`).join('');
+  const campos = state.myInfo.campos;
+  const groups = [...INFO_GROUPS];
+  campos.forEach(c=>{ if(!groups.includes(c.grupo)) groups.push(c.grupo); });
+  el.innerHTML = groups.map(g=>{
+    const rows = campos.filter(c=>c.grupo===g);
+    if(!rows.length) return '';
+    return `<div class="info-section"><div class="info-section-title">${escapeHtml(g)}</div>${rows.map(c=>`
+      <div class="info-row">
+        <input class="info-label" type="text" value="${escA(c.label)}" onchange="updateInfoField('${c.id}','label',this.value)">
+        <input class="info-value" type="text" value="${escA(c.valor||'')}" placeholder="preencher" onchange="updateInfoField('${c.id}','valor',this.value)">
+        <button class="funnel-icon-btn" style="width:32px;height:32px;" title="copiar" onclick="copyInfoValue('${c.id}')">📋</button>
+        <button class="funnel-icon-btn" style="width:32px;height:32px;" title="remover campo" onclick="removeInfoField('${c.id}')">✕</button>
+      </div>`).join('')}</div>`;
+  }).join('');
+}
+function updateInfoField(id, key, value){
+  const c = state.myInfo.campos.find(c=>c.id===id);
+  if(!c) return;
+  c[key] = value;
+  saveState();
+}
+function copyInfoValue(id){
+  const c = state.myInfo.campos.find(c=>c.id===id);
+  if(!c) return;
+  if(!(c.valor||'').trim()){ showToast('Esse campo está vazio.', 'error'); return; }
+  copyToClipboard(c.valor, c.label + ' copiado!');
+}
+function addInfoField(){
+  const label = document.getElementById('infoNewLabel');
+  const grupo = document.getElementById('infoNewGroup').value || 'Outros';
+  if(!label.value.trim()) return;
+  state.myInfo.campos.push({id:fmUid(), grupo, label:label.value.trim(), valor:''});
+  label.value = '';
+  saveState(); renderInfoCompany();
+}
+function removeInfoField(id){
+  const c = state.myInfo.campos.find(c=>c.id===id);
+  if(!c) return;
+  openConfirmModal(`Remover o campo "${c.label}"?`, ()=>{
+    state.myInfo.campos = state.myInfo.campos.filter(x=>x.id!==id);
+    saveState(); renderInfoCompany();
+  });
+}
+// ----- e-mails -----
+function emailMatches(em, q){
+  if(!q) return true;
+  const hay = [em.email, em.finalidade, ...(em.vinculos||[]).flatMap(v=>[v.tipo, v.nome, v.obs])].join(' ').toLowerCase();
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every(t=>hay.includes(t));
+}
+function setInfoSearch(v){
+  infoSearchTerm = v || '';
+  renderEmails();
+}
+function renderEmails(){
+  const el = document.getElementById('emailsList');
+  if(!el) return;
+  const all = state.emails || [];
+  const list = all.filter(em=>emailMatches(em, infoSearchTerm));
+  const countEl = document.getElementById('emailsCount');
+  if(countEl) countEl.innerText = all.length===0 ? '' : (infoSearchTerm ? `${list.length} de ${all.length}` : `${all.length}`);
+  if(all.length===0){
+    el.innerHTML = '<div class="empty-block" style="grid-column:1/-1;padding:24px 12px;"><div class="empty-block-icon">✉️</div><div class="empty-block-title">Nenhum e-mail cadastrado</div><div class="empty-block-sub">Adicione cada e-mail que você usa e vincule a ele os gateways, contas de anúncio, bancos e ferramentas cadastrados nele.</div></div>';
+  } else if(list.length===0){
+    el.innerHTML = '<div class="empty" style="grid-column:1/-1;">nada encontrado pra essa busca.</div>';
+  } else {
+    el.innerHTML = list.map(em=>`
+    <div class="email-card" data-eid="${em.id}">
+      <div class="email-head">
+        <input class="info-input" type="text" value="${escA(em.email)}" placeholder="e-mail" onchange="updateEmail('${em.id}','email',this.value)">
+        <button class="funnel-icon-btn" style="width:32px;height:32px;" title="copiar e-mail" onclick="copyEmail('${em.id}')">📋</button>
+        <button class="funnel-icon-btn" style="width:32px;height:32px;" title="excluir e-mail" onclick="removeEmail('${em.id}')">🗑️</button>
+      </div>
+      <input class="info-input" type="text" value="${escA(em.finalidade||'')}" placeholder="pra que serve (ex: principal, gateways, anúncios)" onchange="updateEmail('${em.id}','finalidade',this.value)">
+      ${(em.vinculos||[]).map(v=>`
+      <div class="email-link-row" data-lid="${v.id}">
+        <select onchange="updateEmailLink('${em.id}','${v.id}','tipo',this.value)">${EMAIL_LINK_TYPES.map(t=>`<option ${v.tipo===t?'selected':''}>${t}</option>`).join('')}</select>
+        <input type="text" value="${escA(v.nome||'')}" placeholder="nome (ex: Pepper, Nubank, BM 02)" onchange="updateEmailLink('${em.id}','${v.id}','nome',this.value)">
+        <button class="funnel-icon-btn" style="width:32px;height:32px;" title="remover" onclick="removeEmailLink('${em.id}','${v.id}')">✕</button>
+        <input class="email-link-obs" type="text" value="${escA(v.obs||'')}" placeholder="observação (opcional: ex: conta aprovada, 2FA no celular)" onchange="updateEmailLink('${em.id}','${v.id}','obs',this.value)">
+      </div>`).join('')}
+      <div class="email-add-link">
+        <select id="emailNewTipo-${em.id}">${EMAIL_LINK_TYPES.map(t=>`<option>${t}</option>`).join('')}</select>
+        <input type="text" id="emailNewNome-${em.id}" placeholder="vincular (ex: Pepper)" onkeydown="if(event.key==='Enter')addEmailLink('${em.id}')">
+        <button class="add" onclick="addEmailLink('${em.id}')">+</button>
+      </div>
+    </div>`).join('');
+  }
+  renderEmailMap();
+}
+function renderEmailMap(){
+  const el = document.getElementById('emailMap');
+  if(!el) return;
+  const items = [];
+  (state.emails||[]).forEach(em=>{
+    (em.vinculos||[]).forEach(v=>{ if((v.nome||'').trim()) items.push({tipo:v.tipo||'Outro', nome:v.nome.trim(), obs:v.obs||'', email:em.email||'(sem e-mail)'}); });
+  });
+  const q = infoSearchTerm.toLowerCase().split(/\s+/).filter(Boolean);
+  const shown = q.length ? items.filter(i=>{ const h=(i.tipo+' '+i.nome+' '+i.obs+' '+i.email).toLowerCase(); return q.every(t=>h.includes(t)); }) : items;
+  if(!shown.length){
+    el.innerHTML = '<div class="empty">'+(items.length ? 'nada encontrado pra essa busca.' : 'ainda não há nada vinculado a nenhum e-mail.')+'</div>';
+    return;
+  }
+  const types = [...EMAIL_LINK_TYPES];
+  shown.forEach(i=>{ if(!types.includes(i.tipo)) types.push(i.tipo); });
+  el.innerHTML = types.map(t=>{
+    const rows = shown.filter(i=>i.tipo===t).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
+    if(!rows.length) return '';
+    return `<div class="email-map-group"><div class="info-section-title">${escapeHtml(t)} (${rows.length})</div>${rows.map(i=>`
+      <div class="email-map-item"><span class="email-map-name">${escapeHtml(i.nome)}</span>${i.obs ? `<small style="color:var(--muted)">${escapeHtml(i.obs)}</small>` : ''}<span class="email-map-mail">${escapeHtml(i.email)}</span></div>`).join('')}</div>`;
+  }).join('');
+}
+function addEmail(){
+  const inp = document.getElementById('emailNewInput');
+  const v = (inp.value||'').trim();
+  if(!v) return;
+  if((state.emails||[]).some(e=>(e.email||'').trim().toLowerCase()===v.toLowerCase())){
+    showToast('Esse e-mail já está cadastrado.', 'error');
+    return;
+  }
+  state.emails.push({id:fmUid(), email:v, finalidade:'', vinculos:[]});
+  inp.value = '';
+  saveState(); renderEmails();
+  showToast('E-mail adicionado.');
+}
+function updateEmail(id, key, value){
+  const em = state.emails.find(e=>e.id===id);
+  if(!em) return;
+  em[key] = value;
+  saveState(); renderEmailMap();
+}
+function copyEmail(id){
+  const em = state.emails.find(e=>e.id===id);
+  if(em && em.email) copyToClipboard(em.email, 'E-mail copiado!');
+}
+function removeEmail(id){
+  const em = state.emails.find(e=>e.id===id);
+  if(!em) return;
+  const n = (em.vinculos||[]).length;
+  openConfirmModal(`Excluir o e-mail "${em.email}"${n ? ' e os '+n+' itens vinculados a ele' : ''}? Esta ação não poderá ser desfeita.`, ()=>{
+    state.emails = state.emails.filter(e=>e.id!==id);
+    saveState(); renderEmails();
+    showToast('E-mail excluído.');
+  });
+}
+function addEmailLink(eid){
+  const em = state.emails.find(e=>e.id===eid);
+  if(!em) return;
+  const nome = document.getElementById('emailNewNome-'+eid);
+  const tipo = document.getElementById('emailNewTipo-'+eid).value;
+  if(!nome.value.trim()) return;
+  if(!em.vinculos) em.vinculos = [];
+  em.vinculos.push({id:fmUid(), tipo, nome:nome.value.trim(), obs:''});
+  saveState(); renderEmails();
+  const again = document.getElementById('emailNewNome-'+eid);
+  if(again) again.focus();
+}
+function updateEmailLink(eid, lid, key, value){
+  const em = state.emails.find(e=>e.id===eid);
+  const v = em && (em.vinculos||[]).find(v=>v.id===lid);
+  if(!v) return;
+  v[key] = value;
+  saveState(); renderEmailMap();
+}
+function removeEmailLink(eid, lid){
+  const em = state.emails.find(e=>e.id===eid);
+  if(!em) return;
+  em.vinculos = (em.vinculos||[]).filter(v=>v.id!==lid);
+  saveState(); renderEmails();
 }
 
 /* ---------- RESUMO DO MÊS (home) ---------- */
@@ -5621,11 +6387,11 @@ function applyHideValuesPreference(){
   document.querySelectorAll('.eye-icon').forEach(icon=>{ icon.innerHTML = hidden ? EYE_CLOSED_SVG : EYE_OPEN_SVG; });
   document.querySelectorAll('.hide-values-btn').forEach(btn=>{ btn.classList.toggle('active', hidden); });
 }
-const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup','notes','contacts'];
+const TAB_NAMES = ['home','finance','processos','products','mining','projects','tools','content','warmup','notes','contacts','info'];
 const TAB_LABELS = {
   home:'Início', finance:'Financeiro mensal', processos:'Processos', products:'Produtos',
   mining:'Mineração', projects:'Projetos', tools:'Ferramentas', content:'Biblioteca de Conteúdo', warmup:'Aquecimento de Chip',
-  notes:'Notas', contacts:'Contatos'
+  notes:'Notas', contacts:'Contatos', info:'Minhas informações'
 };
 function renderTabNav(){
   const nav = document.getElementById('tabNav');
@@ -6337,6 +7103,7 @@ function render(){
   renderFinanceTable();
   renderLogs();
   renderContacts();
+  renderMinhasInfo();
   renderAssets();
   renderPhones();
   renderProducts();
@@ -7886,7 +8653,18 @@ function reorderTasksGroup(ids){
   saveState();
 }
 function reorderArray(key, ids){
-  state[key] = ids.map(id => state[key].find(i=>i.id===id)).filter(Boolean);
+  // Reordena só os itens citados em `ids`, mantendo cada um dentro das "vagas" que já ocupava e
+  // preservando todos os outros itens no lugar. Assim, listas com pastas (onde só uma parte dos itens
+  // é arrastável) nunca perdem itens por engano.
+  const arr = state[key] || [];
+  const set = new Set(ids);
+  const slots = [];
+  arr.forEach((it, i)=>{ if(set.has(it.id)) slots.push(i); });
+  const ordered = ids.map(id => arr.find(i=>i.id===id)).filter(Boolean);
+  if(ordered.length !== slots.length) return;
+  const copy = arr.slice();
+  slots.forEach((pos, k)=>{ copy[pos] = ordered[k]; });
+  state[key] = copy;
   saveState();
 }
 function setupDragHandlers(){
@@ -7894,7 +8672,6 @@ function setupDragHandlers(){
   attachSortableGrid('processosList', ids=>reorderArray('processos', ids));
   attachSortable('offersList', ids=>reorderArray('offers', ids));
   attachSortable('costsList', ids=>reorderArray('costs', ids));
-  attachSortable('miningList', ids=>reorderArray('mining', ids));
   attachSortableGrid('videosList', ids=>reorderArray('videos', ids));
   attachSortableGrid('toolsList', ids=>reorderArray('tools', ids));
   attachSortableGrid('projectsGrid', ids=>reorderArray('projects', ids));

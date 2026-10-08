@@ -1,5 +1,46 @@
 # Guia de publicação — Painel LAKA
 
+## Novidades desta versão (08/10/2026)
+
+- **Mineração — pastas de verdade**: as pastas agora são guardadas numa lista própria e
+  **nunca somem** (antes uma pasta só aparecia com 2 ou mais ofertas). Botão **🗂️ + Nova pasta**,
+  renomear (✏️) e excluir pasta (🗑️, as ofertas não são apagadas). Pastas restauradas: **gcap, shein e CNP**.
+- **Mineração — arrastar ofertas**: arraste o card de uma oferta pra dentro de uma pasta, de uma pasta
+  pra outra, ou pra fora (área "Sem pasta"). Soltando em cima de outra oferta, ela entra naquela posição.
+  O ⠿ continua servindo pra mudar a ordem dentro da pasta. (No celular, use ✎ editar > grupo/pasta.)
+- **Produtos — Conversão do funil**: crie vários funis por produto (por período, criativo ou página).
+  Modelo pronto: cliques, pageviews, retenção até o pitch da VSL, IC, Pix gerado, vendas (Pix pago) e
+  Upsell 1/2/3. Dá pra renomear, remover, reordenar (▲▼) e criar etapas. Cada etapa mostra a conversão
+  sobre a etapa que você escolher (ex.: Vendas sobre Pix gerado, Upsell sobre Vendas), quanto isso é do
+  topo e quantos se perderam. Botão "duplicar" pra comparar períodos.
+- **Produtos — links do funil**: a linha sob o mouse fica destacada (azul, com barrinha lateral) e a linha
+  pisca em verde quando você copia ou abre o link, pra saber exatamente qual foi.
+- **Nova aba "Minhas informações"**: dados da empresa (CNPJ, endereço, Pix...) com botão de copiar, e
+  **Gestão de e-mails**: cada e-mail com os gateways, contas de anúncio, bancos etc. vinculados, busca
+  e o painel "Onde está cada coisa". Não guarde senhas ali.
+- **Correção importante — salvamento seguro**: se o painel estiver aberto em outra aba/aparelho com versão
+  antiga, ele **não sobrescreve mais** os dados novos: pausa o salvamento e mostra um aviso vermelho com
+  o botão "Recarregar". Antes isso apagava dados em silêncio (foi o que fez as pastas sumirem). Também
+  passou a avisar quando um salvamento falha.
+- **Correção — reordenar sem perder itens**: reordenar uma lista que tem pastas não pode mais fazer
+  itens sumirem.
+- **Financeiro**: o app só lia o campo novo de faturamento por gateway; os valores de Pepper/Buckpay de
+  setembro já foram migrados no banco, e o nome "Pepper" ficou padronizado.
+
+## Como atualizar (resumo)
+
+1. **Feche o painel em todas as abas e aparelhos.**
+2. Na pasta do projeto no seu computador, substitua os arquivos pelos deste zip (mantenha a sua pasta `.git`).
+3. No PowerShell, dentro da pasta:
+
+```powershell
+git add .
+git commit -m "pastas na mineracao, arrastar ofertas, conversao de funil, minhas informacoes, salvamento seguro"
+git push
+```
+
+4. Espere 1-2 minutos, abra o painel e use **Ctrl+F5** (no celular, feche e abra o app).
+
 ## ⚠️ Antes de tudo: revogue o token antigo
 
 O `.zip` que você me enviou tinha uma pasta `.git` com um **token de acesso do GitHub
