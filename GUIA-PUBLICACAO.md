@@ -145,3 +145,7 @@ git push
 ## Novidades (08/10/2026 — parte 3)
 - **Gasto total** no Financeiro mensal: coluna (gasto + imposto do Meta) e caixa no resumo. Some junto com a coluna de imposto (✕ ou checkbox).
 - **Idioma da oferta** na Mineração: campo no cadastro e na edição, aparece como etiqueta 🌐 no card e entra na busca.
+
+## Novidades (09/10/2026)
+- **Lucro pós imposto** no Financeiro mensal: coluna por dia (faturamento − gasto − imposto do Meta) e caixa no resumo; some junto com a coluna de imposto.
+- Botão **↗ Abrir** dos links de funil agora é azul e destacado.

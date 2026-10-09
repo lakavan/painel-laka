@@ -1102,6 +1102,9 @@
     flex-shrink:0;transition:border-color .15s, color .15s;
   }
   .funnel-icon-btn:hover{border-color:var(--blue);color:var(--blue-bright);}
+  .funnel-open-btn{background:var(--blue);color:#fff;border:1px solid var(--blue);border-radius:7px;padding:4px 11px;font-size:12px;font-weight:600;line-height:1.2;cursor:pointer;white-space:nowrap;box-shadow:0 1px 6px rgba(59,130,246,0.35);transition:background .15s, box-shadow .15s, transform .1s;}
+  .funnel-open-btn:hover{background:#2563eb;border-color:#2563eb;box-shadow:0 2px 10px rgba(59,130,246,0.55);}
+  .funnel-open-btn:active{transform:translateY(1px);}
 
   /* whatsapp message stage */
   .wa-stage-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
@@ -4758,7 +4761,7 @@ function funnelLinksHtml(links){
         </div>
       </div>
       <div class="funnel-link-actions">
-        ${l.url ? `<button class="funnel-icon-btn" onclick="openFunnelLink('${l.id}', event)" title="abrir link">↗</button>` : ''}
+        ${l.url ? `<button class="funnel-open-btn" onclick="openFunnelLink('${l.id}', event)" title="abrir link em nova aba">↗ Abrir</button>` : ''}
         ${l.url ? `<button class="funnel-icon-btn" onclick="copyFunnelLink('${l.id}', event)" title="copiar link">📋</button>` : ''}
         <button class="funnel-icon-btn" onclick="toggleFunnelLinkEdit('${l.id}', event)" title="editar">✏️</button>
         <button class="funnel-status-pill ${ativo?'is-on':'is-off'}" onclick="toggleFunnelLinkAtivo('${l.id}', event)" title="clique pra alternar">${ativo?'Ativo':'Inativo'}</button>
@@ -6844,6 +6847,8 @@ function updateRowComputed(day){
     taxInput.value = (t>0 || manual) ? t.toFixed(2) : '';
     taxInput.classList.toggle('mtax-auto', !manual);
     const gt = document.getElementById('gtot-'+day); if(gt) gt.innerText = brl(gasto + t);
+    const lpc = document.getElementById('lucrop-'+day);
+    if(lpc){ const lp = fat - gasto - t; lpc.innerText = brl(lp); lpc.className = 'fin-num ' + (lp>=0?'pos':'neg'); }
   }
   if(lucroCell){
     lucroCell.innerText = brl(lucro);
@@ -6875,7 +6880,7 @@ function renderFinanceTable(){
         ? gateways.map(g=>`<th style="text-align:right;" class="fin-gw-th"><span>${escapeHtml(g)}</span><button class="fin-gw-remove" onclick="removeDailyGateway('${jsAttrEscape(g)}')" title="parar de acompanhar ${escapeHtml(g)} separadamente">✕</button></th>`).join('')
           + `<th style="text-align:right;">Faturamento total</th>`
         : `<th style="text-align:right;">Faturamento</th>`}
-      <th style="text-align:right;">Lucro</th><th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
+      <th style="text-align:right;">Lucro</th>${taxCfg.on ? `<th style="text-align:right;">Lucro pós imposto</th>` : ''}<th style="text-align:right;">Margem</th><th style="text-align:right;">ROAS</th>
     `;
   }
   const tbody = document.getElementById('finTableBody');
@@ -6896,6 +6901,7 @@ function renderFinanceTable(){
       ${taxCfg.on ? `<td class="fin-num fin-num-total" id="gtot-${day}">${brl(dayGastoTotal(d, taxCfg))}</td>` : ''}
       ${fatCells}
       <td class="fin-num ${lucro>=0?'pos':'neg'}" id="lucro-${day}">${brl(lucro)}</td>
+      ${taxCfg.on ? (()=>{ const lp = d.faturamento - dayGastoTotal(d, taxCfg); return `<td class="fin-num ${lp>=0?'pos':'neg'}" id="lucrop-${day}">${brl(lp)}</td>`; })() : ''}
       <td class="fin-num" id="margem-${day}">${margem===null?'—':margem.toFixed(1)+'%'}</td>
       <td class="fin-num" id="roas-${day}">${roas===null?'—':roas.toFixed(2)+'x'}</td>
     </tr>`;
@@ -6976,6 +6982,7 @@ function updateMonthSummary(){
       ${monthObj.gateway ? `<div class="gateway-chip">💳 ${escapeHtml(monthObj.gateway)}</div>` : `<div class="gateway-chip gateway-chip-empty">+ escolher gateway</div>`}
     </div>
     <div class="msum"><div class="l">Lucro pré-imposto</div><div class="v ${lucroPre>=0?'pos':'neg'}">${brl(lucroPre)}</div></div>
+    ${taxCfgM.on ? `<div class="msum"><div class="l">Lucro pós imposto Meta</div><div class="v ${(lucroPre-totalMetaTax)>=0?'pos':'neg'}">${brl(lucroPre - totalMetaTax)}</div></div>` : ''}
     <div class="msum imposto-box"><div class="l">Imposto do mês</div><input type="number" value="${monthObj.imposto||''}" placeholder="R$ 0" onchange="updateImposto(this.value)"></div>
     <div class="msum"><div class="l">Lucro real pós-imposto</div><div class="v ${lucroReal>=0?'pos':'neg'}">${brl(lucroReal)}</div></div>
   `;
